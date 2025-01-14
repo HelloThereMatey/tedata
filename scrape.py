@@ -277,40 +277,40 @@ class get_tooltip(object):
 
                 actions.move_by_offset(x_pos, viewport_y).perform()
                 actions.reset_actions()  # Reset for next move
-                print(f"Moving to point at viewport coordinates ({x_pos}, {viewport_y})")
+                #print(f"Moving to point at viewport coordinates ({x_pos}, {viewport_y})")
                 time.sleep(0.05)
                 
                 tooltip = self.get_tooltip_text()
                 date, value = self.extract_date_value_tooltip(tooltip)
+
                 if not just_run:
                     if date == last_date:
                         i += 1
                         date_change_count += 1
                         continue
-                    else:    
+                    else:   
                         date_change.append(date_change_count)
                         date_change_count = 0
                         # Here we're trying to find the average number f pixels needed to move betweeen dates from the 1st 3 points to speed up subsequent scraping.
                         if len(date_change) == 3:
-                            print("Here's the date change list: ", date_change[1::])
+                            #print("Here's the date change list: ", date_change[1::])
                             av_incs = sum(date_change[1::])/2
                             x_increment = round(av_incs)
                             just_run == True
+                
+                if date == last_date:
+                    #print(f"Date not changed from last point, skipping: {date}")
+                    i += 1
+                    continue
 
                 if tooltip and date and value:
-                    print(f"Found point data: {date}, {value}")
-                    if i == 0:
-                        datename = "start_date"
-                    elif i == num_points + 1:
-                        datename = "end_date"
-                    else:
-                        datename = "date"
+                    #print(f"Found point data: {date}, {value}")
 
                     data_points.append({
                         'viewport_x': x_pos,
                         'viewport_y': viewport_y,
                         'tooltip_data': tooltip,
-                        datename: date,
+                        "date": date,
                         "value": value
                     })
                 else:
@@ -326,41 +326,41 @@ class get_tooltip(object):
     def extract_date_value_tooltip(self, tooltip_element: str):
         """Extract date and value from a single tooltip HTML"""
 
+        # try:
+        # Parse tooltip HTML
+        soup = BeautifulSoup(tooltip_element, 'html.parser')
+        
+        # Extract date and value
+        date = soup.select_one('.tooltip-date').text.strip()
+        date = ready_datestr(date)
+        
+        value = soup.select_one('.tooltip-value').text.replace(' Points', '')
+        print("Date: ", date, "Value: ", value)
         try:
-            # Parse tooltip HTML
-            soup = BeautifulSoup(tooltip_element, 'html.parser')
-            
-            # Extract date and value
-            date = soup.select_one('.tooltip-date').text.strip()
-            date = ready_datestr(date)
-            
-            value = soup.select_one('.tooltip-value').text.replace(' Points', '')
-            print("Date: ", date, "Value: ", value)
-            try:
-                value = float(value)
-            except:
-                pass
-            
-            try:
-                date = pd.to_datetime(date)
-            except:
-                print(f"Error converting date string: {date}")
-                pass
-            
-            try:
-                splitted = split_numeric(value)
-                if isinstance(splitted, tuple):
-                    value = convert_metric_prefix(splitted[0])
-                else:
-                    value = splitted
+            value = float(value)
+        except:
+            pass
+        
+        try:
+            date = pd.to_datetime(date)
+        except:
+            print(f"Error converting date string: {date}")
+            pass
+        
+        # try:
+        splitted = split_numeric(value)
+        if isinstance(splitted, tuple):
+            value = convert_metric_prefix(splitted[0])
+        else:
+            value = splitted
 
-            except Exception as e:
-                print(f"Error converting value string: {value}")
-                return
+            # except Exception as e:
+            #     print(f"Error converting value string: {value}")
+            #     return
             
-        except Exception as e:
-            print(f"Error parsing tooltip data: {str(e)}")
-            return None
+        # except Exception as e:
+        #     print(f"Error parsing tooltip data: {str(e)}")
+        #     return None
     
         return date, value
         
@@ -430,6 +430,7 @@ class get_tooltip(object):
                 #print(tooltip_text)
             return tooltip_text
         else:
+            print("Tooltip not found")
             return None
     
     def bail_out(self):
@@ -619,7 +620,7 @@ class TE_Scraper(object):
         print("axisY0 = ", self.y_axis.iloc[0], "axisY1 =", self.y_axis.iloc[-1])
         px_range = self.y_axis.index[-1] - self.y_axis.index[0]
         labrange = self.y_axis.iloc[-1] - self.y_axis.iloc[0]
-        self.unit_per_pix = labrange/px_range
+        self.unit_per_pix_alt2 = labrange/px_range
         print("unit_per_pix: ", self.unit_per_pix)
         self.datamax = round(self.y_axis.iloc[-1] - (self.y_axis.index[-1] - self.series.max())*self.unit_per_pix, 3)
         self.datamin = round(self.y_axis.iloc[0] + (self.series.min()-self.y_axis.index[0])*self.unit_per_pix, 3)
@@ -636,47 +637,56 @@ class TE_Scraper(object):
         if hasattr(self, "start_end"):
             y0 = self.start_end["start_value"]; y1 = self.start_end["end_value"]
             pix0 = self.series.iloc[0]; pix1 = self.series.iloc[-1]
+            print("Start value, end value", y0, y1, "pix0, pix1", pix0, pix1)
             
-            unit_per_px = abs(y1 - y0) / abs(pix1 - pix0)  # Calculated from the start and end datapoints.
+            self.unit_per_px_alt = abs(y1 - y0) / abs(pix1 - pix0)  # Calculated from the start and end datapoints.
+            
+            if not hasattr(self, "axis_limits"):
+                self.axis_limits = self.extract_axis_limits()
+            ## Turns out that this formulation below is the best way to calculate the scaling factor for the chart.
+            axlims_upp = (self.y_axis.iloc[-1] - self.y_axis.iloc[0]) / (self.axis_limits["y_max"] - self.axis_limits["y_min"])
+
             # if the start and end points are at similar values this will be problematic though. 
-            print("Start value, end value", y0, y1, "pix0, pix1", pix0, pix1, 
-                  "unit_per_px: ", unit_per_px,
+            print("Start value, end value", y0, y1, " pix0, pix1", pix0, pix1, 
+                  "data units perchar pixel from start & end points: ", self.unit_per_px_alt, "\n", 
                   "unit_per_pix calculated from the y axis ticks: ", self.unit_per_pix, "\n",
-                  "inverse of that: ", 1/self.unit_per_pix)
+                  "inverse of that: ", 1/self.unit_per_pix, "\n", 
+                  "unit_per_pix from axis limits and self.y_axis (probably best way): ", axlims_upp)
 
-            scaled = self.series.copy()
-
+            self.unscaled_series = self.series.copy()
             ##Does the Y axis cross zero? Where is the zero point??
-            x_intercept = find_zero_crossing(scaled)
+            x_intercept = find_zero_crossing(self.series)
 
             if x_intercept:
                 print("Y axis Series does cross zero at: ", x_intercept)
                 pix0 = x_intercept
 
-            for i in range(len(scaled)):
-                scaled.iloc[i] = (scaled.iloc[i] - pix0)*self.unit_per_pix + y0
+            for i in range(len(self.series)):
+                self.series.iloc[i] = (self.series.iloc[i] - pix0)*axlims_upp + y0
     
-            self.series = scaled
+            self.series = self.series
         else:
             print("start_end not found, run get_datamax_min() first.")
             return
 
-        return scaled
+        return self.series
     
-    def get_xlims_from_tooltips(self):
+    def get_xlims_from_tooltips(self, force_rerun: bool = False):
         """ Use the get_tooltip class to get the start and end dates of the time series using the tooltip box displayed on the chart."""
         if hasattr(self, "tooltip_scraper"):
             pass    
         else: 
             self.tooltip_scraper = get_tooltip(driver=self.driver, chart_x=335.5, chart_y=677.0)  #Note: update this later to use self.width and height etc...
         
-        if hasattr(self, "start_end") and self.start_end is not None and hasattr(self, "frequency") and self.frequency is not None:
-            pass
+        if hasattr(self, "start_end") and self.start_end is not None and hasattr(self, "frequency") and self.frequency is not None and not force_rerun:
+            return
         else:
+            time.sleep(1)
             data_points, num_points = self.tooltip_scraper.scrape_dates_from_tooltips(num_points=8)
-            dates = [point["date"] for point in data_points if "date" in point.keys()]
-            values = [point["value"] for point in data_points if "value" in point.keys()]
+            dates = [point["date"] for point in data_points]
+            values = [point["value"] for point in data_points]
             self.ripped_points = {"dates": dates, "values": values}
+            #print("Dates and values scraped from tooltips: ", self.ripped_points)
 
             if len(data_points) > num_points and "start_date" in data_points[0].keys() and "end_date" in data_points[-1].keys():
                 print("Successfully scraped start and end dates and a bunch of other points to determine frequency of time-series...")
@@ -689,18 +699,20 @@ class TE_Scraper(object):
                 'end_value': data_points[-1]["value"]
             }
 
-            print("These are your dates dawg.......", dates)
+            #print("These are your dates dawg.......", dates)
             diff = pd.Series(dates).diff().dropna().mode()[0]
             self.frequency = map_frequency(diff)
             print(f"\n\nTime series frequency appears to be: {diff.days}, {self.frequency}\n\n")
 
-    def make_x_index(self):
+    def make_x_index(self, force_rerun: bool = False):
         """Make the DateTime Index for the series using the start and end dates scraped from the tooltips. 
         This does a few things and uses Selenium to scrape the dates from the tooltips on the chart as well as
         some more points to detrmine the frequency of the time series. It will take some time....
         """
+        
+        print("Using selenium and toltip scraping to construct the date time index for the time-series, this'll take a bit...")
+        self.get_xlims_from_tooltips(force_rerun = force_rerun)
 
-        self.get_xlims_from_tooltips()
         if self.start_end is not None:
             print("Start and end values scraped from tooltips: ", self.start_end)
         else:
@@ -748,6 +760,7 @@ class TE_Scraper(object):
         ##Get px per unit for y-axis
         pxPerUnit = [abs((yaxlabs[i+1]- yaxlabs[i])/(pixheights[i+1]- pixheights[i])) for i in range(len(pixheights)-1)]
         average = sum(pxPerUnit)/len(pxPerUnit)
+        self.unit_per_pix = average
         print("Average px per unit for y-axis: ", average)  #Calculate the scaling for the chart so we can convert pixel co-ordinates to data values.
 
         yaxis = pd.Series(yaxlabs, index = pixheights, name = "ytick_label")
@@ -841,6 +854,7 @@ class TE_Scraper(object):
         # Label x and y axis
         fig.update_layout(
             legend=dict(
+            title_text="",  # Remove legend title
             orientation="h",
             yanchor="bottom",
             y=-0.2,  # Adjust this value to move the legend further down
@@ -969,7 +983,7 @@ def scrape_chart(url: str, driver: webdriver = None, headless: bool = True, brow
 
     try:
         #datamax, datamin = sel.get_datamax_min()   
-        scaled_series = sel.scale_series(right_way_up=True)   
+        scaled_series = sel.scale_series()   
     except Exception as e:
         print(f"Error scaling series: {str(e)}")
     
