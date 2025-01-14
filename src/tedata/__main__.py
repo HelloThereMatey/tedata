@@ -9,9 +9,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import time
 import pandas as pd
-import time
 import os 
-import re 
 
 ##### Get the directory where this file is housed ########################
 wd = os.path.dirname(__file__)
