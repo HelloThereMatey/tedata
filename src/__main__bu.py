@@ -1,5 +1,4 @@
 from typing import Literal
-import numpy as np
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -14,9 +13,9 @@ import time
 import os 
 import re 
 
+##### Get the directory where this file is housed ########################
 wd = os.path.dirname(__file__)
 fdel= os.path.sep
-
 
 ## Standalone functions  ########################################
 def export_html(html: str, save_path: str = wd+fdel+'last_soup.html'):
@@ -54,7 +53,6 @@ def split_numeric(input_string: str):
             return numeric_part, non_numeric.strip()
         else:   
             return input_string
-
 
 def map_frequency(diff):
     """Map timedelta to frequency string"""
@@ -177,7 +175,12 @@ def find_zero_crossing(series):
 ########### Classes ##############################################################################
 
 class get_tooltip(object):
-        
+    """Class to scrape tooltip data from a chart element using Selenium.
+    This can get x, y data from the tooltip box displayed by a site such as Trading Economics when the cursor
+    is moved over a chart. It can move the cursor to specific points on the chart and extract tooltip text.
+    It extracts date and value data from the tooltip text.
+    """
+
     def __init__(self, 
                     driver: webdriver = None, 
                     url: str = None,
@@ -437,7 +440,7 @@ class get_tooltip(object):
         self.driver.quit()
         return None
     
-################# Selenium class below ##########################################
+################# Selenium classes below ##########################################
 
 class generic_webdriver(object):
     """Generic webdriver class for initializing a Selenium WebDriver"""
@@ -469,6 +472,8 @@ class generic_webdriver(object):
         
         self.wait = WebDriverWait(self.driver, timeout=10)
 
+
+### Main workhorse class for scraping data from Trading Economics website.
 class TE_Scraper(object):
     """Class for scraping data from Trading Economics website. This is the main workhorse of the module.
     It is designed to scrape data from the Trading Economics website using Selenium and BeautifulSoup.
@@ -997,7 +1002,6 @@ def scrape_chart(url: str, driver: webdriver = None, headless: bool = True, brow
         print("Error scraping chart at: ", url) 
         return None
         
-
 class search_TE(object):
     """Class for searching Trading Economics website and extracting search results.
     This class is designed to search the Trading Economics website for a given term and extract the search results.
