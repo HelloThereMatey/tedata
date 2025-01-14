@@ -1,0 +1,19 @@
+[project]
+name = "tedata"
+version = "0.1.0"
+description = "Download data from Trading Economics for free and without any account or API key. Uses selenium and bs4 to scrape the data from the website. Trading Economics is one of the greatest stores of economic data on the web and contains millions of time-series for hundreds of different countries."
+authors = [
+    {name = "the_macro_bootlegger"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">= 3.9"
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "pandas>=2.2.2",
+    "selenium>=4.27.1"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
