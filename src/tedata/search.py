@@ -14,78 +14,7 @@ wd = os.path.dirname(__file__)
 fdel= os.path.sep
 
 ## Import the TE_Scraper class from the scraper module ################
-from .scraper import TE_Scraper
-
-
-############################################################################################################
-############ Convenience function to run the full scraper from scraper.py ##########################################
-
-def scrape_chart(url: str, driver: webdriver = None, headless: bool = True, browser: str = 'firefox') -> TE_Scraper:
-    """ This convenience function will scrape a chart from Trading Economics and return a TE_Scraper object with the series data.
-
-    ** Parameters: **
-
-    - url (str): The URL of the chart to scrape.
-    - headless (bool): Whether to run the browser in headless mode.
-    - browser (str): The browser to use, either 'chrome' or 'firefox'.
-
-    ** Returns: **  
-    - TE_Scraper object with the scraped data or None if an error occurs.
-    """
-
-    loaded_page = False; clicked_button = False; yaxis = None; series = None; x_index = None; scaled_series = None; datamax = None; datamin = None
-
-    sel = TE_Scraper(driver = driver, browser = browser, headless = headless)
-    if sel.load_page(url):
-        print("Page at ", url, ", loaded successfully.")
-        loaded_page = True
-    else:
-        print("Error loading page at: ", url)
-        return None
-
-    if sel.click_button(sel.find_max_button()):  ## This is the "MAX" button on the Trading Economics chart to set the chart to max length.
-        print("Clicked the MAX button successfully.")
-        clicked_button = True
-    else:
-        print("Error clicking the MAX button.")
-        return None
-    
-    time.sleep(2)
-    try:
-        yaxis = sel.get_y_axis()
-        print("Successfully scraped y-axis values from the chart:", " \n", yaxis)  
-    except Exception as e:
-        print(f"Error scraping y-axis: {str(e)}")
-    
-    try:
-        sel.get_element()
-        series = sel.series_from_element(invert_the_series=True)
-        print("Successfully scraped raw pixel co-ordinate seruies from the path element in chart:", " \n", series)
-        time.sleep(1)
-    except Exception as e:
-        print(f"Error scraping y-axis: {str(e)}")
-
-    try:
-        x_index = sel.make_x_index()
-        time.sleep(1)
-    except Exception as e:
-        print(f"Error creating date index: {str(e)}")
-
-    try:
-        #datamax, datamin = sel.get_datamax_min()   
-        scaled_series = sel.scale_series()   
-    except Exception as e:
-        print(f"Error scaling series: {str(e)}")
-    
-    if loaded_page and clicked_button and yaxis is not None and series is not None and x_index is not None and scaled_series is not None: #and datamax is not None and datamin is not None:
-        print("Successfully scraped time-series from chart at: ", url, " \n", sel.series, "now getting some metadata...")
-        sel.scrape_metadata()
-        print("Check the metadata: ", sel.series_metadata, "\nScraping complete! Happy pirating yo!")
-
-        return sel
-    else:
-        print("Error scraping chart at: ", url) 
-        return None
+from .scraper import scrape_chart
     
 
 ######## Search class to search Trading Economics website and extract search results ##############################
@@ -232,10 +161,29 @@ class search_TE(object):
         This will use the TE_Scraper class and methods to scrape the data from the Trading Economics website.
         
         **Parameters:**
-        - result_num (int): The index of the search result in your result tabel to scrape the data for.
+        - result_num (int): The index of the search result in your result table to scrape the data for.
 
         **Returns:**
-        - scraped_data (TE_Scraper): The scraped data object. The data can be accessed from the 'series' attribute of the object.
+        - scraped_data (TE_Scraper): The scraped data object. The data can be accessed from the 'series' attribute of the TE_SCraper object
+        that is returned. This object is also saved as the "scraped_data" attribute of the search_TE object.  The maximum length 
+        for the indicator is always retrieved. Use slicing to reduce length if needed.
+
+        ** Example: **
+        - Run a search and display the "result_table" attribute of the search_TE object to see the search results:
+
+        ```
+        search = search_TE()
+        search.search_trading_economics("US ISM Services PMI")
+        search.result_table
+        ````
+
+        - Scrape the data for the 11th search result (counts from 0):
+        
+        ```
+        scraped = search.get_data(10)
+        scraped.plot_series()  # This will plot an interactive plotly chart of the series.
+        ```
+
         """
 
         print("Attempting to scrape data for result ", result_num, ", ", self.result_table.loc[result_num, "country"], self.result_table.loc[result_num, "metric"] )

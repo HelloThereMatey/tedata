@@ -81,7 +81,7 @@ class TE_Scraper(object):
             return False
     
     def click_button(self, selector, selector_type=By.CSS_SELECTOR):
-        """Click button and wait for response"""
+        """Click button and wait for response..."""
 
         try:
             # Wait for element to be clickable
@@ -103,7 +103,8 @@ class TE_Scraper(object):
             return False
 
     def find_max_button(self, selector: str = "#dateSpansDiv"):
-        """Find the button that selects the maximum date range and return the CSS selector for it."""
+        """Find the button on the chart that selects the maximum date range and return the CSS selector for it."""
+
         try:
             buts = self.page_soup.select_one(selector)
             i = 1
@@ -123,7 +124,17 @@ class TE_Scraper(object):
             return None
 
     def get_element(self, selector: str = ".highcharts-series path", selector_type=By.CSS_SELECTOR):
-        """Find element by selector"""
+        """Find element by selector. The data trace displayed on a Trading Economics chart is a PATH element in the SVG chart.
+        This is selected using the CSS selector ".highcharts-series path" by default. The element is stored in the 'current_element' attribute.
+        It can be used to select other elements on the chart as well and assign that to current element attribute.
+        
+        **Parameters:**
+        - selector (str): The CSS selector for the element to find.
+        - selector_type (By): The type of selector to use, By.CSS_SELECTOR by default.
+
+        **Returns:**
+        - element: The found element or None if not found.
+        """
         try:
             element = self.wait.until(
                 EC.presence_of_element_located((selector_type, selector))
@@ -171,7 +182,7 @@ class TE_Scraper(object):
         return series
     
     def get_datamax_min(self):
-        """Get the max and min data values for the series using y-axis values..."""
+        """Get the max and min data values for the series using y-axis values... This is deprecated and not used in the current version of the code."""
         
         print("axisY0 = ", self.y_axis.iloc[0], "axisY1 =", self.y_axis.iloc[-1])
         px_range = self.y_axis.index[-1] - self.y_axis.index[0]
@@ -184,7 +195,8 @@ class TE_Scraper(object):
         return self.datamax, self.datamin
     
     def scale_series(self, right_way_up: bool = True):
-        """Scale the series using the first and last values from the series pulled from the tooltip box."""
+        """Scale the series using the first and last values from the series pulled from the tooltip box. Uses the y axis limits and the max and min of the y axis
+        to determine the scaling factor to convert pixel co-ordinates to data values. The scaling factor is stored in the self.axlims_upp attribute."""
 
         if not right_way_up:
             max_val = self.y_axis.index.max()  # This should be the top pixel of the chart.
@@ -200,14 +212,14 @@ class TE_Scraper(object):
             if not hasattr(self, "axis_limits"):
                 self.axis_limits = self.extract_axis_limits()
             ## Turns out that this formulation below is the best way to calculate the scaling factor for the chart.
-            axlims_upp = (self.y_axis.iloc[-1] - self.y_axis.iloc[0]) / (self.axis_limits["y_max"] - self.axis_limits["y_min"])
+            self.axlims_upp = (self.y_axis.iloc[-1] - self.y_axis.iloc[0]) / (self.axis_limits["y_max"] - self.axis_limits["y_min"])
 
             # if the start and end points are at similar values this will be problematic though. 
             print("Start value, end value", y0, y1, " pix0, pix1", pix0, pix1, 
                   "data units perchar pixel from start & end points: ", self.unit_per_px_alt, "\n", 
                   "unit_per_pix calculated from the y axis ticks: ", self.unit_per_pix, "\n",
                   "inverse of that: ", 1/self.unit_per_pix, "\n", 
-                  "unit_per_pix from axis limits and self.y_axis (probably best way): ", axlims_upp)
+                  "unit_per_pix from axis limits and self.y_axis (probably best way): ", self.axlims_upp)
 
             self.unscaled_series = self.series.copy()
             ##Does the Y axis cross zero? Where is the zero point??
@@ -218,7 +230,7 @@ class TE_Scraper(object):
                 pix0 = x_intercept
 
             for i in range(len(self.series)):
-                self.series.iloc[i] = (self.series.iloc[i] - pix0)*axlims_upp + y0
+                self.series.iloc[i] = (self.series.iloc[i] - pix0)*self.axlims_upp + y0
     
             self.series = self.series
         else:
@@ -228,7 +240,8 @@ class TE_Scraper(object):
         return self.series
     
     def get_xlims_from_tooltips(self, force_rerun: bool = False):
-        """ Use the get_tooltip class to get the start and end dates of the time series using the tooltip box displayed on the chart."""
+        """ Use the get_tooltip class to get the start and end dates and some other points of the time series using the tooltip box displayed on the chart."""
+
         if hasattr(self, "tooltip_scraper"):
             pass    
         else: 
@@ -263,7 +276,7 @@ class TE_Scraper(object):
     def make_x_index(self, force_rerun: bool = False):
         """Make the DateTime Index for the series using the start and end dates scraped from the tooltips. 
         This does a few things and uses Selenium to scrape the dates from the tooltips on the chart as well as
-        some more points to detrmine the frequency of the time series. It will take some time....
+        some more points to determine the frequency of the time series. It will take some time....
         """
         
         print("Using selenium and toltip scraping to construct the date time index for the time-series, this'll take a bit...")
@@ -287,12 +300,18 @@ class TE_Scraper(object):
        
     def get_y_axis(self):
         """Get y-axis values from chart to make a y-axis series with tick labels and positions (pixel positions).
-        Also gets the limits of both axis in pixel co-ordinates. """
+        Also gets the limits of both axis in pixel co-ordinates. A series containing the y-axis values and their pixel positions (as index) is assigned
+        to the "y_axis" attribute. The "axis_limits" attribute is made too & is  dictionary containing the pixel co-ordinates of the max and min for both x and y axis.
+        """
 
         ##Get positions of y-axis gridlines
         y_heights = []
         self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML")
-        self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')
+        self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')  #Make a bs4 object from the #chart element of the page.
+
+        ## First get the pixel values of the max and min for both x and y axis.
+        self.axis_limits = self.extract_axis_limits()
+
         ygrid = self.chart_soup.select('g.highcharts-grid.highcharts-yaxis-grid')
         gridlines = ygrid[1].findAll('path')
         for line in gridlines:
@@ -327,7 +346,6 @@ class TE_Scraper(object):
             pass
 
         self.y_axis = yaxis
-        self.axis_limits = self.extract_axis_limits()
         return yaxis
     
     def dtIndex(self, start_date: str, end_date: str, ser_name: str = "Time-series"):
@@ -379,7 +397,20 @@ class TE_Scraper(object):
             return None
     
     def plot_series(self, add_horizontal_lines: bool = False):
-        fig = self.series.plot()
+        """
+        Plots the time series data using pandas with plotly as the backend. Plotly is set as the pandas backend in __init__.py for tedata.
+        If you want to use matplotlib or other plotting library don't use this method, plot the series attribute data directly. If using jupyter
+        you can set 
+
+        :Parameters:
+        - add_horizontal_lines (bool): If True, adds horizontal lines and labels to the plot. The lines correspond to the grid on the TE chart.
+        The lines are plotted in terms of pixel co-ordinates, not data values, don't use the lines when plotting the final scaled series. Only for 
+        inspection of the raw data (pixel co-ordinates) extracted from the #path element of the svg chart on TE.
+
+        :Returns: None
+        """
+
+        fig = self.series.plot()  # Plot the series using pandas, plotly needs to be set as the pandas plotting backend.
 
         if hasattr(self, "series_metadata"):
             title = str(self.series_metadata["country"]).capitalize() + ": " + str(self.series_metadata["title"]).capitalize()
@@ -468,6 +499,8 @@ class TE_Scraper(object):
         except Exception as e:
             print("Description card not found: ", {str(e)})
 
+        self.metadata = pd.Series(self.series_metadata)
+
     def get_page_source(self):
         """Get current page source after interactions"""
         return self.driver.page_source
@@ -484,24 +517,59 @@ class TE_Scraper(object):
         self.close()
 
 
-############ Convenience function to run the full scraper ##########################################
+############################################################################################################
+############ Convenience function to run the full scraper from scraper.py ##########################################
 
-def scrape_chart(url: str, driver: webdriver = None, headless: bool = True, browser: str = 'firefox') -> TE_Scraper:
-    """ This convenience function will scrape a chart from Trading Economics and return a TE_Scraper object with the series data.
+def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business-confidence", 
+                 id: str = None,
+                 country: str = "united-states",
+                 scraper: TE_Scraper = None,
+                 driver: webdriver = None, 
+                 headless: bool = True, 
+                 browser: str = 'firefox') -> TE_Scraper:
+    
+    """ This convenience function will scrape a chart from Trading Economics and return a TE_Scraper object with the series data in
+    the 'series' attribute. Metadata is also retreived and stored in the 'series_metadata' & 'metadata' attributes.
+    
+    *There are multiple ways to use this function:*
 
-    ** Parameters: **
+    - Supply URL of the chart to scrape OR supply country + id of the chart to scrape. country and id are just the latter parts of the 
+    full chart URL. e.g for URL: 'https://tradingeconomics.com/united-states/business-confidence', we could instead use country='united-states' 
+    and id='business-confidence'. You can supply only id and default country is 'united-states'.
+    - You can leave scraper and driver as None and the function will create a new TE_Scraper object for that URL and use it to scrape the data.
+    You can however save time by passing either a scraper object or a driver object to the function. Best to pass a driver object
+    for fastest results.
+    
+    :Parameters:
 
     - url (str): The URL of the chart to scrape.
-    - headless (bool): Whether to run the browser in headless mode.
+    - id (str): The id of the chart to scrape. This is the latter part of the URL after the country name.
+    - country (str): The country of the chart to scrape. Default is 'united-states'.
+    - scraper (TE_Scraper): A TE_Scraper object to use for scraping the data. If this is passed, the function will not create a new one.
+    - driver (webdriver): A Selenium WebDriver object to use for scraping the data. If this is passed, the function will not create a new one. If 
+    scraper and driver are both passed, the webdriver of the scraper object will be used rather than the supplied webdriver.
+    - headless (bool): Whether to run the browser in headless mode (display no window).
     - browser (str): The browser to use, either 'chrome' or 'firefox'.
 
-    ** Returns: **  
+    :Returns:  
     - TE_Scraper object with the scraped data or None if an error occurs.
     """
 
+    ## Parameters that monitor progress....
     loaded_page = False; clicked_button = False; yaxis = None; series = None; x_index = None; scaled_series = None; datamax = None; datamin = None
 
-    sel = TE_Scraper(driver = driver, browser = browser, headless = headless)
+    if scraper is not None:
+        sel = scraper
+        if driver is None:
+            driver = scraper.driver
+        else:
+            scraper.driver = driver
+    else:
+        sel = TE_Scraper(driver = driver, browser = browser, headless = headless)
+
+    if id is not None:
+        url = f"https://tradingeconomics.com/{country}/{id}"
+
     if sel.load_page(url):
         print("Page at ", url, ", loaded successfully.")
         loaded_page = True
@@ -516,7 +584,7 @@ def scrape_chart(url: str, driver: webdriver = None, headless: bool = True, brow
         print("Error clicking the MAX button.")
         return None
     
-    time.sleep(2)
+    time.sleep(1)
     try:
         yaxis = sel.get_y_axis()
         print("Successfully scraped y-axis values from the chart:", " \n", yaxis)  
@@ -552,162 +620,3 @@ def scrape_chart(url: str, driver: webdriver = None, headless: bool = True, brow
     else:
         print("Error scraping chart at: ", url) 
         return None
-        
-class search_TE(object):
-    """Class for searching Trading Economics website and extracting search results.
-    This class is designed to search the Trading Economics website for a given term and extract the search results.
-    It can load the search page, enter a search term, and extract the URLs of the search results.
-
-    **Init Parameters:**
-
-    - driver (webdriver): A Selenium WebDriver object, can put in an active one or make a new one for a new URL.
-    - browser (str): The browser to use for scraping, either 'chrome' or 'firefox'.
-    - search_term (str): The term to search for on the website.
-    - headless (bool): Whether to run the browser in headless mode (show no window).
-    """
-    # Define browser type with allowed values
-    BrowserType = Literal["chrome", "firefox"]
-    
-    def __init__(self, driver: webdriver = None, 
-                 browser: BrowserType = "firefox", 
-                 search_term: str = "US ISM Services PMI",
-                 headless: bool = True):
-        
-        self.browser = browser
-        self.headless = headless
-
-        if driver is None:
-            if browser == "chrome":
-                options = webdriver.ChromeOptions()
-                if headless:
-                    options.add_argument('--headless')
-                self.driver = webdriver.Chrome(options=options)
-            elif browser == "firefox":
-                options = webdriver.FirefoxOptions()
-                if headless:
-                    options.add_argument('--headless')
-                self.driver = webdriver.Firefox(options=options)
-            else:
-                raise ValueError("Unsupported browser! Use 'chrome' or 'firefox'.")
-        else:
-            self.driver = driver
-
-        self.search_term = search_term
-        self.home_page()
-
-    def home_page(self):
-        """Load the Trading Economics home page."""
-        # Load page
-        try:
-            print("Loading home page...")
-            self.driver.get("https://tradingeconomics.com/")
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
-
-    def search_trading_economics(self, search_term: str = None):
-        """Search Trading Economics website for a given term and extract URLs of search results.
-        This method will search the Trading Economics website for a given term and extract the URLs of the search results.
-        It will enter the search term in the search box, submit the search, and extract the URLs of the search results.
-        Results are assigned to the 'results' attribute as a list of URLs and as result_table attribute as a pandas df.
-
-        **Parameters:**
-
-        - search_term (str): The term to search for on the website.
-        """
-
-        self.current_page = self.driver.current_url
-        if self.current_page != "https://tradingeconomics.com/":
-            self.home_page()
-            time.sleep(2)
- 
-        if search_term is None:
-            search_term = self.search_term
-        else:
-            self.search_term = search_term
-        
-        try:
-        # Wait for search box - using the ID from the HTML
-            search_box = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.ID, "thisIstheSearchBoxIdTag")))
-   
-            
-            # Click search box
-            print("Clicking search box...")
-            search_box.click()
-            
-            # Enter search term
-            print(f"Entering search term: {search_term}")
-            search_box.send_keys(search_term)
-            time.sleep(1)  # Small delay to let suggestions appear
-            
-            # Press Enter
-            print("Submitting search...")
-            search_box.send_keys(Keys.RETURN)
-            
-            # Wait a moment to see results
-            time.sleep(3)
-
-            self.results = self.extract_search_results(self.driver.page_source)
-            self.results_table()
-        
-        except Exception as e:
-            print(f"Error occurred: {str(e)}")
-            return None
-        
-    def extract_search_results(self, html_content):
-        """Extract URLs from search results page"""
-        
-        soup = BeautifulSoup(html_content, 'html.parser')
-        
-        # Find all list items in search results
-        results = soup.find_all('li', class_='list-group-item')
-        
-        urls = []
-        for result in results:
-            # Find the main link in each result item
-            link = result.find('a', href=True)
-            if link and link['href'].startswith('/'):
-                full_url = f"https://tradingeconomics.com{link['href']}"
-                urls.append(full_url)
-        
-        return urls
-    
-    def results_table(self):
-        """Create a DataFrame from the search results"""
-
-        if hasattr(self, "results"):
-            metrics = []
-            countries = []
-            for result in self.results:
-                metrics.append(result.split("/")[-1].replace("-", " "))
-                countries.append(result.split("/")[-2].replace("-", " "))
-            df = pd.DataFrame({'country': countries, 'metric': metrics, "url": self.results})
-            df.index.rename('result', inplace=True)
-            self.result_table = df
-        else:
-            print("No search results found.")
-            return None
-        
-    def get_data(self, result_num: int = 0):
-        """Scrape data for a given search result number.
-        This method will scrape data for a given search result number from the search results table.
-        It will extract the URL for the result and scrape the data from the chart at that URL.
-        The scraped data is assigned to the 'scraped_data' attribute as a TE_scraper object.
-        This will use the TE_Scraper class and methods to scrape the data from the Trading Economics website.
-        
-        **Parameters:**
-        - result_num (int): The index of the search result in your result tabel to scrape the data for.
-
-        **Returns:**
-        - scraped_data (TE_Scraper): The scraped data object. The data can be accessed from the 'series' attribute of the object.
-        """
-
-        print("Attempting to scrape data for result ", result_num, ", ", self.result_table.loc[result_num, "country"], self.result_table.loc[result_num, "metric"] )
-        if hasattr(self, "result_table"):
-            url = self.result_table.loc[result_num, "url"]
-            print(f"Scraping data from: {url}")
-            self.scraped_data = scrape_chart(url, driver = self.driver, headless=self.headless, browser=self.browser)
-            return self.scraped_data
-        else:
-            print("No search results found.")
-            return None

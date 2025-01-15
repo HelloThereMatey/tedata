@@ -5,14 +5,48 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.common.exceptions import WebDriverException
 import time
 import pandas as pd
 import os 
 import re 
 
+import warnings
+
 ##### Get the directory where this file is housed ########################
 wd = os.path.dirname(__file__)
 fdel= os.path.sep
+
+def check_browser_installed():
+    """Check if browsers are installed using Selenium's service checks"""
+    firefox_available = False
+    chrome_available = False
+    
+    try:
+        firefox_service = FirefoxService()
+        firefox_service.is_connectable()  # This checks if Firefox is available
+        firefox_available = True
+    except WebDriverException:
+        pass
+
+    try:
+        chrome_service = ChromeService()
+        chrome_service.is_connectable()  # This checks if Chrome is available
+        chrome_available = True
+    except WebDriverException:
+        pass
+
+    if not (firefox_available or chrome_available):
+        warnings.warn(
+            "Neither Firefox nor Chrome browser found. Please install one of them to use this package."
+            "Firefox: https://www.mozilla.org/en-US/firefox/new/"
+            "Google Chrome: https://www.google.com/chrome/ ",
+            RuntimeWarning
+        )
+    
+    return firefox_available, chrome_available
 
 ## Standalone functions  ########################################
 def export_html(html: str, save_path: str = wd+fdel+'last_soup.html'):
@@ -24,7 +58,7 @@ def split_numeric(input_string: str):
     # Match integers or decimal numbers
     # Match numbers including metric suffixes
     if not isinstance(input_string, str):
-        print("split_numeric function: Input is not a string, returning input.")
+        #print("split_numeric function: Input is not a string, returning input.")
         return input_string
     else:
         number_pattern = r'-?\d*\.?\d+[KMGBT]?'
@@ -325,7 +359,7 @@ class get_tooltip(object):
         date = ready_datestr(date)
         
         value = soup.select_one('.tooltip-value').text.replace(' Points', '')
-        print("Date: ", date, "Value: ", value)
+        #print("Date: ", date, "Value: ", value)
         try:
             value = float(value)
         except:

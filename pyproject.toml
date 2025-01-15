@@ -11,8 +11,18 @@ requires-python = ">= 3.9"
 dependencies = [
     "beautifulsoup4>=4.12.3",
     "pandas>=2.2.2",
-    "selenium>=4.27.1"
+    "selenium>=4.27.1",
+    "plotly>=5.18.0"
 ]
+
+[tool.poetry.dependencies.system]
+external = [
+    "firefox>=115.0.0 || google-chrome>=115.0.0"
+]
+
+[project.urls]
+"Firefox Download" = "https://www.mozilla.org/firefox/new/"
+"Chrome Download" = "https://www.google.com/chrome/"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
