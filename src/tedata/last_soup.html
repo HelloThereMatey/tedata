@@ -1,0 +1,166 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Human Verification</title>
+    <style>
+        body {
+            font-family: "Arial";
+        }
+    </style>
+    <script type="text/javascript">
+    window.awsWafCookieDomainList = [];
+    window.gokuProps = {
+"key":"AQIDAHjcYu/GjX+QlghicBgQ/7bFaQZ+m5FKCMDnO+vTbNg96AGWJ8tdFgk2jL9xQ40wBeaHAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM3M9HgN4Pr9bI4NdYAgEQgDtWRNMaY09p+eKQ5CiyJVa8INZMU1fDqg68Slv1azEl/MqFbj7w6HJJWiJtH/3CIdfCBBMPFbNLZ9bSXA==",
+          "iv":"CgAGGDNKGgAABZfS",
+          "context":"vI9K+I6saM91nuWajUxVQwt8oQRQc/yUVyGgi90S4b1uGpHsUQetv5e90yYPLzAfQitOr4vhaRtLVyQA65q5wfarDA0jArffdjDAMFSxCjhgNjEJFxXPYVMYz6IkarK5X9DseQOndAGmYVON51ZponRBmS60e7n5mZlKULP4uCzZ4ed5FBCsvXzIKdbZDCI8bvBL7YB5fKQAArg1xBMTvFrikNi9n2K9g1xPcyN6V+KynrSWhvDtxnn5ZFK7y7Z1brpwf0eEd7LWHns5DrvYCwtII+t5pZ7IpmPSN1MYAiizapm4WWetWhyMOLoGP84aNQbIGDjDDpAlAFM="
+};
+    </script>
+    <script src="https://91ba28030c9c.4b02381c.us-east-1.token.awswaf.com/91ba28030c9c/70b06788b3c5/1a22b45a2144/challenge.js"></script>
+    <script src="https://91ba28030c9c.4b02381c.us-east-1.captcha.awswaf.com/91ba28030c9c/70b06788b3c5/1a22b45a2144/captcha.js"></script>
+<style>/*@font-face {
+    font-family:AmazonEmber;
+    src: url("https://a0.awsstatic.com/libra-css/fonts/amazon-ember/AmazonEmber_Rg.woff2") format("woff2"), url("https://a0.awsstatic.com/libra-css/fonts/amazon-ember/AmazonEmber_Rg.woff") format("woff");
+}*/
+
+html,
+body {
+    height: 100%;
+}
+
+#captcha {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-height: 100%;
+}
+
+.btn {
+    box-sizing: border-box;
+    border-radius: 2px;
+    padding: 5px 17px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: #FF9902;
+    color: black;
+    border: 1px solid #FF9902;
+    font-weight: bold;
+}
+.btn-primary:hover {
+    background-color: #EC7210;
+    border: 1px solid #EC7210;
+    font-weight: bold;
+}
+
+.btn-icon {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    padding-inline-start: 6px;
+    padding-inline-end: 6px;
+}
+
+.amzn-captcha-modal {
+    background-color: #fff,
+}
+
+/* TODO: Fix this so the root uses classes instead of an ID */
+#root select,
+#root button {
+    font-size: inherit;
+}
+
+/* Consistent keyboard focus styling */
+#root *:focus {
+    outline: 3px solid #0972d3;
+    outline-offset: 1px;
+}
+
+.amzn-captcha-state-container {
+    max-width: 100px;
+}
+
+#root-instructions {
+    max-width: 350px;
+}
+
+#verification-status {
+    max-width: 250px;
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+input[type="checkbox"]:checked ~ label > img {
+    transform: scale(2);
+    background: rgb(255, 255, 255);
+    box-shadow: 1px 2px 2px rgb(117, 117, 117), -1px 2px 2px rgb(117, 117, 117);
+    cursor: zoom-out;
+}
+
+input[type="text"],
+select,
+.btn {
+    font-family: 'Amazon Ember', Helvetica, Arial, sans-serif;
+    font-size: inherit;
+}
+
+.element img {
+    transition: transform 0.25s ease;
+    cursor: zoom-in;
+}
+
+.grid-category {
+    text-decoration: underline;
+    font-family: 'Amazon Ember', Helvetica, Arial, sans-serif;
+    font-weight:'heavy';
+}
+
+.amzn-captcha-lang-selector {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: transparent;
+}
+
+.amzn-captcha-audio-play-btn {
+    display: flex;
+    margin: 0 auto;
+    align-items: center;
+    background-color: #18817E;
+    border: 1px solid #18817E;
+}
+
+.amzn-grid-focus {
+    position: absolute;
+    background: transparent;
+    outline: 3px solid #0972d3;
+    outline-offset: 1px;
+    pointer-events: none;
+}
+</style><link rel="stylesheet" href="https://static.captcha.awswaf.com/fonts/AmazonEmberLt/stylesheet.css"></head>
+<body>
+    <div id="captcha-container" dir="ltr" style="width: 320px; margin: 0px auto;"><div id="root" style="font-family: &quot;Amazon Ember&quot;, Helvetica, Arial, sans-serif; width: 100%;"><div style="padding: 50px 0px; text-align: center; border-top: 1px solid rgb(204, 204, 204); border-bottom: 1px solid rgb(204, 204, 204); margin: 0px auto; max-width: 500px; width: 100%;"><div style="display: none; background-color: rgb(255, 233, 228); padding: 5px 20px; margin-bottom: 20px; font-size: 0.875em;"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wIDhDMCAxMi40MTgzIDMuNTgxNzIgMTYgOCAxNkMxMi40MTgzIDE2IDE2IDEyLjQxODMgMTYgOEMxNiAzLjU4MTcyIDEyLjQxODMgMCA4IDBDMy41ODE3MiAwIDAgMy41ODE3MiAwIDhaTTE0IDhDMTQgMTEuMzEzNyAxMS4zMTM3IDE0IDggMTRDNC42ODYyOSAxNCAyIDExLjMxMzcgMiA4QzIgNC42ODYyOSA0LjY4NjI5IDIgOCAyQzExLjMxMzcgMiAxNCA0LjY4NjI5IDE0IDhaTTYuNTg1NzkgOEw0LjQ2Mjg5IDEwLjEyMjlMNS44NzcxMSAxMS41MzcxTDggOS40MTQyMUwxMC4xMjI5IDExLjUzNzFMMTEuNTM3MSAxMC4xMjI5TDkuNDE0MjEgOEwxMS41MzcxIDUuODc3MTFMMTAuMTIyOSA0LjQ2Mjg5TDggNi41ODU3OUw1Ljg3NzExIDQuNDYyODlMNC40NjI4OSA1Ljg3NzExTDYuNTg1NzkgOFoiIGZpbGw9IiNEMTMyMTIiLz4gPC9zdmc+IA=="><p style="margin-left: 10px;">Temporary error. Please try again.</p></div><div style="display: none; background-color: rgb(255, 233, 228); padding: 5px 20px; margin-bottom: 20px; font-size: 0.875em;"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wIDhDMCAxMi40MTgzIDMuNTgxNzIgMTYgOCAxNkMxMi40MTgzIDE2IDE2IDEyLjQxODMgMTYgOEMxNiAzLjU4MTcyIDEyLjQxODMgMCA4IDBDMy41ODE3MiAwIDAgMy41ODE3MiAwIDhaTTE0IDhDMTQgMTEuMzEzNyAxMS4zMTM3IDE0IDggMTRDNC42ODYyOSAxNCAyIDExLjMxMzcgMiA4QzIgNC42ODYyOSA0LjY4NjI5IDIgOCAyQzExLjMxMzcgMiAxNCA0LjY4NjI5IDE0IDhaTTYuNTg1NzkgOEw0LjQ2Mjg5IDEwLjEyMjlMNS44NzcxMSAxMS41MzcxTDggOS40MTQyMUwxMC4xMjI5IDExLjUzNzFMMTEuNTM3MSAxMC4xMjI5TDkuNDE0MjEgOEwxMS41MzcxIDUuODc3MTFMMTAuMTIyOSA0LjQ2Mjg5TDggNi41ODU3OUw1Ljg3NzExIDQuNDYyODlMNC40NjI4OSA1Ljg3NzExTDYuNTg1NzkgOFoiIGZpbGw9IiNEMTMyMTIiLz4gPC9zdmc+IA=="><p style="margin-left: 10px;">Before proceeding to your request, you need to solve a puzzle, and the puzzle requires Google Translate to be disabled. Please disable Google Translate and retry.</p></div><div><h1 style="font-weight: normal; color: rgb(221, 107, 16);">Let's confirm you are human</h1></div><div style="display: flex; flex-direction: column; margin-top: 10px;"><div id="root-instructions" style="text-align: initial; align-self: center; line-height: 22px;"><p>Complete the security check before continuing. This step verifies that you are not a bot, which helps to protect your account and prevent spam.</p></div><div id="verification-status" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; align-self: center; margin-top: 20px;"><div class="amzn-captcha-state-container" style="align-self: center;"><button class="amzn-captcha-verify-button btn btn-primary" id="amzn-captcha-verify-button" type="button" style="display: flex; padding: 5px 30px;">Begin<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOSIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDkgMTQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+IDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMS43ODQ2NyAwTDAuNTAwMjA1IDEuMjg0NDZMNi4yMTUwMyA3TDAuNTAwMjA1IDEyLjcxNTVMMS43ODQ2NyAxNEw4Ljc4NDY3IDdMMS43ODQ2NyAwWiIgZmlsbD0iYmxhY2siLz4gPC9zdmc+IA==" alt="begin" style="margin-left: 5px;"></button></div></div></div></div><select class="amzn-captcha-lang-selector" aria-label="Select language" style="margin-top: 5px;"><option value="ar" aria-labelledby="ar">العربية</option><option value="de" aria-labelledby="de">Deutsch</option><option value="en" aria-labelledby="en" selected="">English</option><option value="es" aria-labelledby="es">Español</option><option value="fr" aria-labelledby="fr">Français</option><option value="it" aria-labelledby="it">Italiano</option><option value="ja" aria-labelledby="ja">日本語</option><option value="nl" aria-labelledby="nl">Nederlands</option><option value="pt" aria-labelledby="pt">Português</option><option value="tr" aria-labelledby="tr">Türkçe</option><option value="zh" aria-labelledby="zh">中文</option></select></div></div>
+    <script type="text/javascript">
+        AwsWafIntegration.saveReferrer();
+        window.addEventListener("load", function() {
+          const container = document.querySelector("#captcha-container");
+          CaptchaScript.renderCaptcha(container, async (voucher) => {
+              await ChallengeScript.submitCaptcha(voucher);
+              window.location.reload(true);
+          }
+      );
+    });
+    </script>
+    <noscript>
+        <h1>JavaScript is disabled</h1>
+        In order to continue, you need to verify that you're not a robot by solving a CAPTCHA puzzle.
+         The CAPTCHA puzzle requires JavaScript. Enable JavaScript and then reload the page.
+    </noscript>
+
+</body></html>

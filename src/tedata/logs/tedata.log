@@ -1,0 +1,1253 @@
+2025-01-16 13:31:33,681 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/Scrape_TE/src/tedata
+Time: 2025-01-16 13:31:33.681246
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-16 13:42:03,829 - tedata.utils.scraper.search.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/Scrape_TE/src/tedata
+Time: 2025-01-16 13:42:03.829504
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-16 13:42:03,829 - tedata.utils.scraper.search.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/Scrape_TE/src/tedata
+Time: 2025-01-16 13:42:03.829504
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-16 13:42:03,831 - tedata.utils.scraper.search.search - INFO - tedata package initialized successfully!
+2025-01-16 13:42:03,831 - tedata.utils.scraper.search.search - INFO - tedata package initialized successfully!
+2025-01-16 13:43:29,358 - tedata.utils.scraper.search.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/Scrape_TE/src/tedata
+Time: 2025-01-16 13:43:29.357984
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-16 13:43:29,358 - tedata.utils.scraper.search.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/Scrape_TE/src/tedata
+Time: 2025-01-16 13:43:29.357984
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-16 13:43:29,358 - tedata.utils.scraper.search.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/Scrape_TE/src/tedata
+Time: 2025-01-16 13:43:29.357984
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-16 13:43:29,363 - tedata.utils.scraper.search.search - INFO - tedata package initialized successfully!
+2025-01-16 13:43:29,363 - tedata.utils.scraper.search.search - INFO - tedata package initialized successfully!
+2025-01-16 13:43:29,363 - tedata.utils.scraper.search.search - INFO - tedata package initialized successfully!
+2025-01-16 13:44:04,928 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/Scrape_TE/src/tedata
+Time: 2025-01-16 13:44:04.928268
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-16 13:44:04,928 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-16 13:44:09,041 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: firefox, headless: True, use_existing_driver: True
+2025-01-16 13:44:11,960 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedFirefox (session="1afc1373-6640-4518-8e6d-bb4a7c4d21bc")>
+2025-01-16 13:44:13,969 - tedata.utils.scraper.search - DEBUG - Home page at https://tradingeconomics.com/ loaded successfully!
+2025-01-16 13:46:57,713 - tedata.utils.scraper.search.search - DEBUG - Initializing search object with browser: firefox, headless: True, use_existing_driver: True
+2025-01-16 13:47:00,944 - tedata.utils.scraper.search.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="df875199-4711-40a4-a681-d70b93060fcb")>
+2025-01-16 13:47:00,944 - tedata.utils.scraper.search.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="df875199-4711-40a4-a681-d70b93060fcb")>
+2025-01-16 13:47:00,946 - tedata.utils.scraper.search.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedFirefox (session="df875199-4711-40a4-a681-d70b93060fcb")>
+2025-01-16 13:47:03,106 - tedata.utils.scraper.search.search - DEBUG - Home page at https://tradingeconomics.com/ loaded successfully!
+2025-01-16 15:38:39,996 - tedata.utils.scraper.search.search - DEBUG - Initializing search object with browser: firefox, headless: True, use_existing_driver: True
+2025-01-16 15:38:40,118 - tedata.utils.scraper.search.search - DEBUG - Using existing webdriver object: <tedata.utils.TimestampedFirefox (session="1afc1373-6640-4518-8e6d-bb4a7c4d21bc")>
+2025-01-16 15:38:40,118 - tedata.utils.scraper.search.search - INFO - Using existing webdriver object: <tedata.utils.TimestampedFirefox (session="1afc1373-6640-4518-8e6d-bb4a7c4d21bc")>
+2025-01-16 15:38:40,119 - tedata.utils.scraper.search.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedFirefox (session="1afc1373-6640-4518-8e6d-bb4a7c4d21bc")>
+2025-01-16 15:38:40,119 - tedata.utils.scraper.search.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-16 15:38:41,986 - tedata.utils.scraper.search.search - INFO - Home page loaded successfully!
+2025-01-16 15:38:41,987 - tedata.utils.scraper.search.search - DEBUG - Home page at https://tradingeconomics.com/ loaded successfully!
+2025-01-16 16:10:35,654 - tedata.utils.scraper.search.search - DEBUG - Initializing search object with browser: firefox, headless: True, use_existing_driver: True
+2025-01-16 16:10:35,748 - tedata.utils.scraper.search.search - DEBUG - Using existing webdriver object: <tedata.utils.TimestampedFirefox (session="1afc1373-6640-4518-8e6d-bb4a7c4d21bc")>
+2025-01-16 16:10:35,749 - tedata.utils.scraper.search.search - INFO - Using existing webdriver object: <tedata.utils.TimestampedFirefox (session="1afc1373-6640-4518-8e6d-bb4a7c4d21bc")>
+2025-01-16 16:10:35,749 - tedata.utils.scraper.search.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedFirefox (session="1afc1373-6640-4518-8e6d-bb4a7c4d21bc")>
+2025-01-16 16:10:35,750 - tedata.utils.scraper.search.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-16 16:10:37,466 - tedata.utils.scraper.search.search - INFO - Home page loaded successfully!
+2025-01-16 16:10:37,467 - tedata.utils.scraper.search.search - DEBUG - Home page at https://tradingeconomics.com/ loaded successfully!
+2025-01-16 16:10:41,079 - tedata.utils.scraper.search.search - DEBUG - Searching Trading Economics for: australia consumer confidence
+2025-01-16 16:10:41,082 - tedata.utils.scraper.search.search - INFO - Clicking search box...
+2025-01-16 16:10:41,402 - tedata.utils.scraper.search.search - INFO - Entering search term: australia consumer confidence
+2025-01-16 16:10:42,439 - tedata.utils.scraper.search.search - INFO - Submitting search...
+2025-01-16 16:10:45,518 - tedata.utils.scraper.search.search - DEBUG - Search for australia consumer confidence completed successfully.
+2025-01-16 16:10:48,551 - tedata.utils.scraper.search.search - DEBUG - Attempting to scrape data for result 5, australia consumer confidence financial expectations
+2025-01-16 16:10:48,636 - tedata.utils.scraper.search.scraper - DEBUG - Using supplied driver.
+2025-01-16 16:10:49,135 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 16:10:54,344 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 16:10:54,346 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 16:10:55,617 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-16 16:10:55,619 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 16:10:57,624 - tedata.utils.scraper.search.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-16 16:10:58,632 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-16 16:10:58,651 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-16 16:10:58,656 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [75.0, 84.0, 93.0, 102.0, 111.0, 120.0, 128.0]
+2025-01-16 16:10:58,656 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 0.17927536231884056
+2025-01-16 16:10:58,664 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-16 16:10:58,666 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-16 16:10:58,669 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-16 16:11:08,129 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 31, MS
+2025-01-16 16:11:08,129 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: 
+2025-01-16 16:11:08,129 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1974-09-01 00:00:00'), 'end_date': Timestamp('2017-07-01 00:00:00'), 'start_value': 98.4053, 'end_value': 98.4054}
+2025-01-16 16:11:08,184 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: 1974-09-01    170.774783
+1974-10-01    174.713311
+1974-11-01    178.907667
+1974-12-01    181.873462
+1975-01-01    211.770655
+                 ...    
+2017-03-01    200.329330
+2017-04-01    214.390811
+2017-05-01    177.958311
+2017-06-01    195.053840
+2017-07-01    170.775340
+Freq: MS, Name: consumer confidence financial expectations, Length: 515, dtype: float64
+2025-01-16 16:11:09,189 - tedata.utils.scraper.search.scraper - DEBUG - scale_series method: Start value, end value: 98.4053, 98.4054, 170.77478301887, 170.77533962264, 170.77478301887, 170.77533962264
+2025-01-16 16:11:09,189 - tedata.utils.scraper.search.scraper - DEBUG - Start value, end value: 98.4053, 98.4054, pix0, pix1: 170.77478301887, 170.77533962264, data units per chart pixel from start & end points: 0.17966101811892185, unit_per_pix calculated from the y axis ticks: 0.17927536231884056, inverse of that: 5.5780113177041235, unit_per_pix from axis limits and self.y_axis (probably best way): 0.17966101694915254
+2025-01-16 16:11:09,220 - tedata.utils.scraper.search.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-16 16:11:09,234 - tedata.utils.scraper.search.scraper - DEBUG - Metadata scraped successfully: {'units': '', 'original_source': 'unknown', 'title': 'Australia Consumer Confidence Financial Expectations', 'indicator': 'consumer confidence financial expectations', 'country': 'australia', 'length': 515, 'frequency': 'MS', 'source': 'Trading Economics', 'id': 'australia/consumer-confidence-financial-expectations', 'start_date': '1974-09-01', 'end_date': '2017-07-01', 'min_value': 78.99649999999966, 'max_value': 124.39599999999962}
+2025-01-16 16:11:09,234 - tedata.utils.scraper.search.scraper - DEBUG - Scraping complete, data series retrieved successfully from chart at: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 16:11:09,234 - tedata.utils.scraper.search.search - DEBUG - Data scraped successfully from: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 16:11:44,172 - tedata.utils.scraper.search.search - DEBUG - Attempting to scrape data for result 5, australia consumer confidence financial expectations
+2025-01-16 16:11:44,258 - tedata.utils.scraper.search.scraper - DEBUG - Using supplied driver.
+2025-01-16 16:11:44,730 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 16:11:49,831 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 16:11:49,833 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 16:11:51,092 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-16 16:11:51,093 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 16:11:53,096 - tedata.utils.scraper.search.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-16 16:11:54,104 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-16 16:11:54,125 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-16 16:11:54,129 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [75.0, 84.0, 93.0, 102.0, 111.0, 120.0, 128.0]
+2025-01-16 16:11:54,129 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 0.17927536231884056
+2025-01-16 16:11:54,130 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-16 16:11:54,130 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-16 16:11:54,134 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-16 16:12:03,424 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 31, MS
+2025-01-16 16:12:03,424 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: 
+2025-01-16 16:12:03,425 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1974-09-01 00:00:00'), 'end_date': Timestamp('2017-07-01 00:00:00'), 'start_value': 98.4053, 'end_value': 98.4054}
+2025-01-16 16:12:03,433 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: 1974-09-01    170.774783
+1974-10-01    174.713311
+1974-11-01    178.907667
+1974-12-01    181.873462
+1975-01-01    211.770655
+                 ...    
+2017-03-01    200.329330
+2017-04-01    214.390811
+2017-05-01    177.958311
+2017-06-01    195.053840
+2017-07-01    170.775340
+Freq: MS, Name: consumer confidence financial expectations, Length: 515, dtype: float64
+2025-01-16 16:12:04,435 - tedata.utils.scraper.search.scraper - DEBUG - scale_series method: Start value, end value: 98.4053, 98.4054, 170.77478301887, 170.77533962264, 170.77478301887, 170.77533962264
+2025-01-16 16:12:04,435 - tedata.utils.scraper.search.scraper - DEBUG - Start value, end value: 98.4053, 98.4054, pix0, pix1: 170.77478301887, 170.77533962264, data units per chart pixel from start & end points: 0.17966101811892185, unit_per_pix calculated from the y axis ticks: 0.17927536231884056, inverse of that: 5.5780113177041235, unit_per_pix from axis limits and self.y_axis (probably best way): 0.17966101694915254
+2025-01-16 16:12:04,465 - tedata.utils.scraper.search.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-16 16:12:04,479 - tedata.utils.scraper.search.scraper - DEBUG - Metadata scraped successfully: {'units': '', 'original_source': 'unknown', 'title': 'Australia Consumer Confidence Financial Expectations', 'indicator': 'consumer confidence financial expectations', 'country': 'australia', 'length': 515, 'frequency': 'MS', 'source': 'Trading Economics', 'id': 'australia/consumer-confidence-financial-expectations', 'start_date': '1974-09-01', 'end_date': '2017-07-01', 'min_value': 78.99649999999966, 'max_value': 124.39599999999962}
+2025-01-16 16:12:04,479 - tedata.utils.scraper.search.scraper - DEBUG - Scraping complete, data series retrieved successfully from chart at: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 16:12:04,479 - tedata.utils.scraper.search.search - DEBUG - Data scraped successfully from: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 17:41:44,837 - tedata.utils.scraper.search.search - DEBUG - Attempting to scrape data for result 5, australia consumer confidence financial expectations
+2025-01-16 17:41:44,971 - tedata.utils.scraper.search.scraper - DEBUG - Using supplied driver.
+2025-01-16 17:41:46,994 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 17:41:52,093 - tedata.utils.scraper.search.scraper - INFO - Page at https://tradingeconomics.com/australia/consumer-confidence-financial-expectations loaded successfully.
+2025-01-16 17:41:52,093 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 17:41:52,096 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 17:41:53,363 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-16 17:41:53,364 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 17:41:55,431 - tedata.utils.scraper.search.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-16 17:41:56,438 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-16 17:41:56,459 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-16 17:41:56,463 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [75.0, 84.0, 93.0, 102.0, 111.0, 120.0, 128.0]
+2025-01-16 17:41:56,463 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 0.17927536231884056
+2025-01-16 17:41:56,464 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-16 17:41:56,464 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-16 17:41:56,468 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-16 17:42:05,924 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 31, MS
+2025-01-16 17:42:05,930 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: 
+2025-01-16 17:42:05,931 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1974-09-01 00:00:00'), 'end_date': Timestamp('2017-07-01 00:00:00'), 'start_value': 98.4053, 'end_value': 98.4054}
+2025-01-16 17:42:05,939 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: 1974-09-01    170.774783
+1974-10-01    174.713311
+1974-11-01    178.907667
+1974-12-01    181.873462
+1975-01-01    211.770655
+                 ...    
+2017-03-01    200.329330
+2017-04-01    214.390811
+2017-05-01    177.958311
+2017-06-01    195.053840
+2017-07-01    170.775340
+Freq: MS, Name: consumer confidence financial expectations, Length: 515, dtype: float64
+2025-01-16 17:42:06,943 - tedata.utils.scraper.search.scraper - DEBUG - scale_series method: Start value, end value: 98.4053, 98.4054, 170.77478301887, 170.77533962264, 170.77478301887, 170.77533962264
+2025-01-16 17:42:06,943 - tedata.utils.scraper.search.scraper - DEBUG - Start value, end value: 98.4053, 98.4054, pix0, pix1: 170.77478301887, 170.77533962264, data units per chart pixel from start & end points: 0.17966101811892185, unit_per_pix calculated from the y axis ticks: 0.17927536231884056, inverse of that: 5.5780113177041235, unit_per_pix from axis limits and self.y_axis (probably best way): 0.17966101694915254
+2025-01-16 17:42:06,975 - tedata.utils.scraper.search.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-16 17:42:06,989 - tedata.utils.scraper.search.scraper - DEBUG - Metadata scraped successfully: {'units': '', 'original_source': 'unknown', 'title': 'Australia Consumer Confidence Financial Expectations', 'indicator': 'consumer confidence financial expectations', 'country': 'australia', 'length': 515, 'frequency': 'MS', 'source': 'Trading Economics', 'id': 'australia/consumer-confidence-financial-expectations', 'start_date': '1974-09-01', 'end_date': '2017-07-01', 'min_value': 78.99649999999966, 'max_value': 124.39599999999962}
+2025-01-16 17:42:06,989 - tedata.utils.scraper.search.scraper - DEBUG - Scraping complete, data series retrieved successfully from chart at: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 17:42:06,989 - tedata.utils.scraper.search.search - DEBUG - Data scraped successfully from: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 18:08:38,867 - tedata.utils.scraper.search.search - DEBUG - Attempting to scrape data for result 5, australia consumer confidence financial expectations
+2025-01-16 18:08:39,008 - tedata.utils.scraper.search.scraper - DEBUG - Using supplied driver.
+2025-01-16 18:08:41,792 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 18:08:46,888 - tedata.utils.scraper.search.scraper - INFO - Page at https://tradingeconomics.com/australia/consumer-confidence-financial-expectations loaded successfully.
+2025-01-16 18:08:46,888 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 18:08:46,890 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 18:08:48,161 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-16 18:08:48,162 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 18:08:50,166 - tedata.utils.scraper.search.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-16 18:08:51,174 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-16 18:08:51,195 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-16 18:08:51,198 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [75.0, 84.0, 93.0, 102.0, 111.0, 120.0, 128.0]
+2025-01-16 18:08:51,198 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 0.17927536231884056
+2025-01-16 18:08:51,199 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-16 18:08:51,200 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-16 18:08:51,203 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-16 18:08:53,580 - tedata.utils.scraper.search.utils - DEBUG - Error scraping tooltip at (144.0, 501.5), error: object of type 'NoneType' has no len(), moving to next point..
+2025-01-16 18:09:00,193 - tedata.utils.scraper.search.utils - INFO - Points scraped successfully, scraping the last point now at x =  809.0
+2025-01-16 18:09:00,537 - tedata.utils.scraper.search.scraper - INFO - Scraped 10 data points from the chart, num_points target was 8
+2025-01-16 18:09:00,539 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 31, MS
+2025-01-16 18:09:00,540 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1974-09-01 00:00:00'), 'end_date': Timestamp('2017-07-01 00:00:00'), 'start_value': 98.4053, 'end_value': 98.4054}
+2025-01-16 18:09:00,540 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1974-09-01 00:00:00'), 'end_date': Timestamp('2017-07-01 00:00:00'), 'start_value': 98.4053, 'end_value': 98.4054}
+2025-01-16 18:09:00,551 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: 1974-09-01    170.774783
+1974-10-01    174.713311
+1974-11-01    178.907667
+1974-12-01    181.873462
+1975-01-01    211.770655
+                 ...    
+2017-03-01    200.329330
+2017-04-01    214.390811
+2017-05-01    177.958311
+2017-06-01    195.053840
+2017-07-01    170.775340
+Freq: MS, Name: consumer confidence financial expectations, Length: 515, dtype: float64
+2025-01-16 18:09:01,556 - tedata.utils.scraper.search.scraper - DEBUG - scale_series method: Start value, end value: 98.4053, 98.4054, 170.77478301887, 170.77533962264, 170.77478301887, 170.77533962264
+2025-01-16 18:09:01,562 - tedata.utils.scraper.search.scraper - DEBUG - Start value, end value: 98.4053, 98.4054, pix0, pix1: 170.77478301887, 170.77533962264, data units per chart pixel from start & end points: 0.17966101811892185, unit_per_pix calculated from the y axis ticks: 0.17927536231884056, inverse of that: 5.5780113177041235, unit_per_pix from axis limits and self.y_axis (probably best way): 0.17966101694915254
+2025-01-16 18:09:01,591 - tedata.utils.scraper.search.scraper - INFO - Successfully scaled series.
+2025-01-16 18:09:01,592 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scaled series.
+2025-01-16 18:09:01,594 - tedata.utils.scraper.search.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-16 18:09:01,607 - tedata.utils.scraper.search.scraper - DEBUG - Metadata scraped successfully: {'units': '', 'original_source': 'unknown', 'title': 'Australia Consumer Confidence Financial Expectations', 'indicator': 'consumer confidence financial expectations', 'country': 'australia', 'length': 515, 'frequency': 'MS', 'source': 'Trading Economics', 'id': 'australia/consumer-confidence-financial-expectations', 'start_date': '1974-09-01', 'end_date': '2017-07-01', 'min_value': 78.99649999999966, 'max_value': 124.39599999999962}
+2025-01-16 18:09:01,607 - tedata.utils.scraper.search.scraper - DEBUG - Scraping complete, data series retrieved successfully from chart at: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 18:09:01,608 - tedata.utils.scraper.search.search - DEBUG - Data scraped successfully from: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 18:11:39,139 - tedata.utils.scraper.search.search - DEBUG - Attempting to scrape data for result 5, australia consumer confidence financial expectations
+2025-01-16 18:11:39,237 - tedata.utils.scraper.search.scraper - DEBUG - Using supplied driver.
+2025-01-16 18:11:40,722 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 18:11:45,811 - tedata.utils.scraper.search.scraper - INFO - Page at https://tradingeconomics.com/australia/consumer-confidence-financial-expectations loaded successfully.
+2025-01-16 18:11:45,812 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 18:11:45,813 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 18:11:47,073 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-16 18:11:47,073 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 18:11:49,078 - tedata.utils.scraper.search.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-16 18:11:50,092 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-16 18:11:50,127 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-16 18:11:50,130 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [75.0, 84.0, 93.0, 102.0, 111.0, 120.0, 128.0]
+2025-01-16 18:11:50,130 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 0.17927536231884056
+2025-01-16 18:11:50,130 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-16 18:11:50,131 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-16 18:11:50,134 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-16 18:11:52,610 - tedata.utils.scraper.search.utils - DEBUG - Error scraping tooltip at (144.0, 501.5), error: object of type 'NoneType' has no len(), moving to next point..
+2025-01-16 18:11:59,232 - tedata.utils.scraper.search.utils - INFO - Points scraped successfully, scraping the last point now at x =  809.0
+2025-01-16 18:11:59,579 - tedata.utils.scraper.search.scraper - INFO - Scraped 10 data points from the chart, num_points target was 8
+2025-01-16 18:11:59,581 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 31, MS
+2025-01-16 18:11:59,581 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1974-09-01 00:00:00'), 'end_date': Timestamp('2017-07-01 00:00:00'), 'start_value': 98.4053, 'end_value': 98.4054}
+2025-01-16 18:11:59,582 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1974-09-01 00:00:00'), 'end_date': Timestamp('2017-07-01 00:00:00'), 'start_value': 98.4053, 'end_value': 98.4054}
+2025-01-16 18:11:59,593 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: 1974-09-01    170.774783
+1974-10-01    174.713311
+1974-11-01    178.907667
+1974-12-01    181.873462
+1975-01-01    211.770655
+                 ...    
+2017-03-01    200.329330
+2017-04-01    214.390811
+2017-05-01    177.958311
+2017-06-01    195.053840
+2017-07-01    170.775340
+Freq: MS, Name: consumer confidence financial expectations, Length: 515, dtype: float64
+2025-01-16 18:12:00,598 - tedata.utils.scraper.search.scraper - DEBUG - scale_series method: Start value, end value: 98.4053, 98.4054, 170.77478301887, 170.77533962264, 170.77478301887, 170.77533962264
+2025-01-16 18:12:00,598 - tedata.utils.scraper.search.scraper - DEBUG - Start value, end value: 98.4053, 98.4054, pix0, pix1: 170.77478301887, 170.77533962264, data units per chart pixel from start & end points: 0.17966101811892185, unit_per_pix calculated from the y axis ticks: 0.17927536231884056, inverse of that: 5.5780113177041235, unit_per_pix from axis limits and self.y_axis (probably best way): 0.17966101694915254
+2025-01-16 18:12:00,630 - tedata.utils.scraper.search.scraper - INFO - Successfully scaled series.
+2025-01-16 18:12:00,631 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scaled series.
+2025-01-16 18:12:00,632 - tedata.utils.scraper.search.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-16 18:12:00,646 - tedata.utils.scraper.search.scraper - DEBUG - Metadata scraped successfully: {'units': '', 'original_source': 'unknown', 'title': 'Australia Consumer Confidence Financial Expectations', 'indicator': 'consumer confidence financial expectations', 'country': 'australia', 'length': 515, 'frequency': 'MS', 'source': 'Trading Economics', 'id': 'australia/consumer-confidence-financial-expectations', 'start_date': '1974-09-01', 'end_date': '2017-07-01', 'min_value': 78.99649999999966, 'max_value': 124.39599999999962}
+2025-01-16 18:12:00,646 - tedata.utils.scraper.search.scraper - DEBUG - Scraping complete, data series retrieved successfully from chart at: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 18:12:00,646 - tedata.utils.scraper.search.search - DEBUG - Data scraped successfully from: https://tradingeconomics.com/australia/consumer-confidence-financial-expectations
+2025-01-16 22:23:52,280 - tedata.utils.scraper.search.scraper - DEBUG - New firefox driver created.
+2025-01-16 22:25:20,333 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/australia/consumer-confidence
+2025-01-16 22:25:25,578 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/australia/consumer-confidence, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 22:25:26,881 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-16 22:25:26,882 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 22:29:57,829 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/australia/consumer-confidence
+2025-01-16 22:30:02,946 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/australia/consumer-confidence, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 22:30:04,204 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-16 22:30:04,204 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-16 22:30:06,210 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-16 22:30:06,226 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-16 22:30:06,228 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [59.0, 70.0, 82.0, 94.0, 106.0, 118.0, 128.0]
+2025-01-16 22:30:06,229 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 0.23323625685953597
+2025-01-16 22:30:06,230 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-16 22:30:06,233 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-16 22:30:39,881 - tedata.utils.scraper.search.utils - INFO - Points scraped successfully, scraping the first point now at x =  809.0
+2025-01-16 22:30:40,235 - tedata.utils.scraper.search.scraper - INFO - Scraped 10 data points from the chart, num_points target was 8
+2025-01-16 22:30:40,238 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: -31, Multi-year
+2025-01-16 22:30:40,238 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('2025-01-01 00:00:00'), 'end_date': Timestamp('2025-01-01 00:00:00'), 'start_value': 92.1, 'end_value': 92.1}
+2025-01-16 22:30:40,239 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('2025-01-01 00:00:00'), 'end_date': Timestamp('2025-01-01 00:00:00'), 'start_value': 92.1, 'end_value': 92.1}
+2025-01-16 22:36:19,061 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('2025-01-01 00:00:00'), 'end_date': Timestamp('2025-01-01 00:00:00'), 'start_value': 92.1, 'end_value': 92.1}
+2025-01-16 22:36:19,061 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('2025-01-01 00:00:00'), 'end_date': Timestamp('2025-01-01 00:00:00'), 'start_value': 92.1, 'end_value': 92.1}
+2025-01-16 22:36:43,147 - tedata.utils.scraper.search.utils - INFO - Points scraped successfully, scraping the first point now at x =  809.0
+2025-01-16 22:36:43,483 - tedata.utils.scraper.search.scraper - INFO - Scraped 10 data points from the chart, num_points target was 8
+2025-01-16 22:36:43,485 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 31, MS
+2025-01-16 22:36:43,486 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('2025-01-01 00:00:00'), 'end_date': Timestamp('2025-01-01 00:00:00'), 'start_value': 92.1, 'end_value': 92.1}
+2025-01-16 22:36:43,488 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('2025-01-01 00:00:00'), 'end_date': Timestamp('2025-01-01 00:00:00'), 'start_value': 92.1, 'end_value': 92.1}
+2025-01-16 22:36:43,499 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: 2025-01-01    176.028986
+Freq: MS, Name: consumer confidence, dtype: float64
+2025-01-17 10:14:06,637 - tedata.utils.scraper.search.utils - INFO - Points scraped successfully, scraping the first point now at x =  809.0
+2025-01-17 10:14:06,995 - tedata.utils.scraper.search.scraper - INFO - Scraped 10 data points from the chart, num_points target was 8
+2025-01-17 10:14:07,002 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: -31, Multi-year
+2025-01-17 10:14:07,002 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('2025-01-01 00:00:00'), 'end_date': Timestamp('2025-01-01 00:00:00'), 'start_value': 92.1, 'end_value': 92.1}
+2025-01-17 10:14:07,005 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('2025-01-01 00:00:00'), 'end_date': Timestamp('2025-01-01 00:00:00'), 'start_value': 92.1, 'end_value': 92.1}
+2025-01-17 10:15:22,493 - tedata.utils.scraper.search.utils - INFO - Points scraped successfully, scraping the first point now at x =  144.0
+2025-01-17 10:15:22,838 - tedata.utils.scraper.search.scraper - INFO - Scraped 10 data points from the chart, num_points target was 8
+2025-01-17 10:15:22,840 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: -31, Multi-year
+2025-01-17 10:15:22,840 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('2025-01-01 00:00:00'), 'end_date': Timestamp('1974-09-01 00:00:00'), 'start_value': 92.1, 'end_value': 90.7}
+2025-01-17 10:15:22,841 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('2025-01-01 00:00:00'), 'end_date': Timestamp('1974-09-01 00:00:00'), 'start_value': 92.1, 'end_value': 90.7}
+2025-01-17 10:16:59,468 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/corporate-profits
+2025-01-17 10:17:04,579 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/corporate-profits, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-17 10:17:05,833 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-17 10:17:05,834 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-17 10:17:07,840 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-17 10:17:07,858 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-17 10:17:07,861 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [-200.0, 0.0, 600.0, 1200.0, 1800.0, 2400.0, 3000.0, 3400.0]
+2025-01-17 10:17:07,861 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 13.123134968273023
+2025-01-17 10:17:07,862 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-17 10:17:07,864 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-17 10:18:18,870 - tedata.utils.scraper.search.scraper - DEBUG - Using existing firefox driver.
+2025-01-17 10:18:23,653 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/corporate-profits
+2025-01-17 10:18:23,653 - tedata.utils.scraper.search.scraper - INFO - WebPage at https://tradingeconomics.com/united-states/corporate-profits loaded successfully.
+2025-01-17 10:18:28,781 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/corporate-profits, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-17 10:18:30,057 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-17 10:18:30,058 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-17 10:18:32,065 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-17 10:18:32,083 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-17 10:18:32,086 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [-200.0, 0.0, 600.0, 1200.0, 1800.0, 2400.0, 3000.0, 3400.0]
+2025-01-17 10:18:32,087 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 13.123134968273023
+2025-01-17 10:18:32,087 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-17 10:18:32,091 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-17 10:20:01,686 - tedata.utils.scraper.search.utils - INFO - Points scraped successfully, scraping the first point now at x =  144.0
+2025-01-17 10:20:02,031 - tedata.utils.scraper.search.scraper - INFO - Scraped 10 data points from the chart, num_points target was 8
+2025-01-17 10:20:02,033 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: -91, Multi-year
+2025-01-17 10:20:02,033 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('2024-07-01 00:00:00'), 'end_date': Timestamp('1947-01-01 00:00:00'), 'start_value': 3130.0, 'end_value': 9.959}
+2025-01-17 10:20:02,034 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('2024-07-01 00:00:00'), 'end_date': Timestamp('1947-01-01 00:00:00'), 'start_value': 3130.0, 'end_value': 9.959}
+2025-01-17 11:01:50,408 - tedata.utils.scraper.search.utils - INFO - Points scraped successfully, scraping the first point now at x =  144.0
+2025-01-17 11:01:50,773 - tedata.utils.scraper.search.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-17 11:01:50,774 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-17 11:01:50,776 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 91, QS
+2025-01-17 11:01:50,776 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-17 11:01:50,777 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-17 11:01:50,788 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: 1947-01-01     57.704974
+1947-04-01     58.003579
+1947-07-01     58.025294
+1947-10-01     58.073396
+1948-01-01     58.361513
+                 ...    
+2023-07-01    298.874029
+2023-10-01    311.066953
+2024-01-01    305.729747
+2024-04-01    314.322032
+2024-07-01    313.252083
+Freq: QS-JAN, Name: corporate profits, Length: 311, dtype: float64
+2025-01-17 11:06:43,040 - tedata.utils.scraper.search.scraper - DEBUG - Using existing firefox driver.
+2025-01-17 11:06:47,051 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/corporate-profits
+2025-01-17 11:06:47,051 - tedata.utils.scraper.search.scraper - INFO - WebPage at https://tradingeconomics.com/united-states/corporate-profits loaded successfully.
+2025-01-17 11:06:52,204 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/corporate-profits, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-17 11:06:53,489 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-17 11:06:53,490 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-17 11:06:55,498 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-17 11:06:55,517 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-17 11:06:55,518 - tedata.utils.scraper.search.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-17 11:06:55,518 - tedata.utils.scraper.search.scraper - DEBUG - xax: [25.0, 684.0]
+2025-01-17 11:06:55,520 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [-200.0, 0.0, 600.0, 1200.0, 1800.0, 2400.0, 3000.0, 3400.0]
+2025-01-17 11:06:55,520 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 13.123134968273023
+2025-01-17 11:06:55,521 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-17 11:06:55,524 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-17 11:11:16,215 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/corporate-profits
+2025-01-17 11:11:16,216 - tedata.utils.scraper.search.scraper - INFO - WebPage at https://tradingeconomics.com/united-states/corporate-profits loaded successfully.
+2025-01-17 11:11:21,335 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/corporate-profits, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-17 11:11:22,596 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-17 11:11:22,597 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-17 11:11:24,605 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-17 11:11:24,623 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-17 11:11:24,624 - tedata.utils.scraper.search.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-17 11:11:24,625 - tedata.utils.scraper.search.scraper - DEBUG - xax: [25.0, 684.0]
+2025-01-17 11:11:24,626 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [-200.0, 0.0, 600.0, 1200.0, 1800.0, 2400.0, 3000.0, 3400.0]
+2025-01-17 11:11:24,626 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 13.123134968273023
+2025-01-17 11:11:24,627 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-17 11:11:24,627 - tedata.utils.scraper.search.scraper - INFO - Y-axis values scraped successfully.
+2025-01-17 11:11:24,631 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-17 11:11:24,640 - tedata.utils.scraper.search.scraper - DEBUG - Raw data series extracted successfully: 0.000000    57.704974
+0.000000    57.704974
+1.284991    57.981864
+2.141651    58.003579
+2.998311    58.025294
+Name: Extracted Series, dtype: float64
+2025-01-17 11:11:24,641 - tedata.utils.scraper.search.scraper - INFO - Raw data series extracted successfully: 0.000000    57.704974
+0.000000    57.704974
+1.284991    57.981864
+2.141651    58.003579
+2.998311    58.025294
+Name: Extracted Series, dtype: float64
+2025-01-17 11:12:11,068 - tedata.utils.scraper.search.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-17 11:12:11,404 - tedata.utils.scraper.search.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-17 11:12:11,405 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-17 11:12:11,406 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 91, QS
+2025-01-17 11:12:11,406 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-17 11:12:11,407 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-17 11:12:11,464 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1947-01-01', '1947-04-01', '1947-07-01', '1947-10-01',
+               '1948-01-01', '1948-04-01', '1948-07-01', '1948-10-01',
+               '1949-01-01', '1949-04-01',
+               ...
+               '2022-04-01', '2022-07-01', '2022-10-01', '2023-01-01',
+               '2023-04-01', '2023-07-01', '2023-10-01', '2024-01-01',
+               '2024-04-01', '2024-07-01'],
+              dtype='datetime64[ns]', length=311, freq='QS-JAN')
+2025-01-17 11:12:11,464 - tedata.utils.scraper.search.scraper - INFO - Date index created successfully.
+2025-01-17 11:27:16,550 - tedata.utils.scraper.search.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-17 11:27:16,880 - tedata.utils.scraper.search.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-17 11:27:16,880 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-17 11:27:16,882 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 91, QS
+2025-01-17 11:27:16,882 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-17 11:27:16,883 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-17 11:27:16,889 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1947-01-01', '1947-04-01', '1947-07-01', '1947-10-01',
+               '1948-01-01', '1948-04-01', '1948-07-01', '1948-10-01',
+               '1949-01-01', '1949-04-01',
+               ...
+               '2022-04-01', '2022-07-01', '2022-10-01', '2023-01-01',
+               '2023-04-01', '2023-07-01', '2023-10-01', '2024-01-01',
+               '2024-04-01', '2024-07-01'],
+              dtype='datetime64[ns]', length=311, freq='QS-JAN')
+2025-01-17 11:27:16,889 - tedata.utils.scraper.search.scraper - INFO - Date index created successfully.
+2025-01-17 11:29:52,060 - tedata.utils.scraper.search.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-17 11:29:52,406 - tedata.utils.scraper.search.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-17 11:29:52,407 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-17 11:29:52,408 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 91, QS
+2025-01-17 11:29:52,408 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-17 11:29:52,409 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-17 11:29:52,415 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1947-01-01', '1947-04-01', '1947-07-01', '1947-10-01',
+               '1948-01-01', '1948-04-01', '1948-07-01', '1948-10-01',
+               '1949-01-01', '1949-04-01',
+               ...
+               '2022-04-01', '2022-07-01', '2022-10-01', '2023-01-01',
+               '2023-04-01', '2023-07-01', '2023-10-01', '2024-01-01',
+               '2024-04-01', '2024-07-01'],
+              dtype='datetime64[ns]', length=311, freq='QS-JAN')
+2025-01-17 11:29:52,415 - tedata.utils.scraper.search.scraper - INFO - Date index created successfully.
+2025-01-17 11:30:48,008 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/Scrape_TE/src/tedata
+Time: 2025-01-17 11:30:48.008857
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-17 11:30:48,009 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-17 11:53:47,232 - tedata.utils.scraper.search.scraper - DEBUG - scale_series method: Start value, end value: 9.959, 3130.0, 57.70497361111097, 313.25208333333, 57.70497361111097, 313.25208333333
+2025-01-17 11:53:47,238 - tedata.utils.scraper.search.scraper - DEBUG - Start value, end value: 9.959, 3130.0, pix0, pix1: 57.70497361111097, 313.25208333333, data units per chart pixel from start & end points: 12.209259589715181, unit_per_pix calculated from the y axis ticks: 13.123134968273023, inverse of that: 0.07620130421714301, unit_per_pix from axis limits and self.y_axis (probably best way): 12.203389830508474
+2025-01-17 11:56:00,736 - tedata.utils.scraper.search.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-17 11:56:00,758 - tedata.utils.scraper.search.scraper - DEBUG - Metadata scraped successfully: {'units': 'USD Billion', 'original_source': 'U.S. Bureau of Economics Analysis', 'title': 'United States Corporate Profits', 'indicator': 'corporate profits', 'country': 'united states', 'length': 311, 'frequency': 'QS', 'source': 'Trading Economics', 'id': 'united-states/corporate-profits', 'start_date': '1947-01-01', 'end_date': '2024-07-01', 'min_value': 9.959, 'max_value': 3128.499999999961, 'description': 'Corporate profits represents the portion of the total income earned from current production that is accounted for by U.S. corporations. It is one of the most closely watched U.S. economic indicators, as it provides a summary measure of corporate financial health and thus serves as an essential indicator of economic performance.'}
+2025-01-17 11:56:47,125 - tedata.utils.scraper.search.scraper - DEBUG - Using existing firefox driver.
+2025-01-17 11:56:49,392 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/corporate-profits
+2025-01-17 11:56:49,392 - tedata.utils.scraper.search.scraper - INFO - WebPage at https://tradingeconomics.com/united-states/corporate-profits loaded successfully.
+2025-01-17 11:56:54,522 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/corporate-profits, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-17 11:56:55,781 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-17 11:56:55,782 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-17 11:56:57,790 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-17 11:56:57,810 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-17 11:56:57,811 - tedata.utils.scraper.search.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-17 11:56:57,811 - tedata.utils.scraper.search.scraper - DEBUG - xax: [25.0, 684.0]
+2025-01-17 11:56:57,813 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [-200.0, 0.0, 600.0, 1200.0, 1800.0, 2400.0, 3000.0, 3400.0]
+2025-01-17 11:56:57,813 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 13.123134968273023
+2025-01-17 11:56:57,813 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-17 11:56:57,814 - tedata.utils.scraper.search.scraper - INFO - Y-axis values scraped successfully.
+2025-01-17 11:56:57,818 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-17 11:56:57,834 - tedata.utils.scraper.search.scraper - DEBUG - Raw data series extracted successfully: 0.000000    57.704974
+0.000000    57.704974
+1.284991    57.981864
+2.141651    58.003579
+2.998311    58.025294
+Name: Extracted Series, dtype: float64
+2025-01-17 11:56:57,834 - tedata.utils.scraper.search.scraper - INFO - Raw data series extracted successfully.
+2025-01-17 11:57:04,318 - tedata.utils.scraper.search.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-17 11:57:04,659 - tedata.utils.scraper.search.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-17 11:57:04,660 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-17 11:57:04,661 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 91, QS
+2025-01-17 11:57:04,662 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-17 11:57:04,662 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-17 11:57:04,669 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1947-01-01', '1947-04-01', '1947-07-01', '1947-10-01',
+               '1948-01-01', '1948-04-01', '1948-07-01', '1948-10-01',
+               '1949-01-01', '1949-04-01',
+               ...
+               '2022-04-01', '2022-07-01', '2022-10-01', '2023-01-01',
+               '2023-04-01', '2023-07-01', '2023-10-01', '2024-01-01',
+               '2024-04-01', '2024-07-01'],
+              dtype='datetime64[ns]', length=311, freq='QS-JAN')
+2025-01-17 11:57:04,669 - tedata.utils.scraper.search.scraper - INFO - Date index created successfully.
+2025-01-17 11:57:04,827 - tedata.utils.scraper.search.scraper - DEBUG - scale_series method: Start value, end value: 9.959, 3130.0, 57.70497361111097, 313.25208333333, 57.70497361111097, 313.25208333333
+2025-01-17 11:57:04,827 - tedata.utils.scraper.search.scraper - DEBUG - Start value, end value: 9.959, 3130.0, pix0, pix1: 57.70497361111097, 313.25208333333, data units per chart pixel from start & end points: 12.209259589715181, unit_per_pix calculated from the y axis ticks: 13.123134968273023, inverse of that: 0.07620130421714301, unit_per_pix from axis limits and self.y_axis (probably best way): 12.203389830508474
+2025-01-17 11:57:04,922 - tedata.utils.scraper.search.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-17 11:57:04,949 - tedata.utils.scraper.search.scraper - DEBUG - Metadata scraped successfully: {'units': 'USD Billion', 'original_source': 'U.S. Bureau of Economics Analysis', 'title': 'United States Corporate Profits', 'indicator': 'corporate profits', 'country': 'united states', 'length': 311, 'frequency': 'QS', 'source': 'Trading Economics', 'id': 'united-states/corporate-profits', 'start_date': '1947-01-01', 'end_date': '2024-07-01', 'min_value': 9.959, 'max_value': 3141.5569999999475, 'description': 'Corporate profits represents the portion of the total income earned from current production that is accounted for by U.S. corporations. It is one of the most closely watched U.S. economic indicators, as it provides a summary measure of corporate financial health and thus serves as an essential indicator of economic performance.'}
+2025-01-17 14:45:44,494 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-17 14:45:44.494424
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-17 14:45:44,496 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-17 14:45:54,579 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: firefox, headless: True, use_existing_driver: True
+2025-01-17 14:45:59,674 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="e4a6179d-539a-4e2b-afa5-6ced22e60b16")>
+2025-01-17 14:45:59,675 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="e4a6179d-539a-4e2b-afa5-6ced22e60b16")>
+2025-01-17 14:45:59,678 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedFirefox (session="e4a6179d-539a-4e2b-afa5-6ced22e60b16")>
+2025-01-17 14:45:59,678 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 14:46:08,212 - tedata.utils.scraper.search - INFO - Home page loaded successfully!
+2025-01-17 14:46:08,213 - tedata.utils.scraper.search - DEBUG - Home page at https://tradingeconomics.com/ loaded successfully!
+2025-01-17 14:46:24,555 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: chrome, headless: True, use_existing_driver: False
+2025-01-17 14:46:31,973 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="4439b3e61eecd5e33ebc95b2a5993db9")>
+2025-01-17 14:46:31,979 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="4439b3e61eecd5e33ebc95b2a5993db9")>
+2025-01-17 14:46:31,981 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedChrome (session="4439b3e61eecd5e33ebc95b2a5993db9")>
+2025-01-17 14:46:31,982 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 14:46:49,965 - tedata.utils.scraper.search - INFO - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000106b08ab8 chromedriver + 7092920
+1   chromedriver                        0x0000000106b0039a chromedriver + 7058330
+2   chromedriver                        0x00000001064a6d70 chromedriver + 400752
+3   chromedriver                        0x00000001064f5bc3 chromedriver + 723907
+4   chromedriver                        0x00000001064f5ec1 chromedriver + 724673
+5   chromedriver                        0x000000010653be94 chromedriver + 1011348
+6   chromedriver                        0x000000010651a24d chromedriver + 873037
+7   chromedriver                        0x0000000106539175 chromedriver + 999797
+8   chromedriver                        0x0000000106519fc3 chromedriver + 872387
+9   chromedriver                        0x00000001064e85c2 chromedriver + 669122
+10  chromedriver                        0x00000001064e959e chromedriver + 673182
+11  chromedriver                        0x0000000106acd350 chromedriver + 6849360
+12  chromedriver                        0x0000000106ad1280 chromedriver + 6865536
+13  chromedriver                        0x0000000106aaf737 chromedriver + 6727479
+14  chromedriver                        0x0000000106ad1d0e chromedriver + 6868238
+15  chromedriver                        0x0000000106a9f084 chromedriver + 6660228
+16  chromedriver                        0x0000000106aeea18 chromedriver + 6986264
+17  chromedriver                        0x0000000106aeebd6 chromedriver + 6986710
+18  chromedriver                        0x0000000106afff78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:46:49,968 - tedata.utils.scraper.search - DEBUG - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000106b08ab8 chromedriver + 7092920
+1   chromedriver                        0x0000000106b0039a chromedriver + 7058330
+2   chromedriver                        0x00000001064a6d70 chromedriver + 400752
+3   chromedriver                        0x00000001064f5bc3 chromedriver + 723907
+4   chromedriver                        0x00000001064f5ec1 chromedriver + 724673
+5   chromedriver                        0x000000010653be94 chromedriver + 1011348
+6   chromedriver                        0x000000010651a24d chromedriver + 873037
+7   chromedriver                        0x0000000106539175 chromedriver + 999797
+8   chromedriver                        0x0000000106519fc3 chromedriver + 872387
+9   chromedriver                        0x00000001064e85c2 chromedriver + 669122
+10  chromedriver                        0x00000001064e959e chromedriver + 673182
+11  chromedriver                        0x0000000106acd350 chromedriver + 6849360
+12  chromedriver                        0x0000000106ad1280 chromedriver + 6865536
+13  chromedriver                        0x0000000106aaf737 chromedriver + 6727479
+14  chromedriver                        0x0000000106ad1d0e chromedriver + 6868238
+15  chromedriver                        0x0000000106a9f084 chromedriver + 6660228
+16  chromedriver                        0x0000000106aeea18 chromedriver + 6986264
+17  chromedriver                        0x0000000106aeebd6 chromedriver + 6986710
+18  chromedriver                        0x0000000106afff78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:46:59,818 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: chrome, headless: True, use_existing_driver: False
+2025-01-17 14:47:01,303 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="63afc307d2b37ead8c44fc91e2a8bed5")>
+2025-01-17 14:47:01,304 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="63afc307d2b37ead8c44fc91e2a8bed5")>
+2025-01-17 14:47:01,307 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedChrome (session="63afc307d2b37ead8c44fc91e2a8bed5")>
+2025-01-17 14:47:01,308 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 14:47:19,620 - tedata.utils.scraper.search - INFO - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000106e42ab8 chromedriver + 7092920
+1   chromedriver                        0x0000000106e3a39a chromedriver + 7058330
+2   chromedriver                        0x00000001067e0d70 chromedriver + 400752
+3   chromedriver                        0x000000010682fbc3 chromedriver + 723907
+4   chromedriver                        0x000000010682fec1 chromedriver + 724673
+5   chromedriver                        0x0000000106875e94 chromedriver + 1011348
+6   chromedriver                        0x000000010685424d chromedriver + 873037
+7   chromedriver                        0x0000000106873175 chromedriver + 999797
+8   chromedriver                        0x0000000106853fc3 chromedriver + 872387
+9   chromedriver                        0x00000001068225c2 chromedriver + 669122
+10  chromedriver                        0x000000010682359e chromedriver + 673182
+11  chromedriver                        0x0000000106e07350 chromedriver + 6849360
+12  chromedriver                        0x0000000106e0b280 chromedriver + 6865536
+13  chromedriver                        0x0000000106de9737 chromedriver + 6727479
+14  chromedriver                        0x0000000106e0bd0e chromedriver + 6868238
+15  chromedriver                        0x0000000106dd9084 chromedriver + 6660228
+16  chromedriver                        0x0000000106e28a18 chromedriver + 6986264
+17  chromedriver                        0x0000000106e28bd6 chromedriver + 6986710
+18  chromedriver                        0x0000000106e39f78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:47:19,621 - tedata.utils.scraper.search - DEBUG - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000106e42ab8 chromedriver + 7092920
+1   chromedriver                        0x0000000106e3a39a chromedriver + 7058330
+2   chromedriver                        0x00000001067e0d70 chromedriver + 400752
+3   chromedriver                        0x000000010682fbc3 chromedriver + 723907
+4   chromedriver                        0x000000010682fec1 chromedriver + 724673
+5   chromedriver                        0x0000000106875e94 chromedriver + 1011348
+6   chromedriver                        0x000000010685424d chromedriver + 873037
+7   chromedriver                        0x0000000106873175 chromedriver + 999797
+8   chromedriver                        0x0000000106853fc3 chromedriver + 872387
+9   chromedriver                        0x00000001068225c2 chromedriver + 669122
+10  chromedriver                        0x000000010682359e chromedriver + 673182
+11  chromedriver                        0x0000000106e07350 chromedriver + 6849360
+12  chromedriver                        0x0000000106e0b280 chromedriver + 6865536
+13  chromedriver                        0x0000000106de9737 chromedriver + 6727479
+14  chromedriver                        0x0000000106e0bd0e chromedriver + 6868238
+15  chromedriver                        0x0000000106dd9084 chromedriver + 6660228
+16  chromedriver                        0x0000000106e28a18 chromedriver + 6986264
+17  chromedriver                        0x0000000106e28bd6 chromedriver + 6986710
+18  chromedriver                        0x0000000106e39f78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:47:50,173 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: chrome, headless: True, use_existing_driver: False
+2025-01-17 14:47:51,603 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="219875f3a809ccdbddfbd0d01c7bf0ac")>
+2025-01-17 14:47:51,603 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="219875f3a809ccdbddfbd0d01c7bf0ac")>
+2025-01-17 14:47:51,605 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedChrome (session="219875f3a809ccdbddfbd0d01c7bf0ac")>
+2025-01-17 14:47:51,606 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 14:48:08,943 - tedata.utils.scraper.search - INFO - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x00000001056d1ab8 chromedriver + 7092920
+1   chromedriver                        0x00000001056c939a chromedriver + 7058330
+2   chromedriver                        0x000000010506fd70 chromedriver + 400752
+3   chromedriver                        0x00000001050bebc3 chromedriver + 723907
+4   chromedriver                        0x00000001050beec1 chromedriver + 724673
+5   chromedriver                        0x0000000105104e94 chromedriver + 1011348
+6   chromedriver                        0x00000001050e324d chromedriver + 873037
+7   chromedriver                        0x0000000105102175 chromedriver + 999797
+8   chromedriver                        0x00000001050e2fc3 chromedriver + 872387
+9   chromedriver                        0x00000001050b15c2 chromedriver + 669122
+10  chromedriver                        0x00000001050b259e chromedriver + 673182
+11  chromedriver                        0x0000000105696350 chromedriver + 6849360
+12  chromedriver                        0x000000010569a280 chromedriver + 6865536
+13  chromedriver                        0x0000000105678737 chromedriver + 6727479
+14  chromedriver                        0x000000010569ad0e chromedriver + 6868238
+15  chromedriver                        0x0000000105668084 chromedriver + 6660228
+16  chromedriver                        0x00000001056b7a18 chromedriver + 6986264
+17  chromedriver                        0x00000001056b7bd6 chromedriver + 6986710
+18  chromedriver                        0x00000001056c8f78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:48:08,944 - tedata.utils.scraper.search - DEBUG - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x00000001056d1ab8 chromedriver + 7092920
+1   chromedriver                        0x00000001056c939a chromedriver + 7058330
+2   chromedriver                        0x000000010506fd70 chromedriver + 400752
+3   chromedriver                        0x00000001050bebc3 chromedriver + 723907
+4   chromedriver                        0x00000001050beec1 chromedriver + 724673
+5   chromedriver                        0x0000000105104e94 chromedriver + 1011348
+6   chromedriver                        0x00000001050e324d chromedriver + 873037
+7   chromedriver                        0x0000000105102175 chromedriver + 999797
+8   chromedriver                        0x00000001050e2fc3 chromedriver + 872387
+9   chromedriver                        0x00000001050b15c2 chromedriver + 669122
+10  chromedriver                        0x00000001050b259e chromedriver + 673182
+11  chromedriver                        0x0000000105696350 chromedriver + 6849360
+12  chromedriver                        0x000000010569a280 chromedriver + 6865536
+13  chromedriver                        0x0000000105678737 chromedriver + 6727479
+14  chromedriver                        0x000000010569ad0e chromedriver + 6868238
+15  chromedriver                        0x0000000105668084 chromedriver + 6660228
+16  chromedriver                        0x00000001056b7a18 chromedriver + 6986264
+17  chromedriver                        0x00000001056b7bd6 chromedriver + 6986710
+18  chromedriver                        0x00000001056c8f78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:54:21,654 - tedata.utils.scraper.search.search - DEBUG - Initializing search object with browser: chrome, headless: True, use_existing_driver: False
+2025-01-17 14:54:23,501 - tedata.utils.scraper.search.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="16bae856a48f345c09638f3f819d4fcb")>
+2025-01-17 14:54:23,501 - tedata.utils.scraper.search.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="16bae856a48f345c09638f3f819d4fcb")>
+2025-01-17 14:54:23,504 - tedata.utils.scraper.search.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedChrome (session="16bae856a48f345c09638f3f819d4fcb")>
+2025-01-17 14:54:23,505 - tedata.utils.scraper.search.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 14:54:35,704 - tedata.utils.scraper.search.search - INFO - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000100eb3ab8 chromedriver + 7092920
+1   chromedriver                        0x0000000100eab39a chromedriver + 7058330
+2   chromedriver                        0x0000000100851d70 chromedriver + 400752
+3   chromedriver                        0x00000001008a0bc3 chromedriver + 723907
+4   chromedriver                        0x00000001008a0ec1 chromedriver + 724673
+5   chromedriver                        0x00000001008e6e94 chromedriver + 1011348
+6   chromedriver                        0x00000001008c524d chromedriver + 873037
+7   chromedriver                        0x00000001008e4175 chromedriver + 999797
+8   chromedriver                        0x00000001008c4fc3 chromedriver + 872387
+9   chromedriver                        0x00000001008935c2 chromedriver + 669122
+10  chromedriver                        0x000000010089459e chromedriver + 673182
+11  chromedriver                        0x0000000100e78350 chromedriver + 6849360
+12  chromedriver                        0x0000000100e7c280 chromedriver + 6865536
+13  chromedriver                        0x0000000100e5a737 chromedriver + 6727479
+14  chromedriver                        0x0000000100e7cd0e chromedriver + 6868238
+15  chromedriver                        0x0000000100e4a084 chromedriver + 6660228
+16  chromedriver                        0x0000000100e99a18 chromedriver + 6986264
+17  chromedriver                        0x0000000100e99bd6 chromedriver + 6986710
+18  chromedriver                        0x0000000100eaaf78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:54:35,707 - tedata.utils.scraper.search.search - DEBUG - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000100eb3ab8 chromedriver + 7092920
+1   chromedriver                        0x0000000100eab39a chromedriver + 7058330
+2   chromedriver                        0x0000000100851d70 chromedriver + 400752
+3   chromedriver                        0x00000001008a0bc3 chromedriver + 723907
+4   chromedriver                        0x00000001008a0ec1 chromedriver + 724673
+5   chromedriver                        0x00000001008e6e94 chromedriver + 1011348
+6   chromedriver                        0x00000001008c524d chromedriver + 873037
+7   chromedriver                        0x00000001008e4175 chromedriver + 999797
+8   chromedriver                        0x00000001008c4fc3 chromedriver + 872387
+9   chromedriver                        0x00000001008935c2 chromedriver + 669122
+10  chromedriver                        0x000000010089459e chromedriver + 673182
+11  chromedriver                        0x0000000100e78350 chromedriver + 6849360
+12  chromedriver                        0x0000000100e7c280 chromedriver + 6865536
+13  chromedriver                        0x0000000100e5a737 chromedriver + 6727479
+14  chromedriver                        0x0000000100e7cd0e chromedriver + 6868238
+15  chromedriver                        0x0000000100e4a084 chromedriver + 6660228
+16  chromedriver                        0x0000000100e99a18 chromedriver + 6986264
+17  chromedriver                        0x0000000100e99bd6 chromedriver + 6986710
+18  chromedriver                        0x0000000100eaaf78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:56:39,915 - tedata.utils.scraper.search.search - DEBUG - Initializing search object with browser: chrome, headless: True, use_existing_driver: False
+2025-01-17 14:56:41,522 - tedata.utils.scraper.search.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="d33fdcd5452a0564c39eb037fc39b932")>
+2025-01-17 14:56:41,522 - tedata.utils.scraper.search.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="d33fdcd5452a0564c39eb037fc39b932")>
+2025-01-17 14:56:41,525 - tedata.utils.scraper.search.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedChrome (session="d33fdcd5452a0564c39eb037fc39b932")>
+2025-01-17 14:56:41,525 - tedata.utils.scraper.search.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 14:56:53,897 - tedata.utils.scraper.search.search - INFO - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000105215ab8 chromedriver + 7092920
+1   chromedriver                        0x000000010520d39a chromedriver + 7058330
+2   chromedriver                        0x0000000104bb3d70 chromedriver + 400752
+3   chromedriver                        0x0000000104c02bc3 chromedriver + 723907
+4   chromedriver                        0x0000000104c02ec1 chromedriver + 724673
+5   chromedriver                        0x0000000104c48e94 chromedriver + 1011348
+6   chromedriver                        0x0000000104c2724d chromedriver + 873037
+7   chromedriver                        0x0000000104c46175 chromedriver + 999797
+8   chromedriver                        0x0000000104c26fc3 chromedriver + 872387
+9   chromedriver                        0x0000000104bf55c2 chromedriver + 669122
+10  chromedriver                        0x0000000104bf659e chromedriver + 673182
+11  chromedriver                        0x00000001051da350 chromedriver + 6849360
+12  chromedriver                        0x00000001051de280 chromedriver + 6865536
+13  chromedriver                        0x00000001051bc737 chromedriver + 6727479
+14  chromedriver                        0x00000001051ded0e chromedriver + 6868238
+15  chromedriver                        0x00000001051ac084 chromedriver + 6660228
+16  chromedriver                        0x00000001051fba18 chromedriver + 6986264
+17  chromedriver                        0x00000001051fbbd6 chromedriver + 6986710
+18  chromedriver                        0x000000010520cf78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:56:53,898 - tedata.utils.scraper.search.search - DEBUG - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000105215ab8 chromedriver + 7092920
+1   chromedriver                        0x000000010520d39a chromedriver + 7058330
+2   chromedriver                        0x0000000104bb3d70 chromedriver + 400752
+3   chromedriver                        0x0000000104c02bc3 chromedriver + 723907
+4   chromedriver                        0x0000000104c02ec1 chromedriver + 724673
+5   chromedriver                        0x0000000104c48e94 chromedriver + 1011348
+6   chromedriver                        0x0000000104c2724d chromedriver + 873037
+7   chromedriver                        0x0000000104c46175 chromedriver + 999797
+8   chromedriver                        0x0000000104c26fc3 chromedriver + 872387
+9   chromedriver                        0x0000000104bf55c2 chromedriver + 669122
+10  chromedriver                        0x0000000104bf659e chromedriver + 673182
+11  chromedriver                        0x00000001051da350 chromedriver + 6849360
+12  chromedriver                        0x00000001051de280 chromedriver + 6865536
+13  chromedriver                        0x00000001051bc737 chromedriver + 6727479
+14  chromedriver                        0x00000001051ded0e chromedriver + 6868238
+15  chromedriver                        0x00000001051ac084 chromedriver + 6660228
+16  chromedriver                        0x00000001051fba18 chromedriver + 6986264
+17  chromedriver                        0x00000001051fbbd6 chromedriver + 6986710
+18  chromedriver                        0x000000010520cf78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:57:08,431 - tedata.utils.scraper.search.search - DEBUG - Initializing search object with browser: chrome, headless: True, use_existing_driver: False
+2025-01-17 14:57:09,912 - tedata.utils.scraper.search.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="8c63d2daab5b4f9fed0f476f8bd44c37")>
+2025-01-17 14:57:09,914 - tedata.utils.scraper.search.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="8c63d2daab5b4f9fed0f476f8bd44c37")>
+2025-01-17 14:57:09,919 - tedata.utils.scraper.search.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedChrome (session="8c63d2daab5b4f9fed0f476f8bd44c37")>
+2025-01-17 14:57:39,649 - tedata.utils.scraper.search.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 14:57:59,246 - tedata.utils.scraper.search.search - INFO - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000103750ab8 chromedriver + 7092920
+1   chromedriver                        0x000000010374839a chromedriver + 7058330
+2   chromedriver                        0x00000001030eed70 chromedriver + 400752
+3   chromedriver                        0x000000010313dbc3 chromedriver + 723907
+4   chromedriver                        0x000000010313dec1 chromedriver + 724673
+5   chromedriver                        0x0000000103183e94 chromedriver + 1011348
+6   chromedriver                        0x000000010316224d chromedriver + 873037
+7   chromedriver                        0x0000000103181175 chromedriver + 999797
+8   chromedriver                        0x0000000103161fc3 chromedriver + 872387
+9   chromedriver                        0x00000001031305c2 chromedriver + 669122
+10  chromedriver                        0x000000010313159e chromedriver + 673182
+11  chromedriver                        0x0000000103715350 chromedriver + 6849360
+12  chromedriver                        0x0000000103719280 chromedriver + 6865536
+13  chromedriver                        0x00000001036f7737 chromedriver + 6727479
+14  chromedriver                        0x0000000103719d0e chromedriver + 6868238
+15  chromedriver                        0x00000001036e7084 chromedriver + 6660228
+16  chromedriver                        0x0000000103736a18 chromedriver + 6986264
+17  chromedriver                        0x0000000103736bd6 chromedriver + 6986710
+18  chromedriver                        0x0000000103747f78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:57:59,246 - tedata.utils.scraper.search.search - DEBUG - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000103750ab8 chromedriver + 7092920
+1   chromedriver                        0x000000010374839a chromedriver + 7058330
+2   chromedriver                        0x00000001030eed70 chromedriver + 400752
+3   chromedriver                        0x000000010313dbc3 chromedriver + 723907
+4   chromedriver                        0x000000010313dec1 chromedriver + 724673
+5   chromedriver                        0x0000000103183e94 chromedriver + 1011348
+6   chromedriver                        0x000000010316224d chromedriver + 873037
+7   chromedriver                        0x0000000103181175 chromedriver + 999797
+8   chromedriver                        0x0000000103161fc3 chromedriver + 872387
+9   chromedriver                        0x00000001031305c2 chromedriver + 669122
+10  chromedriver                        0x000000010313159e chromedriver + 673182
+11  chromedriver                        0x0000000103715350 chromedriver + 6849360
+12  chromedriver                        0x0000000103719280 chromedriver + 6865536
+13  chromedriver                        0x00000001036f7737 chromedriver + 6727479
+14  chromedriver                        0x0000000103719d0e chromedriver + 6868238
+15  chromedriver                        0x00000001036e7084 chromedriver + 6660228
+16  chromedriver                        0x0000000103736a18 chromedriver + 6986264
+17  chromedriver                        0x0000000103736bd6 chromedriver + 6986710
+18  chromedriver                        0x0000000103747f78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 14:58:13,825 - tedata.utils.scraper.search.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 15:01:17,241 - tedata.utils.scraper.search.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 15:01:52,980 - tedata.utils.scraper.search.search - INFO - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000103750ab8 chromedriver + 7092920
+1   chromedriver                        0x000000010374839a chromedriver + 7058330
+2   chromedriver                        0x00000001030eed70 chromedriver + 400752
+3   chromedriver                        0x000000010313dbc3 chromedriver + 723907
+4   chromedriver                        0x000000010313dec1 chromedriver + 724673
+5   chromedriver                        0x0000000103183e94 chromedriver + 1011348
+6   chromedriver                        0x000000010316224d chromedriver + 873037
+7   chromedriver                        0x0000000103181175 chromedriver + 999797
+8   chromedriver                        0x0000000103161fc3 chromedriver + 872387
+9   chromedriver                        0x00000001031305c2 chromedriver + 669122
+10  chromedriver                        0x000000010313159e chromedriver + 673182
+11  chromedriver                        0x0000000103715350 chromedriver + 6849360
+12  chromedriver                        0x0000000103719280 chromedriver + 6865536
+13  chromedriver                        0x00000001036f7737 chromedriver + 6727479
+14  chromedriver                        0x0000000103719d0e chromedriver + 6868238
+15  chromedriver                        0x00000001036e7084 chromedriver + 6660228
+16  chromedriver                        0x0000000103736a18 chromedriver + 6986264
+17  chromedriver                        0x0000000103736bd6 chromedriver + 6986710
+18  chromedriver                        0x0000000103747f78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 15:01:52,981 - tedata.utils.scraper.search.search - DEBUG - Error occurred, check internet connection. Error details: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000103750ab8 chromedriver + 7092920
+1   chromedriver                        0x000000010374839a chromedriver + 7058330
+2   chromedriver                        0x00000001030eed70 chromedriver + 400752
+3   chromedriver                        0x000000010313dbc3 chromedriver + 723907
+4   chromedriver                        0x000000010313dec1 chromedriver + 724673
+5   chromedriver                        0x0000000103183e94 chromedriver + 1011348
+6   chromedriver                        0x000000010316224d chromedriver + 873037
+7   chromedriver                        0x0000000103181175 chromedriver + 999797
+8   chromedriver                        0x0000000103161fc3 chromedriver + 872387
+9   chromedriver                        0x00000001031305c2 chromedriver + 669122
+10  chromedriver                        0x000000010313159e chromedriver + 673182
+11  chromedriver                        0x0000000103715350 chromedriver + 6849360
+12  chromedriver                        0x0000000103719280 chromedriver + 6865536
+13  chromedriver                        0x00000001036f7737 chromedriver + 6727479
+14  chromedriver                        0x0000000103719d0e chromedriver + 6868238
+15  chromedriver                        0x00000001036e7084 chromedriver + 6660228
+16  chromedriver                        0x0000000103736a18 chromedriver + 6986264
+17  chromedriver                        0x0000000103736bd6 chromedriver + 6986710
+18  chromedriver                        0x0000000103747f78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 17:22:43,711 - tedata.utils.scraper.search.search - DEBUG - Initializing search object with browser: chrome, headless: True, use_existing_driver: False
+2025-01-17 17:22:51,191 - tedata.utils.scraper.search.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="77381552a6c499422614d6f8920978f2")>
+2025-01-17 17:22:51,192 - tedata.utils.scraper.search.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="77381552a6c499422614d6f8920978f2")>
+2025-01-17 17:22:51,194 - tedata.utils.scraper.search.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedChrome (session="77381552a6c499422614d6f8920978f2")>
+2025-01-17 17:22:54,784 - tedata.utils.scraper.search.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 17:23:07,128 - tedata.utils.scraper.search.search - INFO - Home page at https://tradingeconomics.com loaded successfully! Search box element not found though.
+2025-01-17 17:23:22,126 - tedata.utils.scraper.search.search - DEBUG - Searching Trading Economics for: australia consumer confidence
+2025-01-17 17:23:32,385 - tedata.utils.scraper.search.search - INFO - Error occurred: Message: 
+Stacktrace:
+0   chromedriver                        0x000000010e5a3ab8 chromedriver + 7092920
+1   chromedriver                        0x000000010e59b39a chromedriver + 7058330
+2   chromedriver                        0x000000010df41d70 chromedriver + 400752
+3   chromedriver                        0x000000010df90bc3 chromedriver + 723907
+4   chromedriver                        0x000000010df90ec1 chromedriver + 724673
+5   chromedriver                        0x000000010dfd6e94 chromedriver + 1011348
+6   chromedriver                        0x000000010dfb524d chromedriver + 873037
+7   chromedriver                        0x000000010dfd4175 chromedriver + 999797
+8   chromedriver                        0x000000010dfb4fc3 chromedriver + 872387
+9   chromedriver                        0x000000010df835c2 chromedriver + 669122
+10  chromedriver                        0x000000010df8459e chromedriver + 673182
+11  chromedriver                        0x000000010e568350 chromedriver + 6849360
+12  chromedriver                        0x000000010e56c280 chromedriver + 6865536
+13  chromedriver                        0x000000010e54a737 chromedriver + 6727479
+14  chromedriver                        0x000000010e56cd0e chromedriver + 6868238
+15  chromedriver                        0x000000010e53a084 chromedriver + 6660228
+16  chromedriver                        0x000000010e589a18 chromedriver + 6986264
+17  chromedriver                        0x000000010e589bd6 chromedriver + 6986710
+18  chromedriver                        0x000000010e59af78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 17:23:32,386 - tedata.utils.scraper.search.search - DEBUG - Error on search occurred: Message: 
+Stacktrace:
+0   chromedriver                        0x000000010e5a3ab8 chromedriver + 7092920
+1   chromedriver                        0x000000010e59b39a chromedriver + 7058330
+2   chromedriver                        0x000000010df41d70 chromedriver + 400752
+3   chromedriver                        0x000000010df90bc3 chromedriver + 723907
+4   chromedriver                        0x000000010df90ec1 chromedriver + 724673
+5   chromedriver                        0x000000010dfd6e94 chromedriver + 1011348
+6   chromedriver                        0x000000010dfb524d chromedriver + 873037
+7   chromedriver                        0x000000010dfd4175 chromedriver + 999797
+8   chromedriver                        0x000000010dfb4fc3 chromedriver + 872387
+9   chromedriver                        0x000000010df835c2 chromedriver + 669122
+10  chromedriver                        0x000000010df8459e chromedriver + 673182
+11  chromedriver                        0x000000010e568350 chromedriver + 6849360
+12  chromedriver                        0x000000010e56c280 chromedriver + 6865536
+13  chromedriver                        0x000000010e54a737 chromedriver + 6727479
+14  chromedriver                        0x000000010e56cd0e chromedriver + 6868238
+15  chromedriver                        0x000000010e53a084 chromedriver + 6660228
+16  chromedriver                        0x000000010e589a18 chromedriver + 6986264
+17  chromedriver                        0x000000010e589bd6 chromedriver + 6986710
+18  chromedriver                        0x000000010e59af78 chromedriver + 7057272
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 17:30:02,709 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-17 17:30:02.709413
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-17 17:30:02,709 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-17 17:30:09,332 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: chrome, headless: True, use_existing_driver: False
+2025-01-17 17:30:40,473 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="df7b7964632755950d3ca5f35a6ff51f")>
+2025-01-17 17:30:40,474 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="df7b7964632755950d3ca5f35a6ff51f")>
+2025-01-17 17:30:40,475 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedChrome (session="df7b7964632755950d3ca5f35a6ff51f")>
+2025-01-17 17:30:44,720 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 17:30:58,559 - tedata.utils.scraper.search - INFO - Home page at https://tradingeconomics.com loaded successfully! Search box element not found though.
+2025-01-17 17:31:47,421 - tedata.utils.scraper.search - DEBUG - Searching Trading Economics for: australia consumer confidence
+2025-01-17 17:31:57,701 - tedata.utils.scraper.search - INFO - Error occurred: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000106797538 chromedriver + 5539128
+1   chromedriver                        0x000000010678f3fa chromedriver + 5506042
+2   chromedriver                        0x00000001062b0640 chromedriver + 398912
+3   chromedriver                        0x00000001063005d3 chromedriver + 726483
+4   chromedriver                        0x0000000106300811 chromedriver + 727057
+5   chromedriver                        0x00000001063470e4 chromedriver + 1016036
+6   chromedriver                        0x000000010632551d chromedriver + 877853
+7   chromedriver                        0x00000001063443f7 chromedriver + 1004535
+8   chromedriver                        0x0000000106325293 chromedriver + 877203
+9   chromedriver                        0x00000001062f2180 chromedriver + 668032
+10  chromedriver                        0x00000001062f33fe chromedriver + 672766
+11  chromedriver                        0x000000010675d1d0 chromedriver + 5300688
+12  chromedriver                        0x00000001067611e0 chromedriver + 5317088
+13  chromedriver                        0x000000010673eee7 chromedriver + 5177063
+14  chromedriver                        0x0000000106761b7e chromedriver + 5319550
+15  chromedriver                        0x000000010672eb14 chromedriver + 5110548
+16  chromedriver                        0x000000010677d8d8 chromedriver + 5433560
+17  chromedriver                        0x000000010677da96 chromedriver + 5434006
+18  chromedriver                        0x000000010678efd8 chromedriver + 5504984
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 17:31:57,701 - tedata.utils.scraper.search - DEBUG - Error on search occurred: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000106797538 chromedriver + 5539128
+1   chromedriver                        0x000000010678f3fa chromedriver + 5506042
+2   chromedriver                        0x00000001062b0640 chromedriver + 398912
+3   chromedriver                        0x00000001063005d3 chromedriver + 726483
+4   chromedriver                        0x0000000106300811 chromedriver + 727057
+5   chromedriver                        0x00000001063470e4 chromedriver + 1016036
+6   chromedriver                        0x000000010632551d chromedriver + 877853
+7   chromedriver                        0x00000001063443f7 chromedriver + 1004535
+8   chromedriver                        0x0000000106325293 chromedriver + 877203
+9   chromedriver                        0x00000001062f2180 chromedriver + 668032
+10  chromedriver                        0x00000001062f33fe chromedriver + 672766
+11  chromedriver                        0x000000010675d1d0 chromedriver + 5300688
+12  chromedriver                        0x00000001067611e0 chromedriver + 5317088
+13  chromedriver                        0x000000010673eee7 chromedriver + 5177063
+14  chromedriver                        0x0000000106761b7e chromedriver + 5319550
+15  chromedriver                        0x000000010672eb14 chromedriver + 5110548
+16  chromedriver                        0x000000010677d8d8 chromedriver + 5433560
+17  chromedriver                        0x000000010677da96 chromedriver + 5434006
+18  chromedriver                        0x000000010678efd8 chromedriver + 5504984
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 17:32:28,154 - tedata.utils.scraper.search.search - DEBUG - Searching Trading Economics for: australia consumer confidence
+2025-01-17 17:32:58,598 - tedata.utils.scraper.search.search - INFO - Error occurred: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000106797538 chromedriver + 5539128
+1   chromedriver                        0x000000010678f3fa chromedriver + 5506042
+2   chromedriver                        0x00000001062b0640 chromedriver + 398912
+3   chromedriver                        0x00000001063005d3 chromedriver + 726483
+4   chromedriver                        0x0000000106300811 chromedriver + 727057
+5   chromedriver                        0x00000001063470e4 chromedriver + 1016036
+6   chromedriver                        0x000000010632551d chromedriver + 877853
+7   chromedriver                        0x00000001063443f7 chromedriver + 1004535
+8   chromedriver                        0x0000000106325293 chromedriver + 877203
+9   chromedriver                        0x00000001062f2180 chromedriver + 668032
+10  chromedriver                        0x00000001062f33fe chromedriver + 672766
+11  chromedriver                        0x000000010675d1d0 chromedriver + 5300688
+12  chromedriver                        0x00000001067611e0 chromedriver + 5317088
+13  chromedriver                        0x000000010673eee7 chromedriver + 5177063
+14  chromedriver                        0x0000000106761b7e chromedriver + 5319550
+15  chromedriver                        0x000000010672eb14 chromedriver + 5110548
+16  chromedriver                        0x000000010677d8d8 chromedriver + 5433560
+17  chromedriver                        0x000000010677da96 chromedriver + 5434006
+18  chromedriver                        0x000000010678efd8 chromedriver + 5504984
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 17:32:58,598 - tedata.utils.scraper.search.search - DEBUG - Error on search occurred: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000106797538 chromedriver + 5539128
+1   chromedriver                        0x000000010678f3fa chromedriver + 5506042
+2   chromedriver                        0x00000001062b0640 chromedriver + 398912
+3   chromedriver                        0x00000001063005d3 chromedriver + 726483
+4   chromedriver                        0x0000000106300811 chromedriver + 727057
+5   chromedriver                        0x00000001063470e4 chromedriver + 1016036
+6   chromedriver                        0x000000010632551d chromedriver + 877853
+7   chromedriver                        0x00000001063443f7 chromedriver + 1004535
+8   chromedriver                        0x0000000106325293 chromedriver + 877203
+9   chromedriver                        0x00000001062f2180 chromedriver + 668032
+10  chromedriver                        0x00000001062f33fe chromedriver + 672766
+11  chromedriver                        0x000000010675d1d0 chromedriver + 5300688
+12  chromedriver                        0x00000001067611e0 chromedriver + 5317088
+13  chromedriver                        0x000000010673eee7 chromedriver + 5177063
+14  chromedriver                        0x0000000106761b7e chromedriver + 5319550
+15  chromedriver                        0x000000010672eb14 chromedriver + 5110548
+16  chromedriver                        0x000000010677d8d8 chromedriver + 5433560
+17  chromedriver                        0x000000010677da96 chromedriver + 5434006
+18  chromedriver                        0x000000010678efd8 chromedriver + 5504984
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 17:44:54,664 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-17 17:44:54.663946
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-17 17:44:54,664 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-17 17:45:03,809 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: chrome, headless: True, use_existing_driver: False
+2025-01-17 17:45:14,739 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="61f152fd17175181a91edd8efc5e5836")>
+2025-01-17 17:45:14,740 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="61f152fd17175181a91edd8efc5e5836")>
+2025-01-17 17:45:14,742 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedChrome (session="61f152fd17175181a91edd8efc5e5836")>
+2025-01-17 17:48:00,308 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: chrome, headless: True, use_existing_driver: False
+2025-01-17 17:48:01,485 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="a4ef26aebb861756211db00ec5af17f5")>
+2025-01-17 17:48:01,491 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedChrome (session="a4ef26aebb861756211db00ec5af17f5")>
+2025-01-17 17:48:01,500 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedChrome (session="a4ef26aebb861756211db00ec5af17f5")>
+2025-01-17 17:48:05,797 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 17:48:13,617 - tedata.utils.scraper.search - INFO - Home page at https://tradingeconomics.com loaded successfully! Search box element not found though.
+2025-01-17 17:48:20,446 - tedata.utils.scraper.search - DEBUG - Searching Trading Economics for: australia consumer confidence
+2025-01-17 17:48:50,740 - tedata.utils.scraper.search - INFO - Error occurred: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000109700538 chromedriver + 5539128
+1   chromedriver                        0x00000001096f83fa chromedriver + 5506042
+2   chromedriver                        0x0000000109219640 chromedriver + 398912
+3   chromedriver                        0x00000001092695d3 chromedriver + 726483
+4   chromedriver                        0x0000000109269811 chromedriver + 727057
+5   chromedriver                        0x00000001092b00e4 chromedriver + 1016036
+6   chromedriver                        0x000000010928e51d chromedriver + 877853
+7   chromedriver                        0x00000001092ad3f7 chromedriver + 1004535
+8   chromedriver                        0x000000010928e293 chromedriver + 877203
+9   chromedriver                        0x000000010925b180 chromedriver + 668032
+10  chromedriver                        0x000000010925c3fe chromedriver + 672766
+11  chromedriver                        0x00000001096c61d0 chromedriver + 5300688
+12  chromedriver                        0x00000001096ca1e0 chromedriver + 5317088
+13  chromedriver                        0x00000001096a7ee7 chromedriver + 5177063
+14  chromedriver                        0x00000001096cab7e chromedriver + 5319550
+15  chromedriver                        0x0000000109697b14 chromedriver + 5110548
+16  chromedriver                        0x00000001096e68d8 chromedriver + 5433560
+17  chromedriver                        0x00000001096e6a96 chromedriver + 5434006
+18  chromedriver                        0x00000001096f7fd8 chromedriver + 5504984
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 17:48:50,741 - tedata.utils.scraper.search - DEBUG - Error on search occurred: Message: 
+Stacktrace:
+0   chromedriver                        0x0000000109700538 chromedriver + 5539128
+1   chromedriver                        0x00000001096f83fa chromedriver + 5506042
+2   chromedriver                        0x0000000109219640 chromedriver + 398912
+3   chromedriver                        0x00000001092695d3 chromedriver + 726483
+4   chromedriver                        0x0000000109269811 chromedriver + 727057
+5   chromedriver                        0x00000001092b00e4 chromedriver + 1016036
+6   chromedriver                        0x000000010928e51d chromedriver + 877853
+7   chromedriver                        0x00000001092ad3f7 chromedriver + 1004535
+8   chromedriver                        0x000000010928e293 chromedriver + 877203
+9   chromedriver                        0x000000010925b180 chromedriver + 668032
+10  chromedriver                        0x000000010925c3fe chromedriver + 672766
+11  chromedriver                        0x00000001096c61d0 chromedriver + 5300688
+12  chromedriver                        0x00000001096ca1e0 chromedriver + 5317088
+13  chromedriver                        0x00000001096a7ee7 chromedriver + 5177063
+14  chromedriver                        0x00000001096cab7e chromedriver + 5319550
+15  chromedriver                        0x0000000109697b14 chromedriver + 5110548
+16  chromedriver                        0x00000001096e68d8 chromedriver + 5433560
+17  chromedriver                        0x00000001096e6a96 chromedriver + 5434006
+18  chromedriver                        0x00000001096f7fd8 chromedriver + 5504984
+19  libsystem_pthread.dylib             0x00007ff815ac84f4 _pthread_start + 125
+20  libsystem_pthread.dylib             0x00007ff815ac400f thread_start + 15
+
+2025-01-17 17:49:26,966 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: firefox, headless: True, use_existing_driver: False
+2025-01-17 17:49:29,949 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="e24fef8c-6809-4860-ae68-cea2aa8fbd1e")>
+2025-01-17 17:49:29,949 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="e24fef8c-6809-4860-ae68-cea2aa8fbd1e")>
+2025-01-17 17:49:29,952 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedFirefox (session="e24fef8c-6809-4860-ae68-cea2aa8fbd1e")>
+2025-01-17 17:49:29,952 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 17:49:37,132 - tedata.utils.scraper.search - INFO - Home page at https://tradingeconomics.com loaded successfully! Search box element found.
+2025-01-17 17:49:54,179 - tedata.utils.scraper.search - DEBUG - Searching Trading Economics for: australia consumer confidence
+2025-01-17 17:49:54,186 - tedata.utils.scraper.search - INFO - Clicking search box...
+2025-01-17 17:49:54,518 - tedata.utils.scraper.search - INFO - Entering search term: australia consumer confidence
+2025-01-17 17:49:55,565 - tedata.utils.scraper.search - INFO - Submitting search...
+2025-01-17 17:49:58,643 - tedata.utils.scraper.search - DEBUG - Search for australia consumer confidence completed successfully.
+2025-01-17 18:25:49,585 - tedata.utils.scraper.search.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 18:26:57,892 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-17 18:26:57.891984
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-17 18:26:57,892 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-17 18:27:01,143 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: firefox, headless: True, use_existing_driver: True
+2025-01-17 18:27:04,080 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="3197d105-fce8-4efd-92df-25dd42f4c429")>
+2025-01-17 18:27:04,080 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="3197d105-fce8-4efd-92df-25dd42f4c429")>
+2025-01-17 18:27:04,082 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedFirefox (session="3197d105-fce8-4efd-92df-25dd42f4c429")>
+2025-01-17 18:27:04,083 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 18:27:11,533 - tedata.utils.scraper.search - INFO - Home page at https://tradingeconomics.com loaded successfully! Search box element found.
+2025-01-17 18:27:22,533 - tedata.utils.scraper.search - DEBUG - Searching Trading Economics for: ISM Manufacturing
+2025-01-17 18:27:22,541 - tedata.utils.scraper.search - INFO - Clicking search box...
+2025-01-17 18:27:22,892 - tedata.utils.scraper.search - INFO - Entering search term: ISM Manufacturing
+2025-01-17 18:27:23,922 - tedata.utils.scraper.search - INFO - Submitting search...
+2025-01-17 18:27:27,014 - tedata.utils.scraper.search - DEBUG - Search for ISM Manufacturing completed successfully.
+2025-01-17 18:30:15,639 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-17 18:30:15.638995
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-17 18:30:15,639 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-17 18:30:18,274 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: firefox, headless: True, use_existing_driver: True
+2025-01-17 18:30:21,327 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="674c0e96-e0b3-47d7-a0a8-7859b09581b5")>
+2025-01-17 18:30:21,328 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="674c0e96-e0b3-47d7-a0a8-7859b09581b5")>
+2025-01-17 18:30:21,329 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedFirefox (session="674c0e96-e0b3-47d7-a0a8-7859b09581b5")>
+2025-01-17 18:30:21,330 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 18:30:30,098 - tedata.utils.scraper.search - INFO - Home page at https://tradingeconomics.com loaded successfully! Search box element found.
+2025-01-17 18:30:32,964 - tedata.utils.scraper.search - DEBUG - Searching Trading Economics for: ISM Manufacturing
+2025-01-17 18:30:32,970 - tedata.utils.scraper.search - INFO - Clicking search box...
+2025-01-17 18:30:33,301 - tedata.utils.scraper.search - INFO - Entering search term: ISM Manufacturing
+2025-01-17 18:30:34,328 - tedata.utils.scraper.search - INFO - Submitting search...
+2025-01-17 18:30:37,505 - tedata.utils.scraper.search - DEBUG - Search for ISM Manufacturing completed successfully.
+2025-01-17 18:32:01,283 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-17 18:32:01.283056
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-17 18:32:01,283 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-17 18:32:04,538 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: firefox, headless: True, use_existing_driver: True
+2025-01-17 18:32:07,489 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="bdb74023-3db3-4c71-94a8-6d9152c05b18")>
+2025-01-17 18:32:07,489 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="bdb74023-3db3-4c71-94a8-6d9152c05b18")>
+2025-01-17 18:32:07,491 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedFirefox (session="bdb74023-3db3-4c71-94a8-6d9152c05b18")>
+2025-01-17 18:32:07,492 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-17 18:32:15,069 - tedata.utils.scraper.search - INFO - Home page at https://tradingeconomics.com loaded successfully! Search box element found.
+2025-01-17 18:32:19,275 - tedata.utils.scraper.search - DEBUG - Searching Trading Economics for: ISM Manufacturing
+2025-01-17 18:32:19,280 - tedata.utils.scraper.search - INFO - Clicking search box...
+2025-01-17 18:32:19,687 - tedata.utils.scraper.search - INFO - Entering search term: ISM Manufacturing
+2025-01-17 18:32:20,717 - tedata.utils.scraper.search - INFO - Submitting search...
+2025-01-17 18:32:23,793 - tedata.utils.scraper.search - DEBUG - Search for ISM Manufacturing completed successfully.

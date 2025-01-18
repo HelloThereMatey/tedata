@@ -12,8 +12,14 @@ import time
 import pandas as pd
 import os 
 import re 
-
+import gc
 import warnings
+import weakref
+
+from . import logger
+
+# Create module-specific logger
+logger = logger.getChild('utils')
 
 ##### Get the directory where this file is housed ########################
 wd = os.path.dirname(__file__)
@@ -265,10 +271,14 @@ class get_tooltip(object):
     def scrape_dates_from_tooltips(self, num_points: int = 10, x_increment: int = 1):
         """Scrape first and last data points using viewport coordinates.
         Also scrape dates from the first n points to determine time series frequency.
+
         **Parameters:**
+
         - num_points (int): The number of data points to scrape in addition to first and last points.
         - x_increment (int): The number of pixels to move cursor horizontally between points.
+
         **Returns:**
+
         - data_points (list): A list of dictionaries containing scraped data points.
         - num_points (int): The number of data points scraped."""
         
@@ -284,20 +294,20 @@ class get_tooltip(object):
         i = 0
         last_date = ""
         viewport_y = chart_rect['y'] + (chart_rect['height'] / 2)
-        last_x =  chart_rect['x'] + chart_rect['width']
+        first_x =  chart_rect['x']
         date_change = []
         just_run = False
         date_change_count = 0
 
-        while len(data_points) < num_points + 2:  #scrape first 10 points and then last point...
+        while len(data_points) < num_points + 2:  #scrape first num points and then last point...
             try: 
                 # Use ActionChains to move to absolute viewport position
                 actions = ActionChains(self.driver)
                 if len(data_points) == num_points + 1:
-                    print("Scraping the last point now at x = ", last_x)
-                    x_pos = last_x
+                    logger.info(f"Later points scraped successfully, scraping the oldest point now at x =  {first_x}")
+                    x_pos = first_x
                 else:
-                    x_pos = chart_rect['x'] + i*x_increment
+                    x_pos = chart_rect['x'] + chart_rect['width'] - (i*x_increment)
 
                 actions.move_by_offset(x_pos, viewport_y).perform()
                 actions.reset_actions()  # Reset for next move
@@ -315,7 +325,7 @@ class get_tooltip(object):
                     else:   
                         date_change.append(date_change_count)
                         date_change_count = 0
-                        # Here we're trying to find the average number f pixels needed to move betweeen dates from the 1st 3 points to speed up subsequent scraping.
+                        # Here we're trying to find the average number of pixels needed to move betweeen dates from the 1st 3 points to speed up subsequent scraping.
                         if len(date_change) == 3:
                             #print("Here's the date change list: ", date_change[1::])
                             av_incs = sum(date_change[1::])/2
@@ -328,8 +338,6 @@ class get_tooltip(object):
                     continue
 
                 if tooltip and date and value:
-                    #print(f"Found point data: {date}, {value}")
-
                     data_points.append({
                         'viewport_x': x_pos,
                         'viewport_y': viewport_y,
@@ -342,7 +350,8 @@ class get_tooltip(object):
                 
                 last_date = date
             except Exception as e:
-                print(f"Error scraping tooltip at ({x_pos}, {viewport_y}), error: {str(e)}")
+                logger.debug(f"Error scraping tooltip at ({x_pos}, {viewport_y}), error: {str(e)}, moving to next point..")
+                print(f"Error scraping tooltip at ({x_pos}, {viewport_y}), error: {str(e)}, moving to next point..")
                 continue
         
         return data_points, num_points
@@ -454,13 +463,25 @@ class get_tooltip(object):
                 #print(tooltip_text)
             return tooltip_text
         else:
-            print("Tooltip not found")
+            #print("Tooltip not found")
             return None
     
     def bail_out(self):
         self.driver.quit()
         return None
-    
+
+
+##### Webdriver classes ##############################################################
+class TimestampedFirefox(webdriver.Firefox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.created_at = time.time()
+
+class TimestampedChrome(webdriver.Chrome):   #Chrome can work for other things but it's not working for scraping Trading Economics charts at the moment....
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.created_at = time.time()
+
 class generic_webdriver(object):
     """Generic webdriver class for initializing a Selenium WebDriver"""
 
@@ -475,10 +496,7 @@ class generic_webdriver(object):
 
         if driver is None:
             if browser == "chrome":
-                options = webdriver.ChromeOptions()
-                if headless:
-                    options.add_argument('--headless')
-                self.driver = webdriver.Chrome(options=options)
+                self.driver = setup_chrome_driver(headless = headless)
             elif browser == "firefox":
                 options = webdriver.FirefoxOptions()
                 if headless:
@@ -490,3 +508,57 @@ class generic_webdriver(object):
             self.driver = driver
         
         self.wait = WebDriverWait(self.driver, timeout=10)
+        self.created_at = time.time()
+        self.driver.created_at = self.created_at
+
+### More utility functions ##############################################################
+
+def setup_chrome_driver(headless: bool = True):  #Been trying to get it running with Chrome as well but having issues still......
+    chrome_options = webdriver.ChromeOptions()
+    if headless:
+        chrome_options.add_argument("--headless")
+    # Disable notifications
+    chrome_options.add_argument("--disable-notifications")
+    # Additional preference to block notifications
+    prefs = {
+        "profile.default_content_setting_values.notifications": 2,
+        "profile.default_content_settings.popups": 0
+    }
+    chrome_options.add_experimental_option("prefs", prefs)
+    
+    # Initialize driver with options
+    driver = TimestampedChrome(options=chrome_options)
+    return driver
+
+def find_active_drivers(quit_all: bool = False) -> list:
+    """Find all active selenium webdriver instances in memory sorted by age.
+    
+    Args:
+        quit_all (bool): If True, quit all found drivers
+        
+    Returns:
+        list: List of tuples (driver, age_in_seconds) sorted by age, excluding weakproxies
+    """
+    active_drivers = []
+    current_time = time.time()
+    
+    for obj in gc.get_objects():
+        try:
+            if isinstance(obj, (TimestampedFirefox, TimestampedChrome)) and not isinstance(obj, weakref.ProxyType):
+                creation_time = getattr(obj, 'created_at', current_time)
+                age = current_time - creation_time
+                active_drivers.append((obj, age))
+        except ReferenceError:
+            continue
+    
+    # Sort by age (second element of tuple)
+    active_drivers.sort(key=lambda x: x[1])
+    
+    if quit_all:
+        for driver, _ in active_drivers:
+            try:
+                driver.quit()
+            except:
+                pass
+                
+    return active_drivers

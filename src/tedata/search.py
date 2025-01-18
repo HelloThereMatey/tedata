@@ -15,7 +15,11 @@ fdel= os.path.sep
 
 ## Import the TE_Scraper class from the scraper module ################
 from .scraper import scrape_chart
-    
+from . import utils
+from . import logger
+
+# Create module-specific logger
+logger = logger.getChild('search')
 
 ######## Search class to search Trading Economics website and extract search results ##############################
 class search_TE(object):
@@ -26,48 +30,81 @@ class search_TE(object):
     **Init Parameters:**
 
     - driver (webdriver): A Selenium WebDriver object, can put in an active one or make a new one for a new URL.
+    - use_existing_driver (bool): Whether to use an existing driver or make a new one.
     - browser (str): The browser to use for scraping, either 'chrome' or 'firefox'.
-    - search_term (str): The term to search for on the website.
+    - search_term (str): The term to search for on the website. Optional, can also provide it in the search_trading_economics method.
     - headless (bool): Whether to run the browser in headless mode (show no window).
     """
     # Define browser type with allowed values
     BrowserType = Literal["chrome", "firefox"]
     
     def __init__(self, driver: webdriver = None, 
+                 use_existing_driver: bool = False,
                  browser: BrowserType = "firefox", 
                  search_term: str = "US ISM Services PMI",
-                 headless: bool = True):
+                 headless: bool = True,
+                 load_homepage: bool = True):
         
         self.browser = browser
         self.headless = headless
 
-        if driver is None:
+        logger.debug(f"Initializing search object with browser: {browser}, headless: {headless}, use_existing_driver: {use_existing_driver}")
+        active = utils.find_active_drivers() 
+        if len(active) <= 1:
+            use_existing_driver = False
+
+        if driver is None and not use_existing_driver:
             if browser == "chrome":
-                options = webdriver.ChromeOptions()
-                if headless:
-                    options.add_argument('--headless')
-                self.driver = webdriver.Chrome(options=options)
+                print("Chrome browser not supported yet. Please use Firefox.")
+                # self.driver = utils.setup_chrome_driver(headless = headless)
             elif browser == "firefox":
                 options = webdriver.FirefoxOptions()
                 if headless:
                     options.add_argument('--headless')
-                self.driver = webdriver.Firefox(options=options)
+                self.driver = utils.TimestampedFirefox(options=options)
             else:
+                logger.debug(f"Error on driver initialization: Unsupported browser: {browser}")
                 raise ValueError("Unsupported browser! Use 'chrome' or 'firefox'.")
+            logger.debug(f"New webdriver object initialized: {self.driver}")
+            logger.info(f"New webdriver object initialized: {self.driver}")
+        elif use_existing_driver:   ## May want to change this later to make sure a scraper doesn't steal the driver from a search object.
+            self.driver = active[-1][0]
+            logger.debug(f"Using existing webdriver object: {self.driver}")
+            logger.info(f"Using existing webdriver object: {self.driver}")
         else:
             self.driver = driver
-
+            logger.debug(f"Using provided webdriver object: {self.driver}")
+            logger.info(f"Using provided webdriver object: {self.driver}")
+        
+        self.wait = WebDriverWait(self.driver, timeout=10)
+        logger.debug(f"Driver of search_TE object initialized: {self.driver}")
         self.search_term = search_term
-        self.home_page()
+        if load_homepage:
+            self.home_page()
 
-    def home_page(self):
-        """Load the Trading Economics home page."""
+    def home_page(self, timeout: int = 30):
+        """Load the Trading Economics home page.
+        :Parameters:
+        - timeout (int): The maximum time to wait for the page to load, in seconds.
+
+        """
         # Load page
         try:
-            print("Loading home page...")
+            logger.info("Loading home page at https://tradingeconomics.com/ ...")
             self.driver.get("https://tradingeconomics.com/")
+
+            # Wait for 5 seconds
+            time.sleep(5)
+            # Check if search box exists
+            search_box = self.driver.find_elements(By.ID, "thisIstheSearchBoxIdTag")
+            if search_box:
+                logger.info("Home page at https://tradingeconomics.com loaded successfully! Search box element found.")
+            else:
+                logger.info("Home page at https://tradingeconomics.com loaded successfully! Search box element not found though.")
+            
         except Exception as e:
-            print(f"Error occurred: {str(e)}")
+            logger.info(f"Error occurred, check internet connection. Error details: {str(e)}")
+            logger.debug(f"Error occurred, check internet connection. Error details: {str(e)}")
 
     def search_trading_economics(self, search_term: str = None):
         """Search Trading Economics website for a given term and extract URLs of search results.
@@ -89,24 +126,24 @@ class search_TE(object):
             search_term = self.search_term
         else:
             self.search_term = search_term
+        logger.debug(f"Searching Trading Economics for: {self.search_term}")
         
         try:
         # Wait for search box - using the ID from the HTML
-            search_box = WebDriverWait(self.driver, 10).until(
+            search_box = WebDriverWait(self.driver, 30).until(
                 EC.presence_of_element_located((By.ID, "thisIstheSearchBoxIdTag")))
    
-            
             # Click search box
-            print("Clicking search box...")
+            logger.info("Clicking search box...")
             search_box.click()
             
             # Enter search term
-            print(f"Entering search term: {search_term}")
+            logger.info(f"Entering search term: {search_term}")
             search_box.send_keys(search_term)
             time.sleep(1)  # Small delay to let suggestions appear
             
             # Press Enter
-            print("Submitting search...")
+            logger.info("Submitting search...")
             search_box.send_keys(Keys.RETURN)
             
             # Wait a moment to see results
@@ -114,9 +151,11 @@ class search_TE(object):
 
             self.results = self.extract_search_results(self.driver.page_source)
             self.results_table()
+            logger.debug(f"Search for {self.search_term} completed successfully.")
         
         except Exception as e:
-            print(f"Error occurred: {str(e)}")
+            logger.info(f"Error occurred: {str(e)}")
+            logger.debug(f"Error on search occurred: {str(e)}")
             return None
         
     def extract_search_results(self, html_content):
@@ -186,13 +225,18 @@ class search_TE(object):
 
         """
 
-        print("Attempting to scrape data for result ", result_num, ", ", self.result_table.loc[result_num, "country"], self.result_table.loc[result_num, "metric"] )
+        print("Attempting to scrape data for result ", result_num, ", ", self.result_table.loc[result_num, "country"], self.result_table.loc[result_num, "metric"])
+        logger.debug(f"Attempting to scrape data for result {result_num}, {self.result_table.loc[result_num, 'country']} {self.result_table.loc[result_num, 'metric']}")
         if hasattr(self, "result_table"):
             url = self.result_table.loc[result_num, "url"]
             print(f"Scraping data from: {url}")
             self.scraped_data = scrape_chart(url, driver = self.driver, headless=self.headless, browser=self.browser)
+            if self.scraped_data is not None:
+                print(f"Data scraped successfully from: {url}")
+                logger.debug(f"Data scraped successfully from: {url}")
             return self.scraped_data
         else:
-            print("No search results found.")
+            print("No search result found with the number specified: ", result_num)
+            logger.debug(f"No search result found with the number specified: {result_num}")
             return None
         
