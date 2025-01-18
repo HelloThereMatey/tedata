@@ -1,10 +1,10 @@
 # tedata
 
-Download data from Trading Economics without an account or API key. Uses Selenium and BeautifulSoup4 to scrape data directly from charts. Should run on linux, max OSX or windows.
+Download data from Trading Economics without an account or API key. Uses Selenium and BeautifulSoup4 to scrape data directly from charts. Should run on linux, mac OS or windows.
 
 ## System Requirements
 
-This package requires a browser that can be automated via selenium. **ONLY FIREFOX BROWSER IS CURRENTLY SUPPORTED**. Ensure that you have the latest stable version of Firefox installed in order to use this package.
+This package requires a browser that can be automated via selenium. **ONLY FIREFOX BROWSER IS CURRENTLY SUPPORTED**. Ensure that you have the latest stable version of Firefox installed in order to use this package. We should be able to add support for Chrome soon.
 
 - Firefox (version 115.0.0 or higher)
 - Python v3.9 or higher.

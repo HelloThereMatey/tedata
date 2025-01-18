@@ -15,14 +15,12 @@ dependencies = [
     "plotly>=5.18.0"
 ]
 
-[tool.poetry.dependencies.system]
-external = [
-    "firefox>=115.0.0 || google-chrome>=115.0.0"
-]
-
 [project.urls]
 "Firefox Download" = "https://www.mozilla.org/firefox/new/"
 "Chrome Download" = "https://www.google.com/chrome/"
+
+[project.scripts]
+tedata = "tedata.__main__:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
