@@ -1251,3 +1251,503 @@ Browsers:
 2025-01-17 18:32:19,687 - tedata.utils.scraper.search - INFO - Entering search term: ISM Manufacturing
 2025-01-17 18:32:20,717 - tedata.utils.scraper.search - INFO - Submitting search...
 2025-01-17 18:32:23,793 - tedata.utils.scraper.search - DEBUG - Search for ISM Manufacturing completed successfully.
+2025-01-18 11:23:10,140 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-18 11:23:10.140609
+User: jamesbishop
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-18 11:23:10,140 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-18 11:23:12,868 - tedata.utils.scraper - DEBUG - New firefox driver created.
+2025-01-18 11:23:15,260 - tedata.utils.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/china/foreign-exchange-reserves
+2025-01-18 11:23:15,260 - tedata.utils.scraper - INFO - WebPage at https://tradingeconomics.com/china/foreign-exchange-reserves loaded successfully.
+2025-01-18 11:23:20,353 - tedata.utils.scraper - INFO - Page at https://tradingeconomics.com/china/foreign-exchange-reserves loaded successfully.
+2025-01-18 11:23:20,359 - tedata.utils.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/china/foreign-exchange-reserves
+2025-01-18 11:23:20,362 - tedata.utils.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/china/foreign-exchange-reserves, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-18 11:23:21,654 - tedata.utils.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-18 11:23:21,654 - tedata.utils.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-18 11:23:23,657 - tedata.utils.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-18 11:23:24,668 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-18 11:23:24,687 - tedata.utils.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-18 11:23:24,688 - tedata.utils.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-18 11:23:24,689 - tedata.utils.scraper - DEBUG - xax: [25.0, 673.0]
+2025-01-18 11:23:24,691 - tedata.utils.scraper - DEBUG - y-axis labels: [-317000.0, 0.0, 798000.0, 1600000.0, 2390000.0, 3190000.0, 3990000.0, 4260000.0]
+2025-01-18 11:23:24,691 - tedata.utils.scraper - DEBUG - Average px per unit for y-axis: 15492.278962867198
+2025-01-18 11:23:24,701 - tedata.utils.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-18 11:23:24,701 - tedata.utils.scraper - INFO - Y-axis values scraped successfully.
+2025-01-18 11:23:24,706 - tedata.utils.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-18 11:23:24,711 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-18 11:23:24,735 - tedata.utils.scraper - DEBUG - Raw data series extracted successfully: 0.000000    61.171917
+0.000000    61.171917
+0.742899    61.171917
+1.238166    61.173916
+1.733432    61.175914
+Name: Extracted Series, dtype: float64
+2025-01-18 11:23:24,735 - tedata.utils.scraper - INFO - Raw data series extracted successfully.
+2025-01-18 11:23:32,178 - tedata.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-18 11:23:32,516 - tedata.utils.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-18 11:23:32,516 - tedata.utils.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-18 11:23:32,535 - tedata.utils.scraper - DEBUG - Time series frequency appears to be: 31, MS
+2025-01-18 11:23:32,535 - tedata.utils.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1980-07-01 00:00:00'), 'end_date': Timestamp('2024-12-01 00:00:00'), 'start_value': 3680.0, 'end_value': 3200000.0}
+2025-01-18 11:23:32,535 - tedata.utils.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1980-07-01 00:00:00'), 'end_date': Timestamp('2024-12-01 00:00:00'), 'start_value': 3680.0, 'end_value': 3200000.0}
+2025-01-18 11:23:32,556 - tedata.utils.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1980-07-01', '1980-08-01', '1980-09-01', '1980-10-01',
+               '1980-11-01', '1980-12-01', '1981-01-01', '1981-02-01',
+               '1981-03-01', '1981-04-01',
+               ...
+               '2024-03-01', '2024-04-01', '2024-05-01', '2024-06-01',
+               '2024-07-01', '2024-08-01', '2024-09-01', '2024-10-01',
+               '2024-11-01', '2024-12-01'],
+              dtype='datetime64[ns]', length=534, freq='MS')
+2025-01-18 11:23:32,556 - tedata.utils.scraper - INFO - Date index created successfully.
+2025-01-18 11:23:33,558 - tedata.utils.scraper - DEBUG - scale_series method: Start value, end value: 3680.0, 3200000.0, 61.17191726941002, 267.34373839128, 61.17191726941002, 267.34373839128
+2025-01-18 11:23:33,558 - tedata.utils.scraper - DEBUG - Start value, end value: 3680.0, 3200000.0, pix0, pix1: 61.17191726941002, 267.34373839128, data units per chart pixel from start & end points: 15503.185559536902, unit_per_pix calculated from the y axis ticks: 15492.278962867198, inverse of that: 6.454828256041984e-05, unit_per_pix from axis limits and self.y_axis (probably best way): 15515.254237288136
+2025-01-18 11:23:33,582 - tedata.utils.scraper - INFO - Successfully scaled series.
+2025-01-18 11:23:33,582 - tedata.utils.scraper - DEBUG - Successfully scaled series.
+2025-01-18 12:47:11,545 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-18 12:47:11.545765
+User: jamesbishop
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-18 12:47:11,545 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-18 12:47:14,086 - tedata.utils.scraper - DEBUG - New firefox driver created.
+2025-01-18 12:47:21,966 - tedata.utils.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/china/foreign-exchange-reserves
+2025-01-18 12:47:21,966 - tedata.utils.scraper - INFO - WebPage at https://tradingeconomics.com/china/foreign-exchange-reserves loaded successfully.
+2025-01-18 12:47:27,053 - tedata.utils.scraper - INFO - Page at https://tradingeconomics.com/china/foreign-exchange-reserves loaded successfully.
+2025-01-18 12:47:27,053 - tedata.utils.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/china/foreign-exchange-reserves
+2025-01-18 12:47:27,055 - tedata.utils.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/china/foreign-exchange-reserves, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-18 12:47:28,359 - tedata.utils.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-18 12:47:28,359 - tedata.utils.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-18 12:47:30,362 - tedata.utils.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-18 12:47:31,372 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-18 12:47:31,390 - tedata.utils.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-18 12:47:31,392 - tedata.utils.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-18 12:47:31,392 - tedata.utils.scraper - DEBUG - xax: [25.0, 673.0]
+2025-01-18 12:47:31,394 - tedata.utils.scraper - DEBUG - y-axis labels: [-317000.0, 0.0, 798000.0, 1600000.0, 2390000.0, 3190000.0, 3990000.0, 4260000.0]
+2025-01-18 12:47:31,394 - tedata.utils.scraper - DEBUG - Average px per unit for y-axis: 15492.278962867198
+2025-01-18 12:47:31,395 - tedata.utils.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-18 12:47:31,395 - tedata.utils.scraper - INFO - Y-axis values scraped successfully.
+2025-01-18 12:47:31,400 - tedata.utils.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-18 12:47:31,403 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-18 12:47:31,415 - tedata.utils.scraper - DEBUG - Raw data series extracted successfully: 0.000000    61.171917
+0.000000    61.171917
+0.742899    61.171917
+1.238166    61.173916
+1.733432    61.175914
+Name: Extracted Series, dtype: float64
+2025-01-18 12:47:31,415 - tedata.utils.scraper - INFO - Raw data series extracted successfully.
+2025-01-18 12:47:38,810 - tedata.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-18 12:47:39,141 - tedata.utils.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-18 12:47:39,141 - tedata.utils.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-18 12:47:39,142 - tedata.utils.scraper - DEBUG - Time series frequency appears to be: 31, MS
+2025-01-18 12:47:39,143 - tedata.utils.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1980-07-01 00:00:00'), 'end_date': Timestamp('2024-12-01 00:00:00'), 'start_value': 3680.0, 'end_value': 3200000.0}
+2025-01-18 12:47:39,143 - tedata.utils.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1980-07-01 00:00:00'), 'end_date': Timestamp('2024-12-01 00:00:00'), 'start_value': 3680.0, 'end_value': 3200000.0}
+2025-01-18 12:47:39,150 - tedata.utils.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1980-07-01', '1980-08-01', '1980-09-01', '1980-10-01',
+               '1980-11-01', '1980-12-01', '1981-01-01', '1981-02-01',
+               '1981-03-01', '1981-04-01',
+               ...
+               '2024-03-01', '2024-04-01', '2024-05-01', '2024-06-01',
+               '2024-07-01', '2024-08-01', '2024-09-01', '2024-10-01',
+               '2024-11-01', '2024-12-01'],
+              dtype='datetime64[ns]', length=534, freq='MS')
+2025-01-18 12:47:39,150 - tedata.utils.scraper - INFO - Date index created successfully.
+2025-01-18 12:47:40,152 - tedata.utils.scraper - DEBUG - scale_series method: Start value, end value: 3680.0, 3200000.0, 61.17191726941002, 267.34373839128, 61.17191726941002, 267.34373839128
+2025-01-18 12:47:40,152 - tedata.utils.scraper - DEBUG - Start value, end value: 3680.0, 3200000.0, pix0, pix1: 61.17191726941002, 267.34373839128, data units per chart pixel from start & end points: 15503.185559536902, unit_per_pix calculated from the y axis ticks: 15492.278962867198, inverse of that: 6.454828256041984e-05, unit_per_pix from axis limits and self.y_axis (probably best way): 15515.254237288136
+2025-01-18 12:47:40,180 - tedata.utils.scraper - INFO - Successfully scaled series.
+2025-01-18 12:47:40,180 - tedata.utils.scraper - DEBUG - Successfully scaled series.
+2025-01-18 12:47:40,190 - tedata.utils.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-18 12:47:40,205 - tedata.utils.scraper - DEBUG - Metadata scraped successfully: {'units': 'USD Million', 'original_source': "People's Bank of China", 'title': 'China Foreign Exchange Reserves', 'indicator': 'foreign exchange reserves', 'country': 'china', 'length': 534, 'frequency': 'MS', 'source': 'Trading Economics', 'id': 'china/foreign-exchange-reserves', 'start_date': '1980-07-01', 'end_date': '2024-12-01', 'min_value': 2260.7829469115727, 'max_value': 3993821.966750353, 'description': 'In China, Foreign Exchange Reserves are the foreign assets held or controlled by the country central bank. The reserves are made of gold or a specific currency. They can also be special drawing rights and marketable securities denominated in foreign currencies like treasury bills, government bonds, corporate bonds and equities and foreign currency loans.'}
+2025-01-18 12:47:40,206 - tedata.utils.scraper - DEBUG - Scraping complete, data series retrieved successfully from chart at: https://tradingeconomics.com/china/foreign-exchange-reserves
+2025-01-18 12:50:49,081 - tedata.utils.scraper.search - DEBUG - Attempting to scrape data for result 1, united states ism manufacturing new orders
+2025-01-18 12:50:49,220 - tedata.utils.scraper.search.scraper - DEBUG - Using supplied driver.
+2025-01-18 12:50:51,638 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-18 12:50:51,638 - tedata.utils.scraper.search.scraper - INFO - WebPage at https://tradingeconomics.com/united-states/ism-manufacturing-new-orders loaded successfully.
+2025-01-18 12:50:56,890 - tedata.utils.scraper.search.scraper - INFO - Page at https://tradingeconomics.com/united-states/ism-manufacturing-new-orders loaded successfully.
+2025-01-18 12:50:56,891 - tedata.utils.scraper.search.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-18 12:50:56,893 - tedata.utils.scraper.search.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-18 12:50:58,181 - tedata.utils.scraper.search.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-18 12:50:58,182 - tedata.utils.scraper.search.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-18 12:51:00,188 - tedata.utils.scraper.search.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-18 12:51:01,196 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-18 12:51:01,223 - tedata.utils.scraper.search.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-18 12:51:01,225 - tedata.utils.scraper.search.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-18 12:51:01,225 - tedata.utils.scraper.search.scraper - DEBUG - xax: [25.0, 698.0]
+2025-01-18 12:51:01,227 - tedata.utils.scraper.search.scraper - DEBUG - y-axis labels: [19.0, 29.0, 41.0, 53.0, 65.0, 77.0, 87.0]
+2025-01-18 12:51:01,227 - tedata.utils.scraper.search.scraper - DEBUG - Average px per unit for y-axis: 0.2297589422424877
+2025-01-18 12:51:01,228 - tedata.utils.scraper.search.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-18 12:51:01,228 - tedata.utils.scraper.search.scraper - INFO - Y-axis values scraped successfully.
+2025-01-18 12:51:01,232 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-18 12:51:01,238 - tedata.utils.scraper.search.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-18 12:51:01,274 - tedata.utils.scraper.search.scraper - DEBUG - Raw data series extracted successfully: 0.000000    228.345588
+0.000000    228.345588
+0.457472    229.213235
+0.762453    229.213235
+1.037920    229.213235
+Name: Extracted Series, dtype: float64
+2025-01-18 12:51:01,274 - tedata.utils.scraper.search.scraper - INFO - Raw data series extracted successfully.
+2025-01-18 12:51:08,645 - tedata.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-18 12:51:08,999 - tedata.utils.scraper.search.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-18 12:51:09,000 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-18 12:51:09,002 - tedata.utils.scraper.search.scraper - DEBUG - Time series frequency appears to be: 31, MS
+2025-01-18 12:51:09,002 - tedata.utils.scraper.search.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1950-01-01 00:00:00'), 'end_date': Timestamp('2024-12-01 00:00:00'), 'start_value': 62.3, 'end_value': 52.5}
+2025-01-18 12:51:09,005 - tedata.utils.scraper.search.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1950-01-01 00:00:00'), 'end_date': Timestamp('2024-12-01 00:00:00'), 'start_value': 62.3, 'end_value': 52.5}
+2025-01-18 12:51:09,020 - tedata.utils.scraper.search.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1950-01-01', '1950-02-01', '1950-03-01', '1950-04-01',
+               '1950-05-01', '1950-06-01', '1950-07-01', '1950-08-01',
+               '1950-09-01', '1950-10-01',
+               ...
+               '2024-03-01', '2024-04-01', '2024-05-01', '2024-06-01',
+               '2024-07-01', '2024-08-01', '2024-09-01', '2024-10-01',
+               '2024-11-01', '2024-12-01'],
+              dtype='datetime64[ns]', length=900, freq='MS')
+2025-01-18 12:51:09,020 - tedata.utils.scraper.search.scraper - INFO - Date index created successfully.
+2025-01-18 12:51:10,025 - tedata.utils.scraper.search.scraper - DEBUG - scale_series method: Start value, end value: 62.3, 52.5, 228.34558823529, 185.83088235294, 228.34558823529, 185.83088235294
+2025-01-18 12:51:10,025 - tedata.utils.scraper.search.scraper - DEBUG - Start value, end value: 62.3, 52.5, pix0, pix1: 228.34558823529, 185.83088235294, data units per chart pixel from start & end points: 0.23050847457628706, unit_per_pix calculated from the y axis ticks: 0.2297589422424877, inverse of that: 4.352387725325613, unit_per_pix from axis limits and self.y_axis (probably best way): 0.2305084745762712
+2025-01-18 12:51:10,078 - tedata.utils.scraper.search.scraper - INFO - Successfully scaled series.
+2025-01-18 12:51:10,079 - tedata.utils.scraper.search.scraper - DEBUG - Successfully scaled series.
+2025-01-18 12:51:10,081 - tedata.utils.scraper.search.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-18 12:51:10,109 - tedata.utils.scraper.search.scraper - DEBUG - Metadata scraped successfully: {'units': 'points', 'original_source': 'Institute for Supply Management', 'title': 'United States ISM Manufacturing New Orders', 'indicator': 'ism manufacturing new orders', 'country': 'united states', 'length': 900, 'frequency': 'MS', 'source': 'Trading Economics', 'id': 'united-states/ism-manufacturing-new-orders', 'start_date': '1950-01-01', 'end_date': '2024-12-01', 'min_value': 24.200000000000998, 'max_value': 82.6000000000004, 'description': "The Manufacturing ISM Report On Business is based on data compiled from purchasing and supply executives nationwide. Survey responses reflect the change, if any, in the current month compared to the previous month. For each of the indicators measured (New Orders, Backlog of Orders, New Export Orders, Imports, Production, Supplier Deliveries, Inventories, Customers' Inventories, Employment and Prices), the report shows the percentage reporting each response, the net difference between the number of responses in the positive economic direction and the negative economic direction, and the diffusion index. A PMI reading above 50 percent indicates that the manufacturing economy is generally expanding; below 50 percent indicates that it is generally declining."}
+2025-01-18 12:51:10,112 - tedata.utils.scraper.search.scraper - DEBUG - Scraping complete, data series retrieved successfully from chart at: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-18 12:51:10,112 - tedata.utils.scraper.search - DEBUG - Data scraped successfully from: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-19 11:45:47,956 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-19 11:45:47.956634
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-19 11:45:47,956 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-19 11:45:48,029 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: firefox, headless: True, use_existing_driver: True
+2025-01-19 11:45:52,159 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="5858f40d-e2bc-443b-888d-45cbb18caae8")>
+2025-01-19 11:45:52,160 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="5858f40d-e2bc-443b-888d-45cbb18caae8")>
+2025-01-19 11:45:52,161 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedFirefox (session="5858f40d-e2bc-443b-888d-45cbb18caae8")>
+2025-01-19 11:45:52,161 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-19 11:45:59,995 - tedata.utils.scraper.search - INFO - Home page at https://tradingeconomics.com loaded successfully! Search box element found.
+2025-01-19 11:46:00,127 - tedata.utils.scraper.search - DEBUG - Searching Trading Economics for: ISM Manufacturing
+2025-01-19 11:46:00,132 - tedata.utils.scraper.search - INFO - Clicking search box...
+2025-01-19 11:46:00,449 - tedata.utils.scraper.search - INFO - Entering search term: ISM Manufacturing
+2025-01-19 11:46:01,484 - tedata.utils.scraper.search - INFO - Submitting search...
+2025-01-19 11:46:04,565 - tedata.utils.scraper.search - DEBUG - Search for ISM Manufacturing completed successfully.
+2025-01-19 11:46:04,790 - tedata.utils.scraper.search - DEBUG - Attempting to scrape data for result 1, united states ism manufacturing new orders
+2025-01-19 11:46:04,890 - tedata.utils.scraper - DEBUG - Using supplied driver.
+2025-01-19 11:46:05,415 - tedata.utils.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-19 11:46:05,415 - tedata.utils.scraper - INFO - WebPage at https://tradingeconomics.com/united-states/ism-manufacturing-new-orders loaded successfully.
+2025-01-19 11:46:10,612 - tedata.utils.scraper - INFO - Page at https://tradingeconomics.com/united-states/ism-manufacturing-new-orders loaded successfully.
+2025-01-19 11:46:10,613 - tedata.utils.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-19 11:46:10,617 - tedata.utils.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-19 11:46:11,915 - tedata.utils.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-19 11:46:11,916 - tedata.utils.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-19 11:46:13,921 - tedata.utils.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-19 11:46:14,926 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-19 11:46:14,948 - tedata.utils.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-19 11:46:14,950 - tedata.utils.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-19 11:46:14,950 - tedata.utils.scraper - DEBUG - xax: [25.0, 698.0]
+2025-01-19 11:46:14,951 - tedata.utils.scraper - DEBUG - y-axis labels: [19.0, 29.0, 41.0, 53.0, 65.0, 77.0, 87.0]
+2025-01-19 11:46:14,952 - tedata.utils.scraper - DEBUG - Average px per unit for y-axis: 0.2297589422424877
+2025-01-19 11:46:14,952 - tedata.utils.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-19 11:46:14,952 - tedata.utils.scraper - INFO - Y-axis values scraped successfully.
+2025-01-19 11:46:14,956 - tedata.utils.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-19 11:46:14,960 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-19 11:46:14,993 - tedata.utils.scraper - DEBUG - Raw data series extracted successfully: 0.000000    228.345588
+0.000000    228.345588
+0.457472    229.213235
+0.762453    229.213235
+1.037920    229.213235
+Name: Extracted Series, dtype: float64
+2025-01-19 11:46:14,993 - tedata.utils.scraper - INFO - Raw data series extracted successfully.
+2025-01-19 11:46:22,412 - tedata.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-19 11:46:22,764 - tedata.utils.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-19 11:46:22,765 - tedata.utils.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-19 11:46:22,776 - tedata.utils.scraper - DEBUG - Time series frequency appears to be: 31, MS
+2025-01-19 11:46:22,776 - tedata.utils.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1950-01-01 00:00:00'), 'end_date': Timestamp('2024-12-01 00:00:00'), 'start_value': 62.3, 'end_value': 52.5}
+2025-01-19 11:46:22,777 - tedata.utils.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1950-01-01 00:00:00'), 'end_date': Timestamp('2024-12-01 00:00:00'), 'start_value': 62.3, 'end_value': 52.5}
+2025-01-19 11:46:22,795 - tedata.utils.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1950-01-01', '1950-02-01', '1950-03-01', '1950-04-01',
+               '1950-05-01', '1950-06-01', '1950-07-01', '1950-08-01',
+               '1950-09-01', '1950-10-01',
+               ...
+               '2024-03-01', '2024-04-01', '2024-05-01', '2024-06-01',
+               '2024-07-01', '2024-08-01', '2024-09-01', '2024-10-01',
+               '2024-11-01', '2024-12-01'],
+              dtype='datetime64[ns]', length=900, freq='MS')
+2025-01-19 11:46:22,795 - tedata.utils.scraper - INFO - Date index created successfully.
+2025-01-19 11:46:23,797 - tedata.utils.scraper - DEBUG - scale_series method: Start value, end value: 62.3, 52.5, 228.34558823529, 185.83088235294, 228.34558823529, 185.83088235294
+2025-01-19 11:46:23,798 - tedata.utils.scraper - DEBUG - Start value, end value: 62.3, 52.5, pix0, pix1: 228.34558823529, 185.83088235294, data units per chart pixel from start & end points: 0.23050847457628706, unit_per_pix calculated from the y axis ticks: 0.2297589422424877, inverse of that: 4.352387725325613, unit_per_pix from axis limits and self.y_axis (probably best way): 0.2305084745762712
+2025-01-19 11:46:23,839 - tedata.utils.scraper - INFO - Successfully scaled series.
+2025-01-19 11:46:23,840 - tedata.utils.scraper - DEBUG - Successfully scaled series.
+2025-01-19 11:46:23,842 - tedata.utils.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-19 11:46:23,856 - tedata.utils.scraper - DEBUG - Metadata scraped successfully: {'units': 'points', 'original_source': 'Institute for Supply Management', 'title': 'United States ISM Manufacturing New Orders', 'indicator': 'ism manufacturing new orders', 'country': 'united states', 'length': 900, 'frequency': 'MS', 'source': 'Trading Economics', 'id': 'united-states/ism-manufacturing-new-orders', 'start_date': '1950-01-01', 'end_date': '2024-12-01', 'min_value': 24.200000000000998, 'max_value': 82.6000000000004, 'description': "The Manufacturing ISM Report On Business is based on data compiled from purchasing and supply executives nationwide. Survey responses reflect the change, if any, in the current month compared to the previous month. For each of the indicators measured (New Orders, Backlog of Orders, New Export Orders, Imports, Production, Supplier Deliveries, Inventories, Customers' Inventories, Employment and Prices), the report shows the percentage reporting each response, the net difference between the number of responses in the positive economic direction and the negative economic direction, and the diffusion index. A PMI reading above 50 percent indicates that the manufacturing economy is generally expanding; below 50 percent indicates that it is generally declining."}
+2025-01-19 11:46:23,856 - tedata.utils.scraper - DEBUG - Scraping complete, data series retrieved successfully from chart at: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-19 11:46:23,856 - tedata.utils.scraper.search - DEBUG - Data scraped successfully from: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-19 11:46:37,168 - tedata.utils.scraper - DEBUG - New firefox driver created.
+2025-01-19 11:46:39,869 - tedata.utils.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/corporate-profits
+2025-01-19 11:46:39,869 - tedata.utils.scraper - INFO - WebPage at https://tradingeconomics.com/united-states/corporate-profits loaded successfully.
+2025-01-19 11:46:45,095 - tedata.utils.scraper - INFO - Page at https://tradingeconomics.com/united-states/corporate-profits loaded successfully.
+2025-01-19 11:46:45,098 - tedata.utils.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/united-states/corporate-profits
+2025-01-19 11:46:45,100 - tedata.utils.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/corporate-profits, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-19 11:46:46,534 - tedata.utils.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-19 11:46:46,543 - tedata.utils.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-19 11:46:48,547 - tedata.utils.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-19 11:46:49,553 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-19 11:46:49,575 - tedata.utils.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-19 11:46:49,577 - tedata.utils.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-19 11:46:49,577 - tedata.utils.scraper - DEBUG - xax: [25.0, 684.0]
+2025-01-19 11:46:49,579 - tedata.utils.scraper - DEBUG - y-axis labels: [-200.0, 0.0, 600.0, 1200.0, 1800.0, 2400.0, 3000.0, 3400.0]
+2025-01-19 11:46:49,580 - tedata.utils.scraper - DEBUG - Average px per unit for y-axis: 13.123134968273023
+2025-01-19 11:46:49,581 - tedata.utils.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-19 11:46:49,581 - tedata.utils.scraper - INFO - Y-axis values scraped successfully.
+2025-01-19 11:46:49,584 - tedata.utils.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-19 11:46:49,590 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-19 11:46:49,615 - tedata.utils.scraper - DEBUG - Raw data series extracted successfully: 0.000000    57.704974
+0.000000    57.704974
+1.284991    57.981864
+2.141651    58.003579
+2.998311    58.025294
+Name: Extracted Series, dtype: float64
+2025-01-19 11:46:49,615 - tedata.utils.scraper - INFO - Raw data series extracted successfully.
+2025-01-19 11:46:57,148 - tedata.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-19 11:46:57,498 - tedata.utils.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-19 11:46:57,499 - tedata.utils.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-19 11:46:57,500 - tedata.utils.scraper - DEBUG - Time series frequency appears to be: 91, QS
+2025-01-19 11:46:57,500 - tedata.utils.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-19 11:46:57,501 - tedata.utils.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-19 11:46:57,514 - tedata.utils.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1947-01-01', '1947-04-01', '1947-07-01', '1947-10-01',
+               '1948-01-01', '1948-04-01', '1948-07-01', '1948-10-01',
+               '1949-01-01', '1949-04-01',
+               ...
+               '2022-04-01', '2022-07-01', '2022-10-01', '2023-01-01',
+               '2023-04-01', '2023-07-01', '2023-10-01', '2024-01-01',
+               '2024-04-01', '2024-07-01'],
+              dtype='datetime64[ns]', length=311, freq='QS-JAN')
+2025-01-19 11:46:57,515 - tedata.utils.scraper - INFO - Date index created successfully.
+2025-01-19 11:46:58,520 - tedata.utils.scraper - DEBUG - scale_series method: Start value, end value: 9.959, 3130.0, 57.70497361111097, 313.25208333333, 57.70497361111097, 313.25208333333
+2025-01-19 11:46:58,521 - tedata.utils.scraper - DEBUG - Start value, end value: 9.959, 3130.0, pix0, pix1: 57.70497361111097, 313.25208333333, data units per chart pixel from start & end points: 12.209259589715181, unit_per_pix calculated from the y axis ticks: 13.123134968273023, inverse of that: 0.07620130421714301, unit_per_pix from axis limits and self.y_axis (probably best way): 12.203389830508474
+2025-01-19 11:46:58,539 - tedata.utils.scraper - INFO - Successfully scaled series.
+2025-01-19 11:46:58,540 - tedata.utils.scraper - DEBUG - Successfully scaled series.
+2025-01-19 11:46:58,541 - tedata.utils.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-19 11:46:58,557 - tedata.utils.scraper - DEBUG - Metadata scraped successfully: {'units': 'USD Billion', 'original_source': 'U.S. Bureau of Economics Analysis', 'title': 'United States Corporate Profits', 'indicator': 'corporate profits', 'country': 'united states', 'length': 311, 'frequency': 'QS', 'source': 'Trading Economics', 'id': 'united-states/corporate-profits', 'start_date': '1947-01-01', 'end_date': '2024-07-01', 'min_value': 9.959, 'max_value': 3141.5569999999475, 'description': 'Corporate profits represents the portion of the total income earned from current production that is accounted for by U.S. corporations. It is one of the most closely watched U.S. economic indicators, as it provides a summary measure of corporate financial health and thus serves as an essential indicator of economic performance.'}
+2025-01-19 11:46:58,557 - tedata.utils.scraper - DEBUG - Scraping complete, data series retrieved successfully from chart at: https://tradingeconomics.com/united-states/corporate-profits
+2025-01-19 11:46:59,097 - tedata.utils.scraper - DEBUG - Using existing firefox driver.
+2025-01-19 11:46:59,689 - tedata.utils.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/corporate-profits
+2025-01-19 11:46:59,689 - tedata.utils.scraper - INFO - WebPage at https://tradingeconomics.com/united-states/corporate-profits loaded successfully.
+2025-01-19 11:47:04,927 - tedata.utils.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/corporate-profits, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-19 11:47:06,197 - tedata.utils.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-19 11:47:06,198 - tedata.utils.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-19 11:47:08,208 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-19 11:47:08,227 - tedata.utils.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-19 11:47:08,228 - tedata.utils.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-19 11:47:08,228 - tedata.utils.scraper - DEBUG - xax: [25.0, 684.0]
+2025-01-19 11:47:08,229 - tedata.utils.scraper - DEBUG - y-axis labels: [-200.0, 0.0, 600.0, 1200.0, 1800.0, 2400.0, 3000.0, 3400.0]
+2025-01-19 11:47:08,229 - tedata.utils.scraper - DEBUG - Average px per unit for y-axis: 13.123134968273023
+2025-01-19 11:47:08,230 - tedata.utils.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-19 11:47:08,230 - tedata.utils.scraper - INFO - Y-axis values scraped successfully.
+2025-01-19 11:47:08,234 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-19 11:47:08,244 - tedata.utils.scraper - DEBUG - Raw data series extracted successfully: 0.000000    57.704974
+0.000000    57.704974
+1.284991    57.981864
+2.141651    58.003579
+2.998311    58.025294
+Name: Extracted Series, dtype: float64
+2025-01-19 11:47:08,244 - tedata.utils.scraper - INFO - Raw data series extracted successfully.
+2025-01-19 11:47:14,867 - tedata.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-19 11:47:15,210 - tedata.utils.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-19 11:47:15,211 - tedata.utils.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-19 11:47:15,213 - tedata.utils.scraper - DEBUG - Time series frequency appears to be: 91, QS
+2025-01-19 11:47:15,213 - tedata.utils.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-19 11:47:15,214 - tedata.utils.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-19 11:47:15,219 - tedata.utils.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1947-01-01', '1947-04-01', '1947-07-01', '1947-10-01',
+               '1948-01-01', '1948-04-01', '1948-07-01', '1948-10-01',
+               '1949-01-01', '1949-04-01',
+               ...
+               '2022-04-01', '2022-07-01', '2022-10-01', '2023-01-01',
+               '2023-04-01', '2023-07-01', '2023-10-01', '2024-01-01',
+               '2024-04-01', '2024-07-01'],
+              dtype='datetime64[ns]', length=311, freq='QS-JAN')
+2025-01-19 11:47:15,220 - tedata.utils.scraper - INFO - Date index created successfully.
+2025-01-19 11:47:15,295 - tedata.utils.scraper - DEBUG - scale_series method: Start value, end value: 9.959, 3130.0, 57.70497361111097, 313.25208333333, 57.70497361111097, 313.25208333333
+2025-01-19 11:47:15,296 - tedata.utils.scraper - DEBUG - Start value, end value: 9.959, 3130.0, pix0, pix1: 57.70497361111097, 313.25208333333, data units per chart pixel from start & end points: 12.209259589715181, unit_per_pix calculated from the y axis ticks: 13.123134968273023, inverse of that: 0.07620130421714301, unit_per_pix from axis limits and self.y_axis (probably best way): 12.203389830508474
+2025-01-19 11:47:15,484 - tedata.utils.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-19 11:47:15,500 - tedata.utils.scraper - DEBUG - Metadata scraped successfully: {'units': 'USD Billion', 'original_source': 'U.S. Bureau of Economics Analysis', 'title': 'United States Corporate Profits', 'indicator': 'corporate profits', 'country': 'united states', 'length': 311, 'frequency': 'QS', 'source': 'Trading Economics', 'id': 'united-states/corporate-profits', 'start_date': '1947-01-01', 'end_date': '2024-07-01', 'min_value': 9.959, 'max_value': 3141.5569999999475, 'description': 'Corporate profits represents the portion of the total income earned from current production that is accounted for by U.S. corporations. It is one of the most closely watched U.S. economic indicators, as it provides a summary measure of corporate financial health and thus serves as an essential indicator of economic performance.'}
+2025-01-19 13:21:49,896 - tedata.utils.scraper.search.scraper - INFO - Plot saved as plot.png
+2025-01-19 13:25:39,150 - tedata.utils.scraper.search.scraper - INFO - Plot saved as /Users/jamesbishop/Documents/Python/Scraping/tedata/tests/plot.png.html
+2025-01-19 13:26:28,854 - tedata.utils.scraper.search.scraper - INFO - Plot saved as /Users/jamesbishop/Documents/Python/Scraping/tedata/tests/plot.html
+2025-01-19 13:27:12,395 - tedata.utils.scraper.search.scraper - INFO - Plot saved as plot
+2025-01-19 13:42:55,711 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-19 13:42:55.711530
+User: root
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-19 13:42:55,711 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-19 13:42:55,798 - tedata.utils.scraper.search - DEBUG - Initializing search object with browser: firefox, headless: True, use_existing_driver: True
+2025-01-19 13:42:58,619 - tedata.utils.scraper.search - DEBUG - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="5d38cacc-f9d7-4e51-9a87-ac9da24c4fa3")>
+2025-01-19 13:42:58,620 - tedata.utils.scraper.search - INFO - New webdriver object initialized: <tedata.utils.TimestampedFirefox (session="5d38cacc-f9d7-4e51-9a87-ac9da24c4fa3")>
+2025-01-19 13:42:58,622 - tedata.utils.scraper.search - DEBUG - Driver of search_TE object initialized: <tedata.utils.TimestampedFirefox (session="5d38cacc-f9d7-4e51-9a87-ac9da24c4fa3")>
+2025-01-19 13:42:58,623 - tedata.utils.scraper.search - INFO - Loading home page at https://tradingeconomics.com/ ...
+2025-01-19 13:43:06,423 - tedata.utils.scraper.search - INFO - Home page at https://tradingeconomics.com loaded successfully! Search box element found.
+2025-01-19 13:43:06,561 - tedata.utils.scraper.search - DEBUG - Searching Trading Economics for: ISM Manufacturing
+2025-01-19 13:43:06,565 - tedata.utils.scraper.search - INFO - Clicking search box...
+2025-01-19 13:43:06,866 - tedata.utils.scraper.search - INFO - Entering search term: ISM Manufacturing
+2025-01-19 13:43:07,886 - tedata.utils.scraper.search - INFO - Submitting search...
+2025-01-19 13:43:10,960 - tedata.utils.scraper.search - DEBUG - Search for ISM Manufacturing completed successfully.
+2025-01-19 13:43:11,145 - tedata.utils.scraper.search - DEBUG - Attempting to scrape data for result 1, united states ism manufacturing new orders
+2025-01-19 13:43:11,237 - tedata.utils.scraper - DEBUG - Using supplied driver.
+2025-01-19 13:43:11,992 - tedata.utils.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-19 13:43:11,992 - tedata.utils.scraper - INFO - WebPage at https://tradingeconomics.com/united-states/ism-manufacturing-new-orders loaded successfully.
+2025-01-19 13:43:17,177 - tedata.utils.scraper - INFO - Page at https://tradingeconomics.com/united-states/ism-manufacturing-new-orders loaded successfully.
+2025-01-19 13:43:17,177 - tedata.utils.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-19 13:43:17,180 - tedata.utils.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-19 13:43:18,462 - tedata.utils.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-19 13:43:18,463 - tedata.utils.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(5)
+2025-01-19 13:43:20,466 - tedata.utils.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-19 13:43:21,473 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-19 13:43:21,494 - tedata.utils.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-19 13:43:21,496 - tedata.utils.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-19 13:43:21,496 - tedata.utils.scraper - DEBUG - xax: [25.0, 698.0]
+2025-01-19 13:43:21,498 - tedata.utils.scraper - DEBUG - y-axis labels: [19.0, 29.0, 41.0, 53.0, 65.0, 77.0, 87.0]
+2025-01-19 13:43:21,498 - tedata.utils.scraper - DEBUG - Average px per unit for y-axis: 0.2297589422424877
+2025-01-19 13:43:21,499 - tedata.utils.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-19 13:43:21,499 - tedata.utils.scraper - INFO - Y-axis values scraped successfully.
+2025-01-19 13:43:21,501 - tedata.utils.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-19 13:43:21,504 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-19 13:43:21,527 - tedata.utils.scraper - DEBUG - Raw data series extracted successfully: 0.000000    228.345588
+0.000000    228.345588
+0.457472    229.213235
+0.762453    229.213235
+1.037920    229.213235
+Name: Extracted Series, dtype: float64
+2025-01-19 13:43:21,528 - tedata.utils.scraper - INFO - Raw data series extracted successfully.
+2025-01-19 13:43:28,790 - tedata.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-19 13:43:29,144 - tedata.utils.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-19 13:43:29,144 - tedata.utils.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-19 13:43:29,146 - tedata.utils.scraper - DEBUG - Time series frequency appears to be: 31, MS
+2025-01-19 13:43:29,146 - tedata.utils.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1950-01-01 00:00:00'), 'end_date': Timestamp('2024-12-01 00:00:00'), 'start_value': 62.3, 'end_value': 52.5}
+2025-01-19 13:43:29,147 - tedata.utils.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1950-01-01 00:00:00'), 'end_date': Timestamp('2024-12-01 00:00:00'), 'start_value': 62.3, 'end_value': 52.5}
+2025-01-19 13:43:29,160 - tedata.utils.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1950-01-01', '1950-02-01', '1950-03-01', '1950-04-01',
+               '1950-05-01', '1950-06-01', '1950-07-01', '1950-08-01',
+               '1950-09-01', '1950-10-01',
+               ...
+               '2024-03-01', '2024-04-01', '2024-05-01', '2024-06-01',
+               '2024-07-01', '2024-08-01', '2024-09-01', '2024-10-01',
+               '2024-11-01', '2024-12-01'],
+              dtype='datetime64[ns]', length=900, freq='MS')
+2025-01-19 13:43:29,160 - tedata.utils.scraper - INFO - Date index created successfully.
+2025-01-19 13:43:30,165 - tedata.utils.scraper - DEBUG - scale_series method: Start value, end value: 62.3, 52.5, 228.34558823529, 185.83088235294, 228.34558823529, 185.83088235294
+2025-01-19 13:43:30,166 - tedata.utils.scraper - DEBUG - Start value, end value: 62.3, 52.5, pix0, pix1: 228.34558823529, 185.83088235294, data units per chart pixel from start & end points: 0.23050847457628706, unit_per_pix calculated from the y axis ticks: 0.2297589422424877, inverse of that: 4.352387725325613, unit_per_pix from axis limits and self.y_axis (probably best way): 0.2305084745762712
+2025-01-19 13:43:30,216 - tedata.utils.scraper - INFO - Successfully scaled series.
+2025-01-19 13:43:30,217 - tedata.utils.scraper - DEBUG - Successfully scaled series.
+2025-01-19 13:43:30,218 - tedata.utils.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-19 13:43:30,233 - tedata.utils.scraper - DEBUG - Metadata scraped successfully: {'units': 'points', 'original_source': 'Institute for Supply Management', 'title': 'United States ISM Manufacturing New Orders', 'indicator': 'ism manufacturing new orders', 'country': 'united states', 'length': 900, 'frequency': 'MS', 'source': 'Trading Economics', 'id': 'united-states/ism-manufacturing-new-orders', 'start_date': '1950-01-01', 'end_date': '2024-12-01', 'min_value': 24.200000000000998, 'max_value': 82.6000000000004, 'description': "The Manufacturing ISM Report On Business is based on data compiled from purchasing and supply executives nationwide. Survey responses reflect the change, if any, in the current month compared to the previous month. For each of the indicators measured (New Orders, Backlog of Orders, New Export Orders, Imports, Production, Supplier Deliveries, Inventories, Customers' Inventories, Employment and Prices), the report shows the percentage reporting each response, the net difference between the number of responses in the positive economic direction and the negative economic direction, and the diffusion index. A PMI reading above 50 percent indicates that the manufacturing economy is generally expanding; below 50 percent indicates that it is generally declining."}
+2025-01-19 13:43:30,234 - tedata.utils.scraper - DEBUG - Scraping complete, data series retrieved successfully from chart at: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-19 13:43:30,234 - tedata.utils.scraper.search - DEBUG - Data scraped successfully from: https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
+2025-01-19 13:43:33,074 - tedata.utils.scraper - INFO - Plot saved as plot
+2025-01-19 13:43:36,200 - tedata.utils.scraper - DEBUG - New firefox driver created.
+2025-01-19 13:43:40,967 - tedata.utils.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/corporate-profits
+2025-01-19 13:43:40,967 - tedata.utils.scraper - INFO - WebPage at https://tradingeconomics.com/united-states/corporate-profits loaded successfully.
+2025-01-19 13:43:46,189 - tedata.utils.scraper - INFO - Page at https://tradingeconomics.com/united-states/corporate-profits loaded successfully.
+2025-01-19 13:43:46,193 - tedata.utils.scraper - DEBUG - Page loaded successfully https://tradingeconomics.com/united-states/corporate-profits
+2025-01-19 13:43:46,196 - tedata.utils.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/corporate-profits, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-19 13:43:47,558 - tedata.utils.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-19 13:43:47,559 - tedata.utils.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-19 13:43:49,562 - tedata.utils.scraper - DEBUG - Clicked the MAX button successfully.
+2025-01-19 13:43:50,573 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-19 13:43:50,594 - tedata.utils.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-19 13:43:50,595 - tedata.utils.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-19 13:43:50,596 - tedata.utils.scraper - DEBUG - xax: [25.0, 684.0]
+2025-01-19 13:43:50,598 - tedata.utils.scraper - DEBUG - y-axis labels: [-200.0, 0.0, 600.0, 1200.0, 1800.0, 2400.0, 3000.0, 3400.0]
+2025-01-19 13:43:50,598 - tedata.utils.scraper - DEBUG - Average px per unit for y-axis: 13.123134968273023
+2025-01-19 13:43:50,599 - tedata.utils.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-19 13:43:50,599 - tedata.utils.scraper - INFO - Y-axis values scraped successfully.
+2025-01-19 13:43:50,600 - tedata.utils.scraper - DEBUG - Successfully scraped y-axis values from the chart.
+2025-01-19 13:43:50,610 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-19 13:43:50,635 - tedata.utils.scraper - DEBUG - Raw data series extracted successfully: 0.000000    57.704974
+0.000000    57.704974
+1.284991    57.981864
+2.141651    58.003579
+2.998311    58.025294
+Name: Extracted Series, dtype: float64
+2025-01-19 13:43:50,635 - tedata.utils.scraper - INFO - Raw data series extracted successfully.
+2025-01-19 13:43:58,165 - tedata.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-19 13:43:58,513 - tedata.utils.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-19 13:43:58,514 - tedata.utils.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-19 13:43:58,516 - tedata.utils.scraper - DEBUG - Time series frequency appears to be: 91, QS
+2025-01-19 13:43:58,516 - tedata.utils.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-19 13:43:58,518 - tedata.utils.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-19 13:43:58,526 - tedata.utils.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1947-01-01', '1947-04-01', '1947-07-01', '1947-10-01',
+               '1948-01-01', '1948-04-01', '1948-07-01', '1948-10-01',
+               '1949-01-01', '1949-04-01',
+               ...
+               '2022-04-01', '2022-07-01', '2022-10-01', '2023-01-01',
+               '2023-04-01', '2023-07-01', '2023-10-01', '2024-01-01',
+               '2024-04-01', '2024-07-01'],
+              dtype='datetime64[ns]', length=311, freq='QS-JAN')
+2025-01-19 13:43:58,526 - tedata.utils.scraper - INFO - Date index created successfully.
+2025-01-19 13:43:59,528 - tedata.utils.scraper - DEBUG - scale_series method: Start value, end value: 9.959, 3130.0, 57.70497361111097, 313.25208333333, 57.70497361111097, 313.25208333333
+2025-01-19 13:43:59,528 - tedata.utils.scraper - DEBUG - Start value, end value: 9.959, 3130.0, pix0, pix1: 57.70497361111097, 313.25208333333, data units per chart pixel from start & end points: 12.209259589715181, unit_per_pix calculated from the y axis ticks: 13.123134968273023, inverse of that: 0.07620130421714301, unit_per_pix from axis limits and self.y_axis (probably best way): 12.203389830508474
+2025-01-19 13:43:59,547 - tedata.utils.scraper - INFO - Successfully scaled series.
+2025-01-19 13:43:59,548 - tedata.utils.scraper - DEBUG - Successfully scaled series.
+2025-01-19 13:43:59,550 - tedata.utils.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-19 13:43:59,566 - tedata.utils.scraper - DEBUG - Metadata scraped successfully: {'units': 'USD Billion', 'original_source': 'U.S. Bureau of Economics Analysis', 'title': 'United States Corporate Profits', 'indicator': 'corporate profits', 'country': 'united states', 'length': 311, 'frequency': 'QS', 'source': 'Trading Economics', 'id': 'united-states/corporate-profits', 'start_date': '1947-01-01', 'end_date': '2024-07-01', 'min_value': 9.959, 'max_value': 3141.5569999999475, 'description': 'Corporate profits represents the portion of the total income earned from current production that is accounted for by U.S. corporations. It is one of the most closely watched U.S. economic indicators, as it provides a summary measure of corporate financial health and thus serves as an essential indicator of economic performance.'}
+2025-01-19 13:43:59,566 - tedata.utils.scraper - DEBUG - Scraping complete, data series retrieved successfully from chart at: https://tradingeconomics.com/united-states/corporate-profits
+2025-01-19 13:44:00,190 - tedata.utils.scraper - DEBUG - Using existing firefox driver.
+2025-01-19 13:44:01,120 - tedata.utils.scraper - DEBUG - Page loaded successfully: https://tradingeconomics.com/united-states/corporate-profits
+2025-01-19 13:44:01,121 - tedata.utils.scraper - INFO - WebPage at https://tradingeconomics.com/united-states/corporate-profits loaded successfully.
+2025-01-19 13:44:06,239 - tedata.utils.scraper - DEBUG - MAX button found for chart at URL: https://tradingeconomics.com/united-states/corporate-profits, selector: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-19 13:44:07,493 - tedata.utils.scraper - INFO - Button clicked successfully, waiting 2s for response...
+2025-01-19 13:44:07,494 - tedata.utils.scraper - DEBUG - Button clicked successfully: a.hawk-chartOptions-datePicker-cnt-btn:nth-child(4)
+2025-01-19 13:44:09,501 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: #chart
+2025-01-19 13:44:09,522 - tedata.utils.scraper - DEBUG - Extracting axis limits from the chart...
+2025-01-19 13:44:09,524 - tedata.utils.scraper - DEBUG - yax: [40.0, 335.0]
+2025-01-19 13:44:09,524 - tedata.utils.scraper - DEBUG - xax: [25.0, 684.0]
+2025-01-19 13:44:09,526 - tedata.utils.scraper - DEBUG - y-axis labels: [-200.0, 0.0, 600.0, 1200.0, 1800.0, 2400.0, 3000.0, 3400.0]
+2025-01-19 13:44:09,526 - tedata.utils.scraper - DEBUG - Average px per unit for y-axis: 13.123134968273023
+2025-01-19 13:44:09,526 - tedata.utils.scraper - DEBUG - Y-axis values scraped successfully.
+2025-01-19 13:44:09,526 - tedata.utils.scraper - INFO - Y-axis values scraped successfully.
+2025-01-19 13:44:09,531 - tedata.utils.scraper - DEBUG - Element found and assigned to current_element attribute: .highcharts-series path
+2025-01-19 13:44:09,542 - tedata.utils.scraper - DEBUG - Raw data series extracted successfully: 0.000000    57.704974
+0.000000    57.704974
+1.284991    57.981864
+2.141651    58.003579
+2.998311    58.025294
+Name: Extracted Series, dtype: float64
+2025-01-19 13:44:09,542 - tedata.utils.scraper - INFO - Raw data series extracted successfully.
+2025-01-19 13:44:16,178 - tedata.utils - INFO - Later points scraped successfully, scraping the oldest point now at x =  144.0
+2025-01-19 13:44:16,529 - tedata.utils.scraper - INFO - Scraped 9 data points from the chart, num_points target was 7
+2025-01-19 13:44:16,529 - tedata.utils.scraper - DEBUG - Successfully scraped start and end dates plus other data points to determine frequency of the time-series...
+2025-01-19 13:44:16,531 - tedata.utils.scraper - DEBUG - Time series frequency appears to be: 91, QS
+2025-01-19 13:44:16,531 - tedata.utils.scraper - INFO - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-19 13:44:16,534 - tedata.utils.scraper - DEBUG - Start and end values scraped from tooltips: {'start_date': Timestamp('1947-01-01 00:00:00'), 'end_date': Timestamp('2024-07-01 00:00:00'), 'start_value': 9.959, 'end_value': 3130.0}
+2025-01-19 13:44:16,545 - tedata.utils.scraper - DEBUG - Date index created successfully: DatetimeIndex(['1947-01-01', '1947-04-01', '1947-07-01', '1947-10-01',
+               '1948-01-01', '1948-04-01', '1948-07-01', '1948-10-01',
+               '1949-01-01', '1949-04-01',
+               ...
+               '2022-04-01', '2022-07-01', '2022-10-01', '2023-01-01',
+               '2023-04-01', '2023-07-01', '2023-10-01', '2024-01-01',
+               '2024-04-01', '2024-07-01'],
+              dtype='datetime64[ns]', length=311, freq='QS-JAN')
+2025-01-19 13:44:16,545 - tedata.utils.scraper - INFO - Date index created successfully.
+2025-01-19 13:44:16,727 - tedata.utils.scraper - DEBUG - scale_series method: Start value, end value: 9.959, 3130.0, 57.70497361111097, 313.25208333333, 57.70497361111097, 313.25208333333
+2025-01-19 13:44:16,727 - tedata.utils.scraper - DEBUG - Start value, end value: 9.959, 3130.0, pix0, pix1: 57.70497361111097, 313.25208333333, data units per chart pixel from start & end points: 12.209259589715181, unit_per_pix calculated from the y axis ticks: 13.123134968273023, inverse of that: 0.07620130421714301, unit_per_pix from axis limits and self.y_axis (probably best way): 12.203389830508474
+2025-01-19 13:44:16,839 - tedata.utils.scraper - DEBUG - Scraping metadata for the series from the page...
+2025-01-19 13:44:16,920 - tedata.utils.scraper - DEBUG - Metadata scraped successfully: {'units': 'USD Billion', 'original_source': 'U.S. Bureau of Economics Analysis', 'title': 'United States Corporate Profits', 'indicator': 'corporate profits', 'country': 'united states', 'length': 311, 'frequency': 'QS', 'source': 'Trading Economics', 'id': 'united-states/corporate-profits', 'start_date': '1947-01-01', 'end_date': '2024-07-01', 'min_value': 9.959, 'max_value': 3141.5569999999475, 'description': 'Corporate profits represents the portion of the total income earned from current production that is accounted for by U.S. corporations. It is one of the most closely watched U.S. economic indicators, as it provides a summary measure of corporate financial health and thus serves as an essential indicator of economic performance.'}

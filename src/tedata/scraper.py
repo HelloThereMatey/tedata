@@ -8,6 +8,9 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 import time
 import pandas as pd
+import os 
+
+fdel = os.path.sep
 
 # tedata related imports
 from . import utils
@@ -449,47 +452,49 @@ class TE_Scraper(object):
             logger.debug(f"Error extracting axis limits: {str(e)}")
             return None
     
-    def plot_series(self, add_horizontal_lines: bool = False):
+    def plot_series(self, annotation_text: str = None, dpi: int = 300, ann_box_pos: tuple = (0, - 0.23)):
         """
         Plots the time series data using pandas with plotly as the backend. Plotly is set as the pandas backend in __init__.py for tedata.
         If you want to use matplotlib or other plotting library don't use this method, plot the series attribute data directly. If using jupyter
         you can set 
 
         :Parameters:
-        - add_horizontal_lines (bool): If True, adds horizontal lines and labels to the plot. The lines correspond to the grid on the TE chart.
-        The lines are plotted in terms of pixel co-ordinates, not data values, don't use the lines when plotting the final scaled series. Only for 
-        inspection of the raw data (pixel co-ordinates) extracted from the #path element of the svg chart on TE.
+        - annotation_text (str): Text to display in the annotation box at the bottom of the chart. Default is None. If None, the default annotation text
+        will be created from the metadata.
+        - dpi (int): The resolution of the plot in dots per inch. Default is 300.
+        - ann_box_pos (tuple): The position of the annotation box on the chart. Default is (0, -0.23) which is bottom left.
 
         :Returns: None
         """
 
         fig = self.series.plot()  # Plot the series using pandas, plotly needs to be set as the pandas plotting backend.
 
+         # Existing title and label logic
         if hasattr(self, "series_metadata"):
             title = str(self.series_metadata["country"]).capitalize() + ": " + str(self.series_metadata["title"]).capitalize()
             ylabel = str(self.series_metadata["units"]).capitalize()
+            
+            # Create default annotation text from metadata
+            if annotation_text is None:
+                annotation_text = (
+                    f"Source: {self.series_metadata['source']}<br>"
+                    f"Original Source: {self.series_metadata['original_source']}<br>"
+                    f"Frequency: {self.series_metadata['frequency']}"
+                )
         else:
-            title = "Time Series Plot"; ylabel = "Value"
+            title = "Time Series Plot"
+            ylabel = "Value"
+            annotation_text = annotation_text or "Source: Trading Economics"
 
-        if add_horizontal_lines:
-            # Add horizontal lines and labels
-            for i in range(len(self.y_axis)):
-                fig.add_shape(
-                    type='line',
-                    x0=self.series.index.min(),
-                    y0=self.y_axis.index[i],
-                    x1=self.series.index.max(),
-                    y1=self.y_axis.index[i],
-                    line=dict(color='Red', dash='dash')
-                )
-                fig.add_annotation(
-                    x=self.series.index.max(),  # Position the label at the end of the line
-                    y=self.y_axis.index[i],
-                    text=str(self.y_axis.iloc[i]),
-                    showarrow=False,
-                    xanchor='left',
-                    yanchor='middle'
-                )
+        # Add text annotation to bottom left
+        fig.add_annotation(
+            text=annotation_text,
+            xref="paper", yref="paper",
+            x=ann_box_pos[0], y=ann_box_pos[1],
+            showarrow=False, font=dict(size=10),
+            align="left",  xanchor="left",
+            yanchor="bottom", bgcolor="rgba(255, 255, 255, 0.8)",
+            bordercolor="black", borderwidth=1)
 
         # Label x and y axis
         fig.update_layout(
@@ -503,60 +508,84 @@ class TE_Scraper(object):
             ),
             yaxis_title=ylabel,
             xaxis_title="",
-            title = title
-        )
-  
+            title = title)
+
         # Show the figure
         fig.show()
+        self.plot = fig
+
+    def save_plot(self, filename: str = "plot", save_path: str = os.getcwd(), dpi: int = 300, format: str = "png"):
+        """Save the plot to a file. The plot must be created using the plot_series method. This method will save the plot as a PNG image file.
+
+        :Parameters:
+        - filename (str): The name of the file to save the plot to. Default is 'plot.png'.
+        - save_path (str): The directory to save the plot to. Default is the current working directory.
+        - dpi (int): The resolution of the plot in dots per inch. Default is 300.
+        - format (str): The format to save the plot in. Default is 'png'. Other options are: "html", "bmp", "jpeg", "jpg".
+        Use "html" to save as an interactive plotly plot.
+
+        :Returns: None
+        """
+
+        if hasattr(self, "plot"):
+            if format == "html":
+                self.plot.write_html(f"{save_path}{fdel}{filename}.html")
+                logger.info(f"Plot saved as {save_path}{fdel}{filename}.html")
+            else:
+                self.plot.write_image(f"{save_path}{fdel}{filename}.{format}", format=format, scale=dpi/100, width = 1400, height = 500)
+                logger.info(f"Plot saved as {filename}")
+        else:
+            print("Error: Plot not found. Run plot_series() method to create a plot.")
+            logger.debug("Error: Plot not found. Run plot_series() method to create a plot.")
 
     def scrape_metadata(self):
-        self.series_metadata = {}
+        self.metadata = {}
         logger.debug(f"Scraping metadata for the series from the page...")
 
         try:
-            self.series_metadata["units"] = self.chart_soup.select_one('#singleIndChartUnit2').text
+            self.metadata["units"] = self.chart_soup.select_one('#singleIndChartUnit2').text
         except Exception as e:
             print("Units label not found: ", {str(e)})
-            self.series_metadata["units"] = "a.u"
+            self.metadata["units"] = "a.u"
         
         try:
-            self.series_metadata["original_source"] = self.chart_soup.select_one('#singleIndChartUnit').text
+            self.metadata["original_source"] = self.chart_soup.select_one('#singleIndChartUnit').text
         except Exception as e:
             print("original_source label not found: ", {str(e)})
-            self.series_metadata["original_source"] = "unknown"
+            self.metadata["original_source"] = "unknown"
 
         if hasattr(self, "series"):
             if hasattr(self, "page_soup"):
                 heads = self.page_soup.select("#ctl00_Head1")
-                self.series_metadata["title"] = heads[0].title.text.strip()
+                self.metadata["title"] = heads[0].title.text.strip()
             else:
-                self.series_metadata["title"] = self.last_url.split("/")[-1].replace("-", " ")  # Use URL if can't find the title
-            self.series_metadata["indicator"] = self.last_url.split("/")[-1].replace("-", " ")  
-            self.series_metadata["country"] = self.last_url.split("/")[-2].replace("-", " ") 
-            self.series_metadata["length"] = len(self.series)
-            self.series_metadata["frequency"] = self.frequency  
-            self.series_metadata["source"] = "Trading Economics" 
-            self.series_metadata["id"] = "/".join(self.last_url.split("/")[-2:])
-            self.series_metadata["start_date"] = self.series.index[0].strftime("%Y-%m-%d")
-            self.series_metadata["end_date"] = self.series.index[-1].strftime("%Y-%m-%d")
-            self.series_metadata["min_value"] = float(self.series.min())
-            self.series_metadata["max_value"] = float(self.series.max())
-            print("Series metadata: ", self.series_metadata)
+                self.metadata["title"] = self.last_url.split("/")[-1].replace("-", " ")  # Use URL if can't find the title
+            self.metadata["indicator"] = self.last_url.split("/")[-1].replace("-", " ")  
+            self.metadata["country"] = self.last_url.split("/")[-2].replace("-", " ") 
+            self.metadata["length"] = len(self.series)
+            self.metadata["frequency"] = self.frequency  
+            self.metadata["source"] = "Trading Economics" 
+            self.metadata["id"] = "/".join(self.last_url.split("/")[-2:])
+            self.metadata["start_date"] = self.series.index[0].strftime("%Y-%m-%d")
+            self.metadata["end_date"] = self.series.index[-1].strftime("%Y-%m-%d")
+            self.metadata["min_value"] = float(self.series.min())
+            self.metadata["max_value"] = float(self.series.max())
+            print("Series metadata: ", self.metadata)
 
         try:
             desc_card = self.page_soup.select_one("#item_definition")
             header_text = desc_card.select_one('.card-header').text.strip()
-            if header_text.lower() == self.series_metadata["title"].lower():
-                self.series_metadata["description"] = desc_card.select_one('.card-body').text.strip()
+            if header_text.lower() == self.metadata["title"].lower():
+                self.metadata["description"] = desc_card.select_one('.card-body').text.strip()
             else:
                 print("Description card title does not match series title.")
-                self.series_metadata["description"] = "Description not found."
+                self.metadata["description"] = "Description not found."
         except Exception as e:
             print("Description card not found: ", {str(e)})
 
-        self.metadata = pd.Series(self.series_metadata)
+        self.series_metadata = pd.Series(self.metadata)
         if self.metadata is not None:
-            logger.debug(f"Metadata scraped successfully: {self.series_metadata}")
+            logger.debug(f"Metadata scraped successfully: {self.metadata}")
 
     def get_page_source(self):
         """Get current page source after interactions"""
@@ -621,7 +650,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
         else:
             scraper.driver = driver
     else:
-        sel = TE_Scraper(driver = driver, browser = browser, headless = headless)
+        sel = TE_Scraper(driver = driver, browser = browser, headless = headless, use_existing_driver=True)
 
     if id is not None:
         url = f"https://tradingeconomics.com/{country}/{id}"
@@ -655,7 +684,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
     
     try:
         sel.get_element()
-        series = sel.series_from_element(invert_the_series=True)
+        series = sel.series_from_element(invert_the_series=True, return_series=True)
         print("Successfully scraped raw pixel co-ordinate series from the path element in chart:", " \n", series)
         time.sleep(1)
     except Exception as e:
@@ -663,7 +692,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
         logger.debug(f"Error scraping y-axis: {str(e)}")
 
     try:
-        x_index = sel.make_x_index()
+        x_index = sel.make_x_index(return_index=True)
         time.sleep(1)
     except Exception as e:
         print(f"Error creating date index: {str(e)}")

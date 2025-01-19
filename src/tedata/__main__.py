@@ -26,7 +26,7 @@ def main():
     
     try:
         # Run scraper
-        result = scraper.scrape_chart(url=args.url, headless=True)
+        result = scraper.scrape_chart(url=args.url)
         
         if result is not None:
             # Create output filename from URL
