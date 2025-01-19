@@ -1,8 +1,8 @@
 <style>
-    p {font-size: 14px}
-    li {font-size: 14px}
-    figcaption {font-size: 14px}
-    table {font-size: 14px}
+    p {font-size: 12px}
+    li {font-size: 12px}
+    figcaption {font-size: 12px}
+    table {font-size: 12px}
 </style>
 
 ## tedata
