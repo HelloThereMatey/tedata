@@ -86,7 +86,7 @@ scraped.save_plot(format="png")
 ```
 ![Static plot](docs/ISM_Manufacturing.png)
 
-![Interactive plot](https://github.com/HelloThereMatey/tedata/blob/main/docs/ISM_Manufacturing.html)
+[Interactive plot](https://github.com/HelloThereMatey/tedata/blob/main/docs/ISM_Manufacturing.html)
 
 <!-- # For GitHub Pages setup (in repo root)
 #[View Interactive Plot](https://username.github.io/tedata/example_plot.html) -->
