@@ -1,0 +1,1188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
+<title>tedata.utils API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tedata.utils</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tedata.utils.check_browser_installed"><code class="name flex">
+<span>def <span class="ident">check_browser_installed</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def check_browser_installed():
+    &#34;&#34;&#34;Check if browsers are installed using Selenium&#39;s service checks&#34;&#34;&#34;
+    firefox_available = False
+    chrome_available = False
+    
+    try:
+        firefox_service = FirefoxService()
+        firefox_service.is_connectable()  # This checks if Firefox is available
+        firefox_available = True
+    except WebDriverException:
+        pass
+
+    try:
+        chrome_service = ChromeService()
+        chrome_service.is_connectable()  # This checks if Chrome is available
+        chrome_available = True
+    except WebDriverException:
+        pass
+
+    if not (firefox_available or chrome_available):
+        warnings.warn(
+            &#34;Neither Firefox nor Chrome browser found. Please install one of them to use this package.&#34;
+            &#34;Firefox: https://www.mozilla.org/en-US/firefox/new/&#34;
+            &#34;Google Chrome: https://www.google.com/chrome/ &#34;,
+            RuntimeWarning
+        )
+    
+    return firefox_available, chrome_available</code></pre>
+</details>
+<div class="desc"><p>Check if browsers are installed using Selenium's service checks</p></div>
+</dd>
+<dt id="tedata.utils.check_element_exists_bs4"><code class="name flex">
+<span>def <span class="ident">check_element_exists_bs4</span></span>(<span>soup, selector)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def check_element_exists_bs4(soup, selector):
+    try:
+        element = soup.select_one(selector)
+        return element.text if element else None
+    except:
+        return None</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="tedata.utils.convert_metric_prefix"><code class="name flex">
+<span>def <span class="ident">convert_metric_prefix</span></span>(<span>value_str: str) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def convert_metric_prefix(value_str: str) -&gt; float:
+    &#34;&#34;&#34;Convert string with metric prefix to float
+    e.g., &#39;1.3K&#39; -&gt; 1300, &#39;2.6M&#39; -&gt; 2600000
+    &#34;&#34;&#34;
+    # Dictionary of metric prefixes and their multipliers
+    metric_prefixes = {
+        &#39;K&#39;: 1000,
+        &#39;M&#39;: 1000000, 
+        &#39;B&#39;: 1000000000,
+        &#39;G&#39;: 1000000000,
+        &#39;T&#39;: 1000000000000}
+    
+    # Clean and standardize input
+    value_str = value_str.strip().upper()
+    
+    try:
+        # Match number and prefix
+        match = re.match(r&#39;^(-?\d*\.?\d+)([KMGBT])?$&#39;, value_str)
+        if match:
+            number, prefix = match.groups()
+            number = float(number)
+            # Multiply by prefix value if present
+            if prefix and prefix in metric_prefixes:
+                number *= metric_prefixes[prefix]
+            return number
+        return float(value_str)  # No prefix case
+    except:
+        print(f&#34;Error converting value: {value_str}&#34;)
+        return value_str  # Return original if conversion fails</code></pre>
+</details>
+<div class="desc"><p>Convert string with metric prefix to float
+e.g., '1.3K' -&gt; 1300, '2.6M' -&gt; 2600000</p></div>
+</dd>
+<dt id="tedata.utils.export_html"><code class="name flex">
+<span>def <span class="ident">export_html</span></span>(<span>html: str,<br>save_path: str = '/Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata/last_soup.html')</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_html(html: str, save_path: str = wd+fdel+&#39;last_soup.html&#39;):
+    with open(save_path, &#39;w&#39;) as wp:
+        wp.write(html)
+    return None</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="tedata.utils.find_active_drivers"><code class="name flex">
+<span>def <span class="ident">find_active_drivers</span></span>(<span>quit_all: bool = False) ‑> list</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_active_drivers(quit_all: bool = False) -&gt; list:
+    &#34;&#34;&#34;Find all active selenium webdriver instances in memory sorted by age.
+    
+    Args:
+        quit_all (bool): If True, quit all found drivers
+        
+    Returns:
+        list: List of tuples (driver, age_in_seconds) sorted by age, excluding weakproxies
+    &#34;&#34;&#34;
+    active_drivers = []
+    current_time = time.time()
+    
+    for obj in gc.get_objects():
+        try:
+            if isinstance(obj, (TimestampedFirefox, TimestampedChrome)) and not isinstance(obj, weakref.ProxyType):
+                creation_time = getattr(obj, &#39;created_at&#39;, current_time)
+                age = current_time - creation_time
+                active_drivers.append((obj, age))
+        except ReferenceError:
+            continue
+    
+    # Sort by age (second element of tuple)
+    active_drivers.sort(key=lambda x: x[1])
+    
+    if quit_all:
+        for driver, _ in active_drivers:
+            try:
+                driver.quit()
+            except:
+                pass
+                
+    return active_drivers</code></pre>
+</details>
+<div class="desc"><p>Find all active selenium webdriver instances in memory sorted by age.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>quit_all</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If True, quit all found drivers</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>List of tuples (driver, age_in_seconds) sorted by age, excluding weakproxies</dd>
+</dl></div>
+</dd>
+<dt id="tedata.utils.find_zero_crossing"><code class="name flex">
+<span>def <span class="ident">find_zero_crossing</span></span>(<span>series)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_zero_crossing(series):
+    &#34;&#34;&#34;Find the x-intercept (value where series crosses zero) using linear interpolation&#34;&#34;&#34;
+    if not ((series.min() &lt; 0) and (series.max() &gt; 0)):
+        return None
+        
+    # Find where values change sign
+    for i in range(len(series)-1):
+        if (series.iloc[i] &lt;= 0 and series.iloc[i+1] &gt; 0) or \
+           (series.iloc[i] &gt;= 0 and series.iloc[i+1] &lt; 0):
+            # Get x values (index values)
+            x1, x2 = series.index[i], series.index[i+1]
+            # Get y values
+            y1, y2 = series.iloc[i], series.iloc[i+1]
+            # Linear interpolation to find x-intercept
+            zero_x = x1 + (0 - y1)*(x2 - x1)/(y2 - y1)
+            return zero_x
+            
+    return None</code></pre>
+</details>
+<div class="desc"><p>Find the x-intercept (value where series crosses zero) using linear interpolation</p></div>
+</dd>
+<dt id="tedata.utils.invert_series"><code class="name flex">
+<span>def <span class="ident">invert_series</span></span>(<span>series: pandas.core.series.Series, max_val: float = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def invert_series(series: pd.Series, max_val: float = None):
+    &#34;&#34;&#34;
+    Invert a pandas Series.
+
+    Parameters:
+    series (pd.Series): The pandas Series to invert.
+
+    Returns:
+    pd.Series: The inverted pandas Series.
+    &#34;&#34;&#34;
+    if max_val is None:
+        max_val = series.max()
+        print(f&#34;Max value: {max_val}, subtracting series from this value.&#34;)
+    return (max_val - series) #+ series.min()</code></pre>
+</details>
+<div class="desc"><p>Invert a pandas Series.</p>
+<p>Parameters:
+series (pd.Series): The pandas Series to invert.</p>
+<p>Returns:
+pd.Series: The inverted pandas Series.</p></div>
+</dd>
+<dt id="tedata.utils.map_frequency"><code class="name flex">
+<span>def <span class="ident">map_frequency</span></span>(<span>diff)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def map_frequency(diff):
+    &#34;&#34;&#34;Map timedelta to frequency string&#34;&#34;&#34;
+    days = diff.days
+    if days &gt; 0 and days &lt;= 3:
+        return &#34;D&#34;
+    elif days &gt; 3 and days &lt;= 14:
+        return &#34;W&#34;
+    elif days &gt; 14 and days &lt;= 60:
+        return &#34;MS&#34;
+    elif days &gt; 60 and days &lt;= 120:
+        return &#34;QS&#34;
+    elif days &gt; 120 and days &lt;= 420:
+        return &#34;AS&#34;
+    else:
+        return &#34;Multi-year&#34;</code></pre>
+</details>
+<div class="desc"><p>Map timedelta to frequency string</p></div>
+</dd>
+<dt id="tedata.utils.normalize_series"><code class="name flex">
+<span>def <span class="ident">normalize_series</span></span>(<span>series, new_min, new_max)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize_series(series, new_min, new_max):
+    &#34;&#34;&#34;
+    Normalize a pandas Series to a given range [new_min, new_max].
+
+    Parameters:
+    series (pd.Series): The pandas Series to normalize.
+    new_min (float): The minimum value of the new range.
+    new_max (float): The maximum value of the new range.
+
+    Returns:
+    pd.Series: The normalized pandas Series.
+    &#34;&#34;&#34;
+    series_min = series.min()
+    series_max = series.max()
+    normalized_series = (series - series_min) / (series_max - series_min) * (new_max - new_min) + new_min
+    return normalized_series</code></pre>
+</details>
+<div class="desc"><p>Normalize a pandas Series to a given range [new_min, new_max].</p>
+<p>Parameters:
+series (pd.Series): The pandas Series to normalize.
+new_min (float): The minimum value of the new range.
+new_max (float): The maximum value of the new range.</p>
+<p>Returns:
+pd.Series: The normalized pandas Series.</p></div>
+</dd>
+<dt id="tedata.utils.ready_datestr"><code class="name flex">
+<span>def <span class="ident">ready_datestr</span></span>(<span>date_str: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ready_datestr(date_str: str):
+    &#34;&#34;&#34;Replace substrings in datestr using a dictionary to get the string ready
+    for parsing to datetime. Using QS frequency convention for quarters.&#34;&#34;&#34;
+    
+    quarters = {&#34;Q1&#34;: &#34;January&#34;,
+                &#34;Q2&#34;: &#34;April&#34;,
+                &#34;Q3&#34;: &#34;July&#34;,
+                &#34;Q4&#34;: &#34;October&#34;}
+
+    for key, value in quarters.items():
+        date_str = date_str.replace(key, value)
+    return date_str</code></pre>
+</details>
+<div class="desc"><p>Replace substrings in datestr using a dictionary to get the string ready
+for parsing to datetime. Using QS frequency convention for quarters.</p></div>
+</dd>
+<dt id="tedata.utils.setup_chrome_driver"><code class="name flex">
+<span>def <span class="ident">setup_chrome_driver</span></span>(<span>headless: bool = True)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setup_chrome_driver(headless: bool = True):  #Been trying to get it running with Chrome as well but having issues still......
+    chrome_options = webdriver.ChromeOptions()
+    if headless:
+        chrome_options.add_argument(&#34;--headless&#34;)
+    # Disable notifications
+    chrome_options.add_argument(&#34;--disable-notifications&#34;)
+    # Additional preference to block notifications
+    prefs = {
+        &#34;profile.default_content_setting_values.notifications&#34;: 2,
+        &#34;profile.default_content_settings.popups&#34;: 0
+    }
+    chrome_options.add_experimental_option(&#34;prefs&#34;, prefs)
+    
+    # Initialize driver with options
+    driver = TimestampedChrome(options=chrome_options)
+    return driver</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="tedata.utils.split_numeric"><code class="name flex">
+<span>def <span class="ident">split_numeric</span></span>(<span>input_string: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def split_numeric(input_string: str):
+    # Match integers or decimal numbers
+    # Match numbers including metric suffixes
+    if not isinstance(input_string, str):
+        #print(&#34;split_numeric function: Input is not a string, returning input.&#34;)
+        return input_string
+    else:
+        number_pattern = r&#39;-?\d*\.?\d+[KMGBT]?&#39;
+        
+        # Find the numeric part
+        match = re.search(number_pattern, input_string)
+        
+        if match:
+            numeric_part = match.group()
+            # Replace the numeric part with empty string to get remainder
+            non_numeric = re.sub(number_pattern, &#39;&#39;, input_string)
+            return numeric_part, non_numeric.strip()
+        else:   
+            return input_string</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tedata.utils.TimestampedChrome"><code class="flex name class">
+<span>class <span class="ident">TimestampedChrome</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TimestampedChrome(webdriver.Chrome):   #Chrome can work for other things but it&#39;s not working for scraping Trading Economics charts at the moment....
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.created_at = time.time()</code></pre>
+</details>
+<div class="desc"><p>Controls the ChromeDriver and allows you to drive the browser.</p>
+<p>Creates a new instance of the chrome driver. Starts the service and
+then creates new instance of chrome driver.</p>
+<p>:Args:
+- options - this takes an instance of ChromeOptions
+- service - Service object for handling the browser driver if you need to pass extra details
+- keep_alive - Whether to configure ChromeRemoteConnection to use HTTP keep-alive.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>selenium.webdriver.chrome.webdriver.WebDriver</li>
+<li>selenium.webdriver.chromium.webdriver.ChromiumDriver</li>
+<li>selenium.webdriver.remote.webdriver.WebDriver</li>
+<li>selenium.webdriver.remote.webdriver.BaseWebDriver</li>
+</ul>
+</dd>
+<dt id="tedata.utils.TimestampedFirefox"><code class="flex name class">
+<span>class <span class="ident">TimestampedFirefox</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TimestampedFirefox(webdriver.Firefox):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.created_at = time.time()</code></pre>
+</details>
+<div class="desc"><p>Controls the GeckoDriver and allows you to drive the browser.</p>
+<p>Creates a new instance of the Firefox driver. Starts the service and
+then creates new instance of Firefox driver.</p>
+<p>:Args:
+- options - Instance of <code>options.Options</code>.
+- service - (Optional) service instance for managing the starting and stopping of the driver.
+- keep_alive - Whether to configure remote_connection.RemoteConnection to use HTTP keep-alive.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>selenium.webdriver.firefox.webdriver.WebDriver</li>
+<li>selenium.webdriver.remote.webdriver.WebDriver</li>
+<li>selenium.webdriver.remote.webdriver.BaseWebDriver</li>
+</ul>
+</dd>
+<dt id="tedata.utils.generic_webdriver"><code class="flex name class">
+<span>class <span class="ident">generic_webdriver</span></span>
+<span>(</span><span>driver: <module 'selenium.webdriver' from '/Users/jamesbishop/Documents/miniconda3/envs/bm/lib/python3.11/site-packages/selenium/webdriver/__init__.py'> = None,<br>browser: Literal['chrome', 'firefox'] = 'firefox',<br>headless: bool = True)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class generic_webdriver(object):
+    &#34;&#34;&#34;Generic webdriver class for initializing a Selenium WebDriver&#34;&#34;&#34;
+
+    # Define browser type with allowed values
+    BrowserType = Literal[&#34;chrome&#34;, &#34;firefox&#34;]
+    def __init__(self, driver: webdriver = None, 
+                 browser: BrowserType = &#34;firefox&#34;, 
+                 headless: bool = True):
+        
+        self.browser = browser
+        self.headless = headless
+
+        if driver is None:
+            if browser == &#34;chrome&#34;:
+                self.driver = setup_chrome_driver(headless = headless)
+            elif browser == &#34;firefox&#34;:
+                options = webdriver.FirefoxOptions()
+                if headless:
+                    options.add_argument(&#39;--headless&#39;)
+                self.driver = webdriver.Firefox(options=options)
+            else:
+                raise ValueError(&#34;Unsupported browser! Use &#39;chrome&#39; or &#39;firefox&#39;.&#34;)
+        else:
+            self.driver = driver
+        
+        self.wait = WebDriverWait(self.driver, timeout=10)
+        self.created_at = time.time()
+        self.driver.created_at = self.created_at</code></pre>
+</details>
+<div class="desc"><p>Generic webdriver class for initializing a Selenium WebDriver</p></div>
+<h3>Class variables</h3>
+<dl>
+<dt id="tedata.utils.generic_webdriver.BrowserType"><code class="name">var <span class="ident">BrowserType</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="tedata.utils.get_tooltip"><code class="flex name class">
+<span>class <span class="ident">get_tooltip</span></span>
+<span>(</span><span>driver: <module 'selenium.webdriver' from '/Users/jamesbishop/Documents/miniconda3/envs/bm/lib/python3.11/site-packages/selenium/webdriver/__init__.py'> = None,<br>url: str = None,<br>chart_x: int = 600,<br>chart_y: int = 375)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class get_tooltip(object):
+    &#34;&#34;&#34;Class to scrape tooltip data from a chart element using Selenium.
+    This can get x, y data from the tooltip box displayed by a site such as Trading Economics when the cursor
+    is moved over a chart. It can move the cursor to specific points on the chart and extract tooltip text.
+    It extracts date and value data from the tooltip text.
+    &#34;&#34;&#34;
+
+    def __init__(self, 
+                    driver: webdriver = None, 
+                    url: str = None,
+                    chart_x: int = 600, chart_y: int = 375):
+        
+        &#34;&#34;&#34;Initialize the scraper with a URL and chart coordinates
+        **Parameters:**
+        - driver (webdriver): A Selenium WebDriver object, can put in an active one or make a new one for a new URL.
+        - url (str): The URL of the webpage to scrape. Unnecessary if driver is provided.
+        - chart_x (float): The total length in pixels of the svg chart image that we are trying to scrape.
+        - chart_y (float): The total height in pixels of the svg chart image that we are trying to scrape.
+        &#34;&#34;&#34;
+        if driver is None:
+            self.driver = webdriver.Firefox()
+            self.driver.get(url)
+        else:
+            self.driver = driver
+        self.chart_x = round(chart_x)
+        self.chart_y = round(chart_y)
+
+        self.last_url = url
+
+        #wait for the chart element to be present
+        chart_selector = &#39;.highcharts-plot-background&#39;
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, chart_selector))
+        )
+
+        # Locate the chart element
+        self.chart_element = self.driver.find_element(By.CSS_SELECTOR, chart_selector)
+
+        # Initialize ActionChains
+        self.actions = ActionChains(self.driver)
+
+    def move_cursor(self, x: int = 0, y: int = 0):
+        self.actions.move_to_element_with_offset(self.chart_element, x, y).perform()
+        print(f&#34;Moved cursor to ({x}, {y})&#34;)
+        return
+                        
+    def move_pointer(self, x_offset: int = None, y_offset: int = 1, x_increment: int = 1):
+        &#34;&#34;&#34;Move cursor to a specific x-offset and y-offset from the chart element.
+        Uses Selenium ActionChains to move the cursor.&#34;&#34;&#34;
+
+        if x_offset is None:
+            x = 0
+            while x &lt; self.chart_x:
+                self.move_cursor(x, y_offset)
+                time.sleep(1)
+                if self.get_tooltip_text():
+                    break
+                x += x_increment
+            return True
+        else:
+            self.move_cursor(x, y_offset)
+            time.sleep(1)
+            if self.get_tooltip_text():
+                return True
+            else:
+                return False
+    
+    def scrape_dates_from_tooltips(self, num_points: int = 10, x_increment: int = 1):
+        &#34;&#34;&#34;Scrape first and last data points using viewport coordinates.
+        Also scrape dates from the first n points to determine time series frequency.
+
+        **Parameters:**
+
+        - num_points (int): The number of data points to scrape in addition to first and last points.
+        - x_increment (int): The number of pixels to move cursor horizontally between points.
+
+        **Returns:**
+
+        - data_points (list): A list of dictionaries containing scraped data points.
+        - num_points (int): The number of data points scraped.&#34;&#34;&#34;
+        
+        # Get chart element and viewport info
+        chart_rect = self.chart_element.rect
+        viewport_width = self.driver.execute_script(&#34;return window.innerWidth;&#34;)
+        viewport_height = self.driver.execute_script(&#34;return window.innerHeight;&#34;)
+        
+        print(f&#34;Viewport dimensions: {viewport_width} x {viewport_height}&#34;)
+        print(f&#34;Chart position in viewport: x={chart_rect[&#39;x&#39;]}, y={chart_rect[&#39;y&#39;]}&#34;)
+        
+        data_points = []
+        i = 0
+        last_date = &#34;&#34;
+        viewport_y = chart_rect[&#39;y&#39;] + (chart_rect[&#39;height&#39;] / 2)
+        first_x =  chart_rect[&#39;x&#39;]
+        date_change = []
+        just_run = False
+        date_change_count = 0
+
+        while len(data_points) &lt; num_points + 2:  #scrape first num points and then last point...
+            try: 
+                # Use ActionChains to move to absolute viewport position
+                actions = ActionChains(self.driver)
+                if len(data_points) == num_points + 1:
+                    logger.info(f&#34;Later points scraped successfully, scraping the oldest point now at x =  {first_x}&#34;)
+                    x_pos = first_x
+                else:
+                    x_pos = chart_rect[&#39;x&#39;] + chart_rect[&#39;width&#39;] - (i*x_increment)
+
+                actions.move_by_offset(x_pos, viewport_y).perform()
+                actions.reset_actions()  # Reset for next move
+                #print(f&#34;Moving to point at viewport coordinates ({x_pos}, {viewport_y})&#34;)
+                time.sleep(0.05)
+                
+                tooltip = self.get_tooltip_text()
+                date, value = self.extract_date_value_tooltip(tooltip)
+
+                if not just_run:
+                    if date == last_date:
+                        i += 1
+                        date_change_count += 1
+                        continue
+                    else:   
+                        date_change.append(date_change_count)
+                        date_change_count = 0
+                        # Here we&#39;re trying to find the average number of pixels needed to move betweeen dates from the 1st 3 points to speed up subsequent scraping.
+                        if len(date_change) == 3:
+                            #print(&#34;Here&#39;s the date change list: &#34;, date_change[1::])
+                            av_incs = sum(date_change[1::])/2
+                            x_increment = round(av_incs)
+                            just_run == True
+                
+                if date == last_date:
+                    #print(f&#34;Date not changed from last point, skipping: {date}&#34;)
+                    i += 1
+                    continue
+
+                if tooltip and date and value:
+                    data_points.append({
+                        &#39;viewport_x&#39;: x_pos,
+                        &#39;viewport_y&#39;: viewport_y,
+                        &#39;tooltip_data&#39;: tooltip,
+                        &#34;date&#34;: date,
+                        &#34;value&#34;: value
+                    })
+                else:
+                    print(f&#34;No tooltip found at point&#34;)
+                
+                last_date = date
+            except Exception as e:
+                logger.debug(f&#34;Error scraping tooltip at ({x_pos}, {viewport_y}), error: {str(e)}, moving to next point..&#34;)
+                print(f&#34;Error scraping tooltip at ({x_pos}, {viewport_y}), error: {str(e)}, moving to next point..&#34;)
+                continue
+        
+        return data_points, num_points
+    
+    def extract_date_value_tooltip(self, tooltip_element: str):
+        &#34;&#34;&#34;Extract date and value from a single tooltip HTML&#34;&#34;&#34;
+
+        # try:
+        # Parse tooltip HTML
+        soup = BeautifulSoup(tooltip_element, &#39;html.parser&#39;)
+        
+        # Extract date and value
+        date = soup.select_one(&#39;.tooltip-date&#39;).text.strip()
+        date = ready_datestr(date)
+        
+        value = soup.select_one(&#39;.tooltip-value&#39;).text.replace(&#39; Points&#39;, &#39;&#39;)
+        #print(&#34;Date: &#34;, date, &#34;Value: &#34;, value)
+        try:
+            value = float(value)
+        except:
+            pass
+        
+        try:
+            date = pd.to_datetime(date)
+        except:
+            print(f&#34;Error converting date string: {date}&#34;)
+            pass
+        
+        # try:
+        splitted = split_numeric(value)
+        if isinstance(splitted, tuple):
+            value = convert_metric_prefix(splitted[0])
+        else:
+            value = splitted
+
+            # except Exception as e:
+            #     print(f&#34;Error converting value string: {value}&#34;)
+            #     return
+            
+        # except Exception as e:
+        #     print(f&#34;Error parsing tooltip data: {str(e)}&#34;)
+        #     return None
+    
+        return date, value
+        
+    def scrape_chart_data(self):
+        &#34;&#34;&#34;Scrape data points by moving cursor across chart within viewport bounds
+        I don&#39;t know if this is working atm, this approcach of pulling each datapoint one at a time from the tooltips
+        may be implemented later yet it will need javascript implementation to work fast enough.
+        Currently this is very slow when done this way. &#34;&#34;&#34;
+        
+        # Get chart dimensions and position
+        chart_rect = self.chart_element.rect
+        chart_width = chart_rect[&#39;width&#39;]
+        chart_height = chart_rect[&#39;height&#39;]
+        
+        # Find chart center in viewport coordinates
+        chart_center_x = chart_rect[&#39;x&#39;] + (chart_width / 2)
+        chart_center_y = chart_rect[&#39;y&#39;] + (chart_height / 2)
+        print(f&#34;Chart center: ({chart_center_x}, {chart_center_y})&#34;)
+        
+        # Calculate valid x-coordinate range
+        x_start = chart_center_x - (chart_width / 2)  # Leftmost valid x
+        x_end = chart_center_x + (chart_width / 2)    # Rightmost valid x
+        
+        # Initialize data collection
+        data_points = []
+        x_increment = 2
+        
+        # Move cursor left to right within valid range
+        current_x = x_start
+
+        while current_x &lt;= x_end:
+            try:
+                # Calculate offset from chart center
+                x_offset = current_x - chart_center_x
+                
+                # Move cursor using offset from center
+                self.actions.move_to_element(self.chart_element)\
+                        .move_by_offset(x_offset, 0)\
+                        .perform()
+                
+                time.sleep(0.2)
+                
+                # Get tooltip data
+                tooltip = self.get_tooltip_text()
+                if tooltip:
+                    data_points.append({
+                        &#39;x_position&#39;: current_x,
+                        &#39;tooltip_data&#39;: tooltip
+                    })
+                
+                current_x += x_increment
+                
+            except Exception as e:
+                print(f&#34;Error at x={current_x}: {str(e)}&#34;)
+                current_x += x_increment
+                
+        return data_points
+
+    def get_tooltip_text(self, tooltip_selector: str = &#39;.highcharts-tooltip&#39;):
+        &#34;&#34;&#34;Get tooltip text from the chart element&#34;&#34;&#34;
+
+        # Locate the tooltip element and extract the text
+        tooltip_elements = self.driver.find_elements(By.CSS_SELECTOR, tooltip_selector)
+        if tooltip_elements:
+            for tooltip_element in tooltip_elements:
+                tooltip_text = tooltip_element.get_attribute(&#34;outerHTML&#34;)
+                #print(tooltip_text)
+            return tooltip_text
+        else:
+            #print(&#34;Tooltip not found&#34;)
+            return None
+    
+    def bail_out(self):
+        self.driver.quit()
+        return None</code></pre>
+</details>
+<div class="desc"><p>Class to scrape tooltip data from a chart element using Selenium.
+This can get x, y data from the tooltip box displayed by a site such as Trading Economics when the cursor
+is moved over a chart. It can move the cursor to specific points on the chart and extract tooltip text.
+It extracts date and value data from the tooltip text.</p>
+<p>Initialize the scraper with a URL and chart coordinates
+<strong>Parameters:</strong>
+- driver (webdriver): A Selenium WebDriver object, can put in an active one or make a new one for a new URL.
+- url (str): The URL of the webpage to scrape. Unnecessary if driver is provided.
+- chart_x (float): The total length in pixels of the svg chart image that we are trying to scrape.
+- chart_y (float): The total height in pixels of the svg chart image that we are trying to scrape.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="tedata.utils.get_tooltip.bail_out"><code class="name flex">
+<span>def <span class="ident">bail_out</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bail_out(self):
+    self.driver.quit()
+    return None</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="tedata.utils.get_tooltip.extract_date_value_tooltip"><code class="name flex">
+<span>def <span class="ident">extract_date_value_tooltip</span></span>(<span>self, tooltip_element: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_date_value_tooltip(self, tooltip_element: str):
+    &#34;&#34;&#34;Extract date and value from a single tooltip HTML&#34;&#34;&#34;
+
+    # try:
+    # Parse tooltip HTML
+    soup = BeautifulSoup(tooltip_element, &#39;html.parser&#39;)
+    
+    # Extract date and value
+    date = soup.select_one(&#39;.tooltip-date&#39;).text.strip()
+    date = ready_datestr(date)
+    
+    value = soup.select_one(&#39;.tooltip-value&#39;).text.replace(&#39; Points&#39;, &#39;&#39;)
+    #print(&#34;Date: &#34;, date, &#34;Value: &#34;, value)
+    try:
+        value = float(value)
+    except:
+        pass
+    
+    try:
+        date = pd.to_datetime(date)
+    except:
+        print(f&#34;Error converting date string: {date}&#34;)
+        pass
+    
+    # try:
+    splitted = split_numeric(value)
+    if isinstance(splitted, tuple):
+        value = convert_metric_prefix(splitted[0])
+    else:
+        value = splitted
+
+        # except Exception as e:
+        #     print(f&#34;Error converting value string: {value}&#34;)
+        #     return
+        
+    # except Exception as e:
+    #     print(f&#34;Error parsing tooltip data: {str(e)}&#34;)
+    #     return None
+
+    return date, value</code></pre>
+</details>
+<div class="desc"><p>Extract date and value from a single tooltip HTML</p></div>
+</dd>
+<dt id="tedata.utils.get_tooltip.get_tooltip_text"><code class="name flex">
+<span>def <span class="ident">get_tooltip_text</span></span>(<span>self, tooltip_selector: str = '.highcharts-tooltip')</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_tooltip_text(self, tooltip_selector: str = &#39;.highcharts-tooltip&#39;):
+    &#34;&#34;&#34;Get tooltip text from the chart element&#34;&#34;&#34;
+
+    # Locate the tooltip element and extract the text
+    tooltip_elements = self.driver.find_elements(By.CSS_SELECTOR, tooltip_selector)
+    if tooltip_elements:
+        for tooltip_element in tooltip_elements:
+            tooltip_text = tooltip_element.get_attribute(&#34;outerHTML&#34;)
+            #print(tooltip_text)
+        return tooltip_text
+    else:
+        #print(&#34;Tooltip not found&#34;)
+        return None</code></pre>
+</details>
+<div class="desc"><p>Get tooltip text from the chart element</p></div>
+</dd>
+<dt id="tedata.utils.get_tooltip.move_cursor"><code class="name flex">
+<span>def <span class="ident">move_cursor</span></span>(<span>self, x: int = 0, y: int = 0)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def move_cursor(self, x: int = 0, y: int = 0):
+    self.actions.move_to_element_with_offset(self.chart_element, x, y).perform()
+    print(f&#34;Moved cursor to ({x}, {y})&#34;)
+    return</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="tedata.utils.get_tooltip.move_pointer"><code class="name flex">
+<span>def <span class="ident">move_pointer</span></span>(<span>self, x_offset: int = None, y_offset: int = 1, x_increment: int = 1)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def move_pointer(self, x_offset: int = None, y_offset: int = 1, x_increment: int = 1):
+    &#34;&#34;&#34;Move cursor to a specific x-offset and y-offset from the chart element.
+    Uses Selenium ActionChains to move the cursor.&#34;&#34;&#34;
+
+    if x_offset is None:
+        x = 0
+        while x &lt; self.chart_x:
+            self.move_cursor(x, y_offset)
+            time.sleep(1)
+            if self.get_tooltip_text():
+                break
+            x += x_increment
+        return True
+    else:
+        self.move_cursor(x, y_offset)
+        time.sleep(1)
+        if self.get_tooltip_text():
+            return True
+        else:
+            return False</code></pre>
+</details>
+<div class="desc"><p>Move cursor to a specific x-offset and y-offset from the chart element.
+Uses Selenium ActionChains to move the cursor.</p></div>
+</dd>
+<dt id="tedata.utils.get_tooltip.scrape_chart_data"><code class="name flex">
+<span>def <span class="ident">scrape_chart_data</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def scrape_chart_data(self):
+    &#34;&#34;&#34;Scrape data points by moving cursor across chart within viewport bounds
+    I don&#39;t know if this is working atm, this approcach of pulling each datapoint one at a time from the tooltips
+    may be implemented later yet it will need javascript implementation to work fast enough.
+    Currently this is very slow when done this way. &#34;&#34;&#34;
+    
+    # Get chart dimensions and position
+    chart_rect = self.chart_element.rect
+    chart_width = chart_rect[&#39;width&#39;]
+    chart_height = chart_rect[&#39;height&#39;]
+    
+    # Find chart center in viewport coordinates
+    chart_center_x = chart_rect[&#39;x&#39;] + (chart_width / 2)
+    chart_center_y = chart_rect[&#39;y&#39;] + (chart_height / 2)
+    print(f&#34;Chart center: ({chart_center_x}, {chart_center_y})&#34;)
+    
+    # Calculate valid x-coordinate range
+    x_start = chart_center_x - (chart_width / 2)  # Leftmost valid x
+    x_end = chart_center_x + (chart_width / 2)    # Rightmost valid x
+    
+    # Initialize data collection
+    data_points = []
+    x_increment = 2
+    
+    # Move cursor left to right within valid range
+    current_x = x_start
+
+    while current_x &lt;= x_end:
+        try:
+            # Calculate offset from chart center
+            x_offset = current_x - chart_center_x
+            
+            # Move cursor using offset from center
+            self.actions.move_to_element(self.chart_element)\
+                    .move_by_offset(x_offset, 0)\
+                    .perform()
+            
+            time.sleep(0.2)
+            
+            # Get tooltip data
+            tooltip = self.get_tooltip_text()
+            if tooltip:
+                data_points.append({
+                    &#39;x_position&#39;: current_x,
+                    &#39;tooltip_data&#39;: tooltip
+                })
+            
+            current_x += x_increment
+            
+        except Exception as e:
+            print(f&#34;Error at x={current_x}: {str(e)}&#34;)
+            current_x += x_increment
+            
+    return data_points</code></pre>
+</details>
+<div class="desc"><p>Scrape data points by moving cursor across chart within viewport bounds
+I don't know if this is working atm, this approcach of pulling each datapoint one at a time from the tooltips
+may be implemented later yet it will need javascript implementation to work fast enough.
+Currently this is very slow when done this way.</p></div>
+</dd>
+<dt id="tedata.utils.get_tooltip.scrape_dates_from_tooltips"><code class="name flex">
+<span>def <span class="ident">scrape_dates_from_tooltips</span></span>(<span>self, num_points: int = 10, x_increment: int = 1)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def scrape_dates_from_tooltips(self, num_points: int = 10, x_increment: int = 1):
+    &#34;&#34;&#34;Scrape first and last data points using viewport coordinates.
+    Also scrape dates from the first n points to determine time series frequency.
+
+    **Parameters:**
+
+    - num_points (int): The number of data points to scrape in addition to first and last points.
+    - x_increment (int): The number of pixels to move cursor horizontally between points.
+
+    **Returns:**
+
+    - data_points (list): A list of dictionaries containing scraped data points.
+    - num_points (int): The number of data points scraped.&#34;&#34;&#34;
+    
+    # Get chart element and viewport info
+    chart_rect = self.chart_element.rect
+    viewport_width = self.driver.execute_script(&#34;return window.innerWidth;&#34;)
+    viewport_height = self.driver.execute_script(&#34;return window.innerHeight;&#34;)
+    
+    print(f&#34;Viewport dimensions: {viewport_width} x {viewport_height}&#34;)
+    print(f&#34;Chart position in viewport: x={chart_rect[&#39;x&#39;]}, y={chart_rect[&#39;y&#39;]}&#34;)
+    
+    data_points = []
+    i = 0
+    last_date = &#34;&#34;
+    viewport_y = chart_rect[&#39;y&#39;] + (chart_rect[&#39;height&#39;] / 2)
+    first_x =  chart_rect[&#39;x&#39;]
+    date_change = []
+    just_run = False
+    date_change_count = 0
+
+    while len(data_points) &lt; num_points + 2:  #scrape first num points and then last point...
+        try: 
+            # Use ActionChains to move to absolute viewport position
+            actions = ActionChains(self.driver)
+            if len(data_points) == num_points + 1:
+                logger.info(f&#34;Later points scraped successfully, scraping the oldest point now at x =  {first_x}&#34;)
+                x_pos = first_x
+            else:
+                x_pos = chart_rect[&#39;x&#39;] + chart_rect[&#39;width&#39;] - (i*x_increment)
+
+            actions.move_by_offset(x_pos, viewport_y).perform()
+            actions.reset_actions()  # Reset for next move
+            #print(f&#34;Moving to point at viewport coordinates ({x_pos}, {viewport_y})&#34;)
+            time.sleep(0.05)
+            
+            tooltip = self.get_tooltip_text()
+            date, value = self.extract_date_value_tooltip(tooltip)
+
+            if not just_run:
+                if date == last_date:
+                    i += 1
+                    date_change_count += 1
+                    continue
+                else:   
+                    date_change.append(date_change_count)
+                    date_change_count = 0
+                    # Here we&#39;re trying to find the average number of pixels needed to move betweeen dates from the 1st 3 points to speed up subsequent scraping.
+                    if len(date_change) == 3:
+                        #print(&#34;Here&#39;s the date change list: &#34;, date_change[1::])
+                        av_incs = sum(date_change[1::])/2
+                        x_increment = round(av_incs)
+                        just_run == True
+            
+            if date == last_date:
+                #print(f&#34;Date not changed from last point, skipping: {date}&#34;)
+                i += 1
+                continue
+
+            if tooltip and date and value:
+                data_points.append({
+                    &#39;viewport_x&#39;: x_pos,
+                    &#39;viewport_y&#39;: viewport_y,
+                    &#39;tooltip_data&#39;: tooltip,
+                    &#34;date&#34;: date,
+                    &#34;value&#34;: value
+                })
+            else:
+                print(f&#34;No tooltip found at point&#34;)
+            
+            last_date = date
+        except Exception as e:
+            logger.debug(f&#34;Error scraping tooltip at ({x_pos}, {viewport_y}), error: {str(e)}, moving to next point..&#34;)
+            print(f&#34;Error scraping tooltip at ({x_pos}, {viewport_y}), error: {str(e)}, moving to next point..&#34;)
+            continue
+    
+    return data_points, num_points</code></pre>
+</details>
+<div class="desc"><p>Scrape first and last data points using viewport coordinates.
+Also scrape dates from the first n points to determine time series frequency.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li>num_points (int): The number of data points to scrape in addition to first and last points.</li>
+<li>x_increment (int): The number of pixels to move cursor horizontally between points.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li>data_points (list): A list of dictionaries containing scraped data points.</li>
+<li>num_points (int): The number of data points scraped.</li>
+</ul></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tedata" href="index.html">tedata</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tedata.utils.check_browser_installed" href="#tedata.utils.check_browser_installed">check_browser_installed</a></code></li>
+<li><code><a title="tedata.utils.check_element_exists_bs4" href="#tedata.utils.check_element_exists_bs4">check_element_exists_bs4</a></code></li>
+<li><code><a title="tedata.utils.convert_metric_prefix" href="#tedata.utils.convert_metric_prefix">convert_metric_prefix</a></code></li>
+<li><code><a title="tedata.utils.export_html" href="#tedata.utils.export_html">export_html</a></code></li>
+<li><code><a title="tedata.utils.find_active_drivers" href="#tedata.utils.find_active_drivers">find_active_drivers</a></code></li>
+<li><code><a title="tedata.utils.find_zero_crossing" href="#tedata.utils.find_zero_crossing">find_zero_crossing</a></code></li>
+<li><code><a title="tedata.utils.invert_series" href="#tedata.utils.invert_series">invert_series</a></code></li>
+<li><code><a title="tedata.utils.map_frequency" href="#tedata.utils.map_frequency">map_frequency</a></code></li>
+<li><code><a title="tedata.utils.normalize_series" href="#tedata.utils.normalize_series">normalize_series</a></code></li>
+<li><code><a title="tedata.utils.ready_datestr" href="#tedata.utils.ready_datestr">ready_datestr</a></code></li>
+<li><code><a title="tedata.utils.setup_chrome_driver" href="#tedata.utils.setup_chrome_driver">setup_chrome_driver</a></code></li>
+<li><code><a title="tedata.utils.split_numeric" href="#tedata.utils.split_numeric">split_numeric</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tedata.utils.TimestampedChrome" href="#tedata.utils.TimestampedChrome">TimestampedChrome</a></code></h4>
+</li>
+<li>
+<h4><code><a title="tedata.utils.TimestampedFirefox" href="#tedata.utils.TimestampedFirefox">TimestampedFirefox</a></code></h4>
+</li>
+<li>
+<h4><code><a title="tedata.utils.generic_webdriver" href="#tedata.utils.generic_webdriver">generic_webdriver</a></code></h4>
+<ul class="">
+<li><code><a title="tedata.utils.generic_webdriver.BrowserType" href="#tedata.utils.generic_webdriver.BrowserType">BrowserType</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tedata.utils.get_tooltip" href="#tedata.utils.get_tooltip">get_tooltip</a></code></h4>
+<ul class="">
+<li><code><a title="tedata.utils.get_tooltip.bail_out" href="#tedata.utils.get_tooltip.bail_out">bail_out</a></code></li>
+<li><code><a title="tedata.utils.get_tooltip.extract_date_value_tooltip" href="#tedata.utils.get_tooltip.extract_date_value_tooltip">extract_date_value_tooltip</a></code></li>
+<li><code><a title="tedata.utils.get_tooltip.get_tooltip_text" href="#tedata.utils.get_tooltip.get_tooltip_text">get_tooltip_text</a></code></li>
+<li><code><a title="tedata.utils.get_tooltip.move_cursor" href="#tedata.utils.get_tooltip.move_cursor">move_cursor</a></code></li>
+<li><code><a title="tedata.utils.get_tooltip.move_pointer" href="#tedata.utils.get_tooltip.move_pointer">move_pointer</a></code></li>
+<li><code><a title="tedata.utils.get_tooltip.scrape_chart_data" href="#tedata.utils.get_tooltip.scrape_chart_data">scrape_chart_data</a></code></li>
+<li><code><a title="tedata.utils.get_tooltip.scrape_dates_from_tooltips" href="#tedata.utils.get_tooltip.scrape_dates_from_tooltips">scrape_dates_from_tooltips</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+</footer>
+</body>
+</html>

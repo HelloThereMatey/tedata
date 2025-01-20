@@ -1777,3 +1777,16 @@ Browsers:
 - Chrome: True
 
 2025-01-20 12:01:27,099 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-20 13:04:56,761 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-20 13:04:56.761744
+User: jamesbishop
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-20 13:04:56,764 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!

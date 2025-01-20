@@ -130,7 +130,7 @@ with pd.ExcelWriter(filepath) as writer:
 
 #### #3 Use command line
 
-You can run the `scrape_chart` function from command line. Invoking the package in command line will run the functionality in the __main__ module. Only a URL can be used to indicate the data to download. This will save your data and metadata to an excel (.xlsx) file in the current working directory. 
+You can run the `scrape_chart` function from command line. Invoking the package in command line will run the functionality in the _main_ module. Only a URL can be used to indicate the data to download. This will save your data and metadata to an excel (.xlsx) file in the current working directory.
 
 ```bash
 python -m tedata https://tradingeconomics.com/united-states/ism-manufacturing-new-orders
@@ -138,7 +138,7 @@ python -m tedata https://tradingeconomics.com/united-states/ism-manufacturing-ne
 
 #### #4: Run through the steps in Jupyter or similar
 
-Running steps individually can have an advantage in terms of download speed as you can avoid initializing new webdrivers and other objects with every new dataset download. 
+Running steps individually can have an advantage in terms of download speed as you can avoid initializing new webdrivers and other objects with every new dataset download.
 
 ```python
 scr = ted.TE_Scraper(use_existing_driver=True)  ## Initialize a new TE_scraper object.
@@ -170,4 +170,4 @@ scrape_chart(scraper = scr, id = "gdp", country: str = "united-states")
 
 ### Reporting issues and debugging
 
-The package has extensive logging which should help me identify where things went wrong if you encounter a problem. Please log an issue or pull request and send me your logfile if you run into a problem.
+The package has extensive logging which should help me identify where things went wrong if you encounter a problem. Please log an issue or pull request and send me your logfile if you run into a problem. logfiles are stored in `/src/tedata/logs`.
