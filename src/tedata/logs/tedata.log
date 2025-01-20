@@ -1751,3 +1751,29 @@ Name: Extracted Series, dtype: float64
 2025-01-19 13:44:16,727 - tedata.utils.scraper - DEBUG - Start value, end value: 9.959, 3130.0, pix0, pix1: 57.70497361111097, 313.25208333333, data units per chart pixel from start & end points: 12.209259589715181, unit_per_pix calculated from the y axis ticks: 13.123134968273023, inverse of that: 0.07620130421714301, unit_per_pix from axis limits and self.y_axis (probably best way): 12.203389830508474
 2025-01-19 13:44:16,839 - tedata.utils.scraper - DEBUG - Scraping metadata for the series from the page...
 2025-01-19 13:44:16,920 - tedata.utils.scraper - DEBUG - Metadata scraped successfully: {'units': 'USD Billion', 'original_source': 'U.S. Bureau of Economics Analysis', 'title': 'United States Corporate Profits', 'indicator': 'corporate profits', 'country': 'united states', 'length': 311, 'frequency': 'QS', 'source': 'Trading Economics', 'id': 'united-states/corporate-profits', 'start_date': '1947-01-01', 'end_date': '2024-07-01', 'min_value': 9.959, 'max_value': 3141.5569999999475, 'description': 'Corporate profits represents the portion of the total income earned from current production that is accounted for by U.S. corporations. It is one of the most closely watched U.S. economic indicators, as it provides a summary measure of corporate financial health and thus serves as an essential indicator of economic performance.'}
+2025-01-20 11:59:20,801 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-20 11:59:20.801788
+User: jamesbishop
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-20 11:59:20,802 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!
+2025-01-20 12:01:27,099 - tedata.utils.scraper.search - DEBUG - 
+New initialization of the tedata package:
+Version: 0.10
+Python: 3.11.11 | packaged by conda-forge | (main, Dec  5 2024, 14:24:23) [Clang 18.1.8 ]
+System: darwin
+Location: /Users/jamesbishop/Documents/Python/Scraping/tedata/src/tedata
+Time: 2025-01-20 12:01:27.099509
+User: jamesbishop
+Browsers:
+- Firefox: True
+- Chrome: True
+
+2025-01-20 12:01:27,099 - tedata.utils.scraper.search - INFO - tedata package initialized successfully!

@@ -458,13 +458,13 @@ class TE_Scraper(object):
         If you want to use matplotlib or other plotting library don't use this method, plot the series attribute data directly. If using jupyter
         you can set 
 
-        :Parameters:
+        **Parameters**
         - annotation_text (str): Text to display in the annotation box at the bottom of the chart. Default is None. If None, the default annotation text
         will be created from the metadata.
         - dpi (int): The resolution of the plot in dots per inch. Default is 300.
         - ann_box_pos (tuple): The position of the annotation box on the chart. Default is (0, -0.23) which is bottom left.
 
-        :Returns: None
+        **Returns** None
         """
 
         fig = self.series.plot()  # Plot the series using pandas, plotly needs to be set as the pandas plotting backend.
@@ -517,7 +517,7 @@ class TE_Scraper(object):
     def save_plot(self, filename: str = "plot", save_path: str = os.getcwd(), dpi: int = 300, format: str = "png"):
         """Save the plot to a file. The plot must be created using the plot_series method. This method will save the plot as a PNG image file.
 
-        :Parameters:
+        **Parameters**
         - filename (str): The name of the file to save the plot to. Default is 'plot.png'.
         - save_path (str): The directory to save the plot to. Default is the current working directory.
         - dpi (int): The resolution of the plot in dots per inch. Default is 300.
@@ -539,6 +539,11 @@ class TE_Scraper(object):
             logger.debug("Error: Plot not found. Run plot_series() method to create a plot.")
 
     def scrape_metadata(self):
+        """Scrape metadata from the page. This method scrapes metadata from the page and stores it in the 'metadata' attribute. The metadata
+        includes the title, indicator, country, length, frequency, source, , original source, id, start date, end date, min value, and max value of the series.
+        It also scrapes a description of the series if available and stores it in the 'description' attribute.
+        """
+
         self.metadata = {}
         logger.debug(f"Scraping metadata for the series from the page...")
 
@@ -625,7 +630,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
     You can however save time by passing either a scraper object or a driver object to the function. Best to pass a driver object
     for fastest results.
     
-    :Parameters:
+    **Parameters**
 
     - url (str): The URL of the chart to scrape.
     - id (str): The id of the chart to scrape. This is the latter part of the URL after the country name.
@@ -636,7 +641,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
     - headless (bool): Whether to run the browser in headless mode (display no window).
     - browser (str): The browser to use, either 'chrome' or 'firefox'.
 
-    :Returns:  
+    **Returns**
     - TE_Scraper object with the scraped data or None if an error occurs.
     """
 
