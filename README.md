@@ -88,7 +88,6 @@ Metadata for the series is stored in the "metadata" attribte of the TE_Scraper o
 
 ```python
 print(scraped.metadata)
-```
 
 {'units': 'points',
  'original_source': 'Institute for Supply Management',
@@ -104,6 +103,7 @@ print(scraped.metadata)
  'min_value': 24.200000000000998,
  'max_value': 82.6000000000004,
  'description': "The Manufacturing ISM Report On Business is based... ...is generally declining."}
+ ```
 
 #### #2: Single line data download
 
