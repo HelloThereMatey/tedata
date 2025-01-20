@@ -1,10 +1,3 @@
-<style>
-    p {font-size: 12px}
-    li {font-size: 12px}
-    figcaption {font-size: 12px}
-    table {font-size: 12px}
-</style>
-
 ## tedata
 
 Download data from Trading Economics without an account or API key. Uses Selenium and BeautifulSoup4 to scrape data directly from charts. Should run on linux, mac OS or windows.
