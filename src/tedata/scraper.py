@@ -74,7 +74,7 @@ class TE_Scraper(object):
             else:
                 logger.debug(f"Error: Unsupported browser! Use 'chrome' or 'firefox'.")
                 raise ValueError("Unsupported browser! Use 'chrome' or 'firefox'.")
-            logger.debug(f"New {browser} driver created.")
+            logger.info(f"New {browser} webdriver created.")
         elif use_existing_driver:   ## May want to change this later to make sure a scraper doesn't steal the driver from a search object.
             self.driver = active[-1][0]
             logger.debug(f"Using existing {browser} driver.")
@@ -84,7 +84,9 @@ class TE_Scraper(object):
         
         self.wait = WebDriverWait(self.driver, timeout=10)
         self.start_end = None
-    
+        self.datespan = None
+        self.date_spans = None
+
     def load_page(self, url, wait_time=5):
         """Load page and wait for it to be ready"""
 
@@ -97,6 +99,8 @@ class TE_Scraper(object):
             time.sleep(wait_time)  # Basic wait for page load
             self.full_page = self.get_page_source()
             self.page_soup = BeautifulSoup(self.full_page, 'html.parser')
+            self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML")
+            self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')  #Make a bs4 object from the #chart element of the page.
             return True
         except Exception as e:
             print(f"Error loading page: {str(e)}")
@@ -113,11 +117,11 @@ class TE_Scraper(object):
             )
             # Scroll element into view
             #self.driver.execute_script("arguments[0].scrollIntoView(true);", button)
-            time.sleep(1)  # Brief pause after scroll
+            time.sleep(0.25)  # Brief pause after scroll
             button.click()
-            logger.info("Button clicked successfully, waiting 2s for response...")
-            logger.debug(f"Button clicked successfully: {selector}")
-            time.sleep(2)
+            #logger.info("Button clicked successfully, waiting 1s for response...")
+            logger.info(f"Button clicked successfully: {selector}")
+            time.sleep(0.75)
             return True
         except TimeoutException:
             logger.info(f"Button not found or not clickable: {selector}")
@@ -129,25 +133,56 @@ class TE_Scraper(object):
             return False
 
     def find_max_button(self, selector: str = "#dateSpansDiv"):
-        """Find the button on the chart that selects the maximum date range and return the CSS selector for it."""
+        """Find the button on the chart that selects the maximum date range and return the CSS selector for it.
+        The button is usually labelled 'MAX' and is used to select the maximum date range for the chart. The selector for the button is
+        usually '#dateSpansDiv' but can be changed if the button is not found. The method will return the CSS selector for the button.
+        This will also create an atrribute 'date_spans' which is a dictionary containing the text of the date span buttons and their CSS selectors."""
 
         try:
             buts = self.page_soup.select_one(selector)
-            i = 1
-            for res in buts.find_all("a"):
-                #print(res.text)
-                if res.text.upper() == "MAX":
-                    max_selector = res.get("class")
-                    if isinstance(max_selector, list):
-                        max_selector = max_selector[0]
-                    fin_selector = "a." + max_selector + f":nth-child({i})"
-                    logger.debug(f"MAX button found for chart at URL: {self.last_url}, selector: {fin_selector}")
-                i += 1
+            datebut = buts[0] if isinstance(buts, list) else buts
+            self.date_spans = {child.text: f"a.{child['class'][0] if isinstance(child['class'], list) else child['class']}:nth-child({i+1})" for i, child in enumerate(datebut.children)}
+
+            if "MAX" in self.date_spans.keys():
+                max_selector = self.date_spans["MAX"]
+            else:
+                raise ValueError("MAX button not found.")
+            logger.debug(f"MAX button found for chart at URL: {self.last_url}, selector: {max_selector}")
             
-            return fin_selector
+            return max_selector
         except Exception as e:
             print(f"Error finding date spans buttons: {str(e)}")
             logger.debug(f"Error finding date spans buttons: {str(e)}")
+            return None
+    
+    def click_max_button(self):
+        """Click the button that selects the maximum date range on the chart. This is usually the 'MAX' button and is used to select the maximum date range for the chart.
+        The method will find the button and click it. It will also wait for the chart to update after clicking the button."""
+        max_selector = self.find_max_button()
+        if self.click_button(max_selector):
+            time.sleep(1)
+            logger.info("MAX button clicked successfully.")
+            self.datespan = "MAX"
+        else:
+            logger.debug("Error clicking MAX button.")
+            return False
+
+    def select_line_chart(self):
+        """Select the line chart type on the Trading Economics chart. This is done by clicking the chart type button and then selecting the line chart type."""
+
+        self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML")
+        self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')
+
+        if self.click_button("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > button"):
+            chart_type = self.chart_soup.select_one('div.chartTypesWrapper.dropDownStyle')
+            line_but = [child.button["class"][0] for child in chart_type.children if child["title"] == "Line"][0]
+            finsel = ".lineChart ." + line_but
+            line = self.chart_soup.select_one(finsel)
+            self.click_button(finsel)
+            return True
+        else:
+            print("Error selecting line chart type.")
+            logger.debug("Error selecting line chart type.")
             return None
 
     def get_element(self, selector: str = ".highcharts-series path", selector_type=By.CSS_SELECTOR):
@@ -167,7 +202,7 @@ class TE_Scraper(object):
                 EC.presence_of_element_located((selector_type, selector))
             )
             self.current_element = element
-            logger.debug(f"Element found and assigned to current_element attribute: {selector}")
+            logger.info(f"Element found and assigned to current_element attribute: {selector}")
             return element
         except TimeoutException:
             print(f"Element not found: {selector}")
@@ -194,9 +229,58 @@ class TE_Scraper(object):
 
         if element is None:
             element = self.current_element
+        if self.current_element is None:
+            self.get_element()
         
+        print("Element: ", element)
         datastrlist = element.get_attribute("d").split(" ")
+        
+        print("Data string list: ", datastrlist)
+
         ser = pd.Series(datastrlist)
+        ser_num = pd.to_numeric(ser, errors='coerce').dropna()
+
+        exvals = ser_num[::2]; yvals = ser_num[1::2]
+        exvals = exvals.sort_values().to_list()
+        yvals = yvals.to_list()
+        series = pd.Series(yvals, index = exvals, name = "Extracted Series")
+
+        if invert_the_series:
+            series = utils.invert_series(series, max_val = self.y_axis.index.max())
+        self.series = series
+
+        self.pix0 = self.series.iloc[0]; self.pix1 = self.series.iloc[-1]
+        logger.debug(f"Raw data series extracted successfully: {series.head()}")
+        logger.info(f"Raw data series extracted successfully.")
+        if return_series:
+            return series
+        
+    def series_from_chart_soup(self, invert_the_series: bool = True, return_series: bool = False):
+        """Extract series data from element text. This extracts the plotted series from the svg chart by taking the PATH 
+        element of the data tarace on the chart. Series values are pixel co-ordinates on the chart.
+
+        **Parameters:**
+        - invert_the_series (bool): Whether to invert the series values.
+        - return_series (bool): whether or not to return the series at end. Series is assigned to self.series always.
+
+        **Returns:**
+
+        - series (pd.Series): The extracted series data.
+        """
+
+        self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML")
+        self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')  # Update the chart soup 
+        
+        datastrlist = self.chart_soup.select(".highcharts-series-group")
+        print("Data string list: ", len(datastrlist))
+        
+        if len(datastrlist) > 1:
+            print("Multiple series found in the chart. Got to figure out which one to use... wor to do here...")
+            raise ValueError("Multiple series found in the chart. Got to figure out which one to use... work to do here...")
+        else:
+            raw_series = self.chart_soup.select_one(".highcharts-line-series").path["d"].split(" ")
+        print(raw_series)
+        ser = pd.Series(raw_series)
         ser_num = pd.to_numeric(ser, errors='coerce').dropna()
 
         exvals = ser_num[::2]; yvals = ser_num[1::2]
@@ -275,7 +359,7 @@ class TE_Scraper(object):
 
         return self.series
     
-    def get_xlims_from_tooltips(self, force_rerun: bool = False):
+    def get_xlims_from_tooltips(self):
         """ Use the get_tooltip class to get the start and end dates and some other points of the time series using the tooltip box displayed on the chart.
         Takes the latest num_points points from the chart and uses them to determine the frequency of the time series. The latest data is used
         in case the earlier data is of lower frequency which can sometimes occurr.
@@ -291,34 +375,9 @@ class TE_Scraper(object):
         else: 
             self.tooltip_scraper = utils.get_tooltip(driver=self.driver, chart_x=335.5, chart_y=677.0)  #Note: update this later to use self.width and height etc...
         
-        if hasattr(self, "start_end") and self.start_end is not None and hasattr(self, "frequency") and self.frequency is not None and not force_rerun:
-            return
-        else:
-            time.sleep(1)
-            data_points, num_points = self.tooltip_scraper.scrape_dates_from_tooltips(num_points=7)
-            logger.info(f"Scraped {len(data_points)} data points from the chart, num_points target was {num_points}")
-            
-            if len(data_points) > num_points:
-                logger.debug("Successfully scraped start and end dates plus other data points to determine frequency of the time-series...")
-                self.start_end = {
-                'start_date': data_points[-1]["date"],
-                'end_date': data_points[0]["date"],
-                'start_value': data_points[-1]["value"], 
-                'end_value': data_points[0]["value"]
-                }
-                dates = [point["date"] for point in data_points][-2::-1]
-                values = [point["value"] for point in data_points][-2::-1]
-                self.ripped_points = {"dates": dates, "values": values}
-
-                diff = pd.Series(dates).diff().dropna().mode()[0]
-                self.frequency = utils.map_frequency(diff)
-                print(f"Time delta between data points in the series appears to be approxiately: {diff.days} days, will use {self.frequency} frequency.")
-                logger.debug(f"Time series frequency appears to be: {diff.days}, {self.frequency}")
-
-            else:
-                logger.info("Error scraping data from tooltips..")
-                logger.debug("Error scraping data from tooltips..")
-                return None
+        self.start_end = self.tooltip_scraper.first_last_dates()
+        print("Start and end dates scraped from tooltips: ", self.start_end)
+        return None
 
     def make_x_index(self, force_rerun: bool = False, return_index: bool = False):
         """Make the DateTime Index for the series using the start and end dates scraped from the tooltips. 
@@ -327,7 +386,9 @@ class TE_Scraper(object):
         """
         
         print("Using selenium and toltip scraping to construct the date time index for the time-series, this'll take a bit...")
-        self.get_xlims_from_tooltips(force_rerun = force_rerun)
+        self.get_xlims_from_tooltips(force_rerun = force_rerun)  # Get the first and last datapoints from the chart at MAX datespan
+        if self.click_button(self.date_spans["1Y"]):  # Set the datespan to 1 year to look just at the latest data points
+            datapoints = self.tooltip_scraper.get_latest_points(num_points = 10)  # Get the latest 10 points from the chart
 
         if self.start_end is not None:
             logger.info(f"Start and end values scraped from tooltips: {self.start_end}")

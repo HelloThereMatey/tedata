@@ -201,7 +201,7 @@ def find_zero_crossing(series):
 
 ########### Classes ##############################################################################
 
-class get_tooltip(object):
+class get_tooltip(object):  #To do: Get chart_x and chart_y from the chart element of the TE_Scraper  itself.
     """Class to scrape tooltip data from a chart element using Selenium.
     This can get x, y data from the tooltip box displayed by a site such as Trading Economics when the cursor
     is moved over a chart. It can move the cursor to specific points on the chart and extract tooltip text.
@@ -217,7 +217,7 @@ class get_tooltip(object):
         **Parameters:**
         - driver (webdriver): A Selenium WebDriver object, can put in an active one or make a new one for a new URL.
         - url (str): The URL of the webpage to scrape. Unnecessary if driver is provided.
-        - chart_x (float): The total length in pixels of the svg chart image that we are trying to scrape.
+        - chart_x (float): The total length in pixels of the svg chart image that we are trying to scrape. 
         - chart_y (float): The total height in pixels of the svg chart image that we are trying to scrape.
         """
         if driver is None:
@@ -267,14 +267,70 @@ class get_tooltip(object):
                 return True
             else:
                 return False
+            
+    def first_last_dates(self):  ## Maybe put MAX history selection in here rather than external...
+        """Scrape first and last data points for the data series on the chart at TE using viewport coordinates.
+
+        **Returns:**
+
+        - data_points (list): A list of dictionaries containing scraped data points.
+        - num_points (int): The number of data points scraped."""
+        
+        # Get chart element and viewport info
+        chart_rect = self.chart_element.rect # x, y, width, height
+        logger.info("Getting first and last data points from chart at MAX data history... Chart rect: ", chart_rect)
+        viewport_width = self.driver.execute_script("return window.innerWidth;")
+        viewport_height = self.driver.execute_script("return window.innerHeight;")
+        
+        print(f"Viewport dimensions: {viewport_width} x {viewport_height}")
+        print(f"Chart position in viewport: x={chart_rect['x']}, y={chart_rect['y']}")
+        
+        viewport_y = chart_rect['y'] + (chart_rect['height'] / 2)
+        firstlast = {("start_date", "start_value"): chart_rect['x'],
+        ("end_date", "end_value"): chart_rect['x'] + chart_rect['width']}
+        start_end = {}
+
+        for key, value in firstlast.items():
+            date = None; num = None
+            offset = 0
+            while len(start_end) < 4:
+                # Use ActionChains to move to absolute viewport position
+                actions = ActionChains(self.driver)
+                x_pos = value + offset
+
+                actions.move_by_offset(x_pos, viewport_y).perform()
+                actions.reset_actions()  # Reset for next move
+                #print(f"Moving to point at viewport coordinates ({x_pos}, {viewport_y})")
+                time.sleep(0.05)
+                
+                tooltip = self.get_tooltip_text()
+                if tooltip and tooltip is not None:
+                    date, num = self.extract_date_value_tooltip(tooltip)
+                    #print("Date: ", date, "Value: ", value)
+                    break
+                else:
+                    print(f"No tooltip found at point xpos: {x_pos}")
+                    if key[0] == "start_date":
+                        offset += 1
+                    else:
+                        offset += 1
+                    continue
+
+            if date and num:
+                start_end[key[0]] = date
+                start_end[key[1]] = num
+            else:
+                print(f"No tooltip found at point")
+        
+        return start_end
     
-    def scrape_dates_from_tooltips(self, num_points: int = 10, x_increment: int = 1):
-        """Scrape first and last data points using viewport coordinates.
-        Also scrape dates from the first n points to determine time series frequency.
+    def get_latest_points(self, num_points: int = 10, x_increment: int = 1): #To do: The tooltip scraper class should perhaps inherit from this TE_SCraper so attrubutes such as datespan can be accessed.
+        """ Scrape the latest points to determine the time-series frequency. Will also check if end_date is correct.
+        This will work best if the chart is set to 1Y datespan first before the tooltip scrape robject is initialized.
 
         **Parameters:**
 
-        - num_points (int): The number of data points to scrape in addition to first and last points.
+        - num_points (int): The number of data points to scrape from the 1Y chart.
         - x_increment (int): The number of pixels to move cursor horizontally between points.
 
         **Returns:**
@@ -292,52 +348,48 @@ class get_tooltip(object):
         
         data_points = []
         i = 0
-        last_date = ""
+        last_tooltip = ""
         viewport_y = chart_rect['y'] + (chart_rect['height'] / 2)
-        first_x =  chart_rect['x']
         date_change = []
         just_run = False
         date_change_count = 0
 
-        while len(data_points) < num_points + 2:  #scrape first num points and then last point...
+        while len(data_points) < num_points:
             try: 
                 # Use ActionChains to move to absolute viewport position
                 actions = ActionChains(self.driver)
-                if len(data_points) == num_points + 1:
-                    logger.info(f"Later points scraped successfully, scraping the oldest point now at x =  {first_x}")
-                    x_pos = first_x
-                else:
-                    x_pos = chart_rect['x'] + chart_rect['width'] - (i*x_increment)
+                x_pos = chart_rect['x'] + chart_rect['width'] - (i*x_increment)
 
                 actions.move_by_offset(x_pos, viewport_y).perform()
                 actions.reset_actions()  # Reset for next move
-                #print(f"Moving to point at viewport coordinates ({x_pos}, {viewport_y})")
+                print(f"Moving to point at viewport coordinates ({x_pos}, {viewport_y})")
                 time.sleep(0.05)
                 
                 tooltip = self.get_tooltip_text()
-                date, value = self.extract_date_value_tooltip(tooltip)
-
-                if not just_run:
-                    if date == last_date:
-                        i += 1
-                        date_change_count += 1
-                        continue
-                    else:   
-                        date_change.append(date_change_count)
-                        date_change_count = 0
-                        # Here we're trying to find the average number of pixels needed to move betweeen dates from the 1st 3 points to speed up subsequent scraping.
-                        if len(date_change) == 3:
-                            #print("Here's the date change list: ", date_change[1::])
-                            av_incs = sum(date_change[1::])/2
-                            x_increment = round(av_incs)
-                            just_run == True
+                if tooltip:
+                    if not just_run:
+                        if tooltip == last_tooltip:
+                            i += 1
+                            date_change_count += 1
+                            continue
+                        else:
+                            date, value = self.extract_date_value_tooltip(tooltip)   
+                            date_change.append(date_change_count)
+                            date_change_count = 0
+                            # Here we're trying to find the average number of pixels needed to move betweeen dates from the 1st 3 points to speed up subsequent scraping.
+                            if len(date_change) == 3:
+                                print("Here's the date change list: ", date_change[1::])
+                                av_incs = sum(date_change[1::])/2
+                                x_increment = round(av_incs)
+                                just_run == True
                 
-                if date == last_date:
+                if tooltip == last_tooltip:
                     #print(f"Date not changed from last point, skipping: {date}")
                     i += 1
                     continue
 
                 if tooltip and date and value:
+                    print("Data point scraped: ", date, value)  
                     data_points.append({
                         'viewport_x': x_pos,
                         'viewport_y': viewport_y,
@@ -348,13 +400,13 @@ class get_tooltip(object):
                 else:
                     print(f"No tooltip found at point")
                 
-                last_date = date
+                last_tooltip = tooltip
             except Exception as e:
                 logger.debug(f"Error scraping tooltip at ({x_pos}, {viewport_y}), error: {str(e)}, moving to next point..")
                 print(f"Error scraping tooltip at ({x_pos}, {viewport_y}), error: {str(e)}, moving to next point..")
                 continue
         
-        return data_points, num_points
+        return data_points
     
     def extract_date_value_tooltip(self, tooltip_element: str):
         """Extract date and value from a single tooltip HTML"""
