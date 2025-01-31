@@ -9,12 +9,13 @@ from selenium.webdriver.common.keys import Keys
 import time
 import pandas as pd
 import os 
+from timeit import timeit
 
 fdel = os.path.sep
 
 # tedata related imports
-from . import utils
-from . import logger
+from . import utils, logger
+from .base import Generic_Webdriver, SharedWebDriverState
 
 # Create module-specific logger
 logger = logger.getChild('scraper')
@@ -32,60 +33,73 @@ def find_element_header_match(soup: BeautifulSoup, selector: str, match_text: st
     return None
 
 ### Main workhorse class for scraping data from Trading Economics website.
-class TE_Scraper(object):
+class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
     """Class for scraping data from Trading Economics website. This is the main workhorse of the module.
     It is designed to scrape data from the Trading Economics website using Selenium and BeautifulSoup.
     It can load a page, click buttons, extract data from elements, and plot the extracted data.
 
     **Init Parameters:** 
-
-    - driver (webdriver): A Selenium WebDriver object, can put in an active one or make a new one for a new URL.
-    - use_existing_driver (bool): Whether to use an existing driver in the namespace. If True, the driver parameter is ignored.
-    - browser (str): The browser to use for scraping, either 'chrome' or 'firefox'.
-    - headless (bool): Whether to run the browser in headless mode (show no window).
+    - **kwargs (dict): Keyword  arguments to pass to the Generic_Webdriver class. These are the same as the Generic_Webdriver class.
+    These are:
+        - driver (webdriver): A Selenium WebDriver object, can put in an active one or make a new one for a new URL.
+        - use_existing_driver (bool): Whether to use an existing driver in the namespace. If True, the driver parameter is ignored. Default is False.
+        - browser (str): The browser to use for scraping, either 'chrome' or 'firefox'.
+        - headless (bool): Whether to run the browser in headless mode (show no window).
     """
 
     # Define browser type with allowed values
     BrowserType = Literal["chrome", "firefox"]
-    def __init__(self, 
-                 driver: webdriver = None, 
-                 use_existing_driver: bool = False,
-                 browser: BrowserType = "firefox", 
-                 headless: bool = True):
-        
-        self.browser = browser
-        self.headless = headless
 
-        active = utils.find_active_drivers() 
-        if len(active) <= 1:
-            use_existing_driver = False
-
-        if driver is None and not use_existing_driver:
-            if browser == "chrome":
-                print("Chrome browser not supported yet. Please use Firefox.")
-                logger.debug(f"Chrome browser not supported yet. Please use Firefox.")
-                return None
-                # self.driver = utils.setup_chrome_driver(headless = headless)
-            elif browser == "firefox":
-                options = webdriver.FirefoxOptions()
-                if headless:
-                    options.add_argument('--headless')
-                self.driver = utils.TimestampedFirefox(options=options)
-            else:
-                logger.debug(f"Error: Unsupported browser! Use 'chrome' or 'firefox'.")
-                raise ValueError("Unsupported browser! Use 'chrome' or 'firefox'.")
-            logger.info(f"New {browser} webdriver created.")
-        elif use_existing_driver:   ## May want to change this later to make sure a scraper doesn't steal the driver from a search object.
-            self.driver = active[-1][0]
-            logger.debug(f"Using existing {browser} driver.")
-        else:
-            self.driver = driver
-            logger.debug(f"Using supplied driver.")
-        
-        self.wait = WebDriverWait(self.driver, timeout=10)
+    def __init__(self, **kwargs):
+        Generic_Webdriver.__init__(self, **kwargs)
+        SharedWebDriverState.__init__(self)
+        self.observers.append(self)  # Register self as observer
+        self._shared_state = self  # Since we inherit SharedWebDriverState, we are our own shared state
         self.start_end = None
-        self.datespan = None
-        self.date_spans = None
+        self.start_end = None
+        self.chart_type = None
+
+    # @property
+    # def date_span(self):
+    #     return self._shared_state.date_span
+    # @date_span.setter
+    # def date_span(self, value):
+    #     self._shared_state.date_span = value
+
+    # @property
+    # def chart_type(self):
+    #     return self._shared_state.chart_type
+    # @chart_type.setter
+    # def chart_type(self, value):
+    #     self._shared_state.chart_type = value
+
+    # @property
+    # def page_source(self):
+    #     return self._shared_state.page_source
+    # @page_source.setter
+    # def page_source(self, value):
+    #     self._shared_state.page_source = value
+        
+    # @property
+    # def page_soup(self):
+    #     return self._shared_state.page_soup
+    # @page_soup.setter
+    # def page_soup(self, value):
+    #     self._shared_state.page_soup = value
+        
+    # @property
+    # def chart_soup(self):
+    #     return self._shared_state.chart_soup
+    # @chart_soup.setter
+    # def chart_soup(self, value):
+    #     self._shared_state.chart_soup = value
+        
+    # @property
+    # def full_chart(self):
+    #     return self._shared_state.full_chart
+    # @full_chart.setter
+    # def full_chart(self, value):
+    #     self._shared_state.full_chart = value
 
     def load_page(self, url, wait_time=5):
         """Load page and wait for it to be ready"""
@@ -94,13 +108,13 @@ class TE_Scraper(object):
         self.series_name = url.split("/")[-1].replace("-", " ")
         try:
             self.driver.get(url)
-            logger.debug(f"Page loaded successfully: {url}")
+            #logger.debug(f"Page loaded successfully: {url}")
             logger.info(f"WebPage at {url} loaded successfully.")
             time.sleep(wait_time)  # Basic wait for page load
             self.full_page = self.get_page_source()
             self.page_soup = BeautifulSoup(self.full_page, 'html.parser')
-            self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML")
-            self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')  #Make a bs4 object from the #chart element of the page.
+            self.chart_soup = self.page_soup.select_one("#chart")  #Make a bs4 object from the #chart element of the page.
+            self.full_chart = self.chart_soup.contents
             return True
         except Exception as e:
             print(f"Error loading page: {str(e)}")
@@ -162,29 +176,163 @@ class TE_Scraper(object):
         if self.click_button(max_selector):
             time.sleep(1)
             logger.info("MAX button clicked successfully.")
-            self.datespan = "MAX"
+            self.date_span = "MAX"
+            self.update_chart()
         else:
             logger.debug("Error clicking MAX button.")
             return False
+        
+    def determine_date_span(self, update_chart: bool = True):
+        """Determine the selected date span from the Trading Economics chart currently displayed in webdriver."""
 
-    def select_line_chart(self):
+        if update_chart: 
+            self.update_chart()
+        ## Populate the date spans dictionary
+        buts = self.chart_soup.select("#dateSpansDiv")
+        datebut = buts[0] if isinstance(buts, list) else buts
+        self.date_spans = {child.text: f"a.{child['class'][0] if isinstance(child['class'], list) else child['class']}:nth-child({i+1})" for i, child in enumerate(datebut.children)}
+
+        ## Find the selected date span
+        if len(buts) == 1:
+            result = buts[0].children
+        elif len(buts) > 1:
+            print("Multiple date spans found")
+            return buts
+        else:
+            print("No date spans found")
+            return None
+
+        for r in result:
+            if "selected"in r["class"]:
+                date_span = {r.text: r}
+        return date_span
+
+    def update_chart(self):
+        """Update the chart attributes after loading a new page or clicking a button. This will check the page source and update the 
+        beautiful soup objects such as chart_soup, from which most other methods derive their functionality. It will also update the full_chart attribute
+        which is the full HTML of the chart element on the page. This method should be run after changing something on the webpage via driver such
+        as clicking a button to change the date span or chart type."""
+
+        try:
+            # Since we inherit from SharedWebDriverState, we can directly set the page_source property
+            self.page_source = self.driver.page_source
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to update chart: {e}")
+            return False
+
+    def set_date_span(self, date_span: str):
+        """Set the date span on the Trading Economics chart. This is done by clicking the date span button on the chart. The date span is a button on the chart
+        that allows you to change the date range of the chart. This method will click the button for the date span specified in the date_span parameter.
+        The date_span parameter should be a string that matches one of the date span buttons on the chart. The method will also update the date_span attribute
+        of the class to reflect the new date span."""
+        if not hasattr(self, "date_spans"):
+            self.determine_date_span()
+        if date_span in self.date_spans.keys():
+            if self.click_button(self.date_spans[date_span]):
+                self.date_span = date_span
+                logger.info(f"Date span set to: {date_span}")
+                self.update_chart()
+                return True
+            else:
+                logger.info(f"Error setting date span: {date_span}, check that the date span button is clickable.")
+                return False
+        else:
+            logger.info(f"Error setting date span: {date_span}, check that the supplied date span matches one of the keys in the self.date_spans attribute (dict).")
+            return False
+
+    def update_date_span(self, update_chart: bool = False):
+        """Update the date span after clicking a button. This will check the page source and update the date span attribute.
+        This method can be used t check that the curret date span is correct after clicking a button to change it. 
+        It will update the date_span attribute. It is not necessary after running set_date_span though as that method already updates the date span attribute.
+
+        **Parameters:**
+        - update_chart (bool): Whether to update the chart before determining the date span. Default is False.
+        """
+
+        if update_chart:
+            self.update_chart()
+        self.date_span_dict = self.determine_date_span()
+        self.date_span = list(self.date_span_dict.keys())[0]
+    
+    def create_chart_types_dict(self):
+        """Create a dictionary of chart types and their CSS selectors. This is used to select the chart type on the Trading Economics chart.
+        The dictionary is stored in the chart_types attribute of the class. The keys are the names of the chart types and the values are the CSS selectors
+        for the chart type buttons on the chart."""
+
+        hart_types = self.chart_soup.select_one("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > div")
+        self.chart_types = {child["title"]: "."+child["class"][0]+" ."+ child.button["class"][0] for child in hart_types.children}
+        logger.info(f"Chart types dictionary created successfully: {self.chart_types}")
+
+    def select_line_chart(self, update_chart: bool = False):
         """Select the line chart type on the Trading Economics chart. This is done by clicking the chart type button and then selecting the line chart type."""
 
-        self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML")
-        self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')
+        if update_chart:
+            self.update_chart()
+        if not hasattr(self, "chart_types"):
+            self.create_chart_types_dict()
 
         if self.click_button("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > button"):
-            chart_type = self.chart_soup.select_one('div.chartTypesWrapper.dropDownStyle')
-            line_but = [child.button["class"][0] for child in chart_type.children if child["title"] == "Line"][0]
-            finsel = ".lineChart ." + line_but
-            line = self.chart_soup.select_one(finsel)
-            self.click_button(finsel)
-            return True
+            if self.click_button(self.chart_types["Line"]):
+                self.chart_type = "lineChart"
+                logger.info("Line chart type selected.")
+                self.update_chart()
+                return True
         else:
             print("Error selecting line chart type.")
             logger.debug("Error selecting line chart type.")
             return None
+    
+    def select_chart_type(self, chart_type: str):
+        """Select a chart type on the Trading Economics chart. This is done by clicking the chart type button and then selecting the specified chart type.
+        The chart type should be a string that matches one of the chart types in the chart_types dictionary. The method will click the chart type button
+        and then select the specified chart type. It will also update the chart_type attribute of the class to reflect the new chart type.
 
+        **Parameters:**
+        - chart_type (str): The chart type to select on the chart. This must be one of the keys of the chart_types dictionary attribute of the class.
+        List the options by printing self.chart_types.keys()
+        """
+
+        if chart_type in self.chart_types.keys():
+            if self.click_button("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > button"):
+                self.click_button(self.chart_types[chart_type])
+                self.chart_type = self.expected_types[chart_type]
+                logger.info(f"Chart type set to: {chart_type}")
+                self.update_chart()
+                return True
+            else:
+                logger.debug(f"Error selecting chart type: {chart_type}")
+                return False
+        else:
+            logger.debug(f"Chart type not found: {chart_type}")
+            return False
+        
+    def determine_chart_type(self, update_chart: bool = True):
+        """ Determine the chart type from the Trading Economics chart currently displayed in webdriver.
+        This is done by checking the class of the selected chart type button in the chart. The chart type is determined by the class of the SVG element
+        in the chart. This method will return the chart type as a string. 
+
+        **Parameters:**
+        - update_chart (bool): Whether to update the chart before determining the chart type. Default is False.
+        """
+        if update_chart:
+            self.update_chart()
+        if not hasattr(self, "chart_types"):
+            self.create_chart_types_dict()
+
+        self.expected_types = {chart_type: self.chart_types[chart_type].split(" ")[0].replace(".", '') for chart_type in self.chart_types.keys()}
+        logger.debug("determine_chart_type method: Expected chart types: ", self.expected_types)
+        res = self.chart_soup.select(".dkLabels-label-btn.selectedChartType")
+        for r in res:  # This is a list of the selected chart type buttons.
+            #print("Parent class: ", r.parent["class"])
+            if any(expected_type in r.parent["class"] for expected_type in self.expected_types.values()):
+                self.chart_type = r.parent["class"][0]
+                logger.debug(f"Chart type determined: {self.chart_type}")
+                return self.chart_type
+        logger.debug("Error determining chart tyoe: Chart type not found.")
+        return None
+    
     def get_element(self, selector: str = ".highcharts-series path", selector_type=By.CSS_SELECTOR):
         """Find element by selector. The data trace displayed on a Trading Economics chart is a PATH element in the SVG chart.
         This is selected using the CSS selector ".highcharts-series path" by default. The element is stored in the 'current_element' attribute.
@@ -255,7 +403,7 @@ class TE_Scraper(object):
         if return_series:
             return series
         
-    def series_from_chart_soup(self, invert_the_series: bool = True, return_series: bool = False):
+    def series_from_chart_soup(self, invert_the_series: bool = True, return_series: bool = False, set_max_datespan: bool = True):
         """Extract series data from element text. This extracts the plotted series from the svg chart by taking the PATH 
         element of the data tarace on the chart. Series values are pixel co-ordinates on the chart.
 
@@ -268,18 +416,24 @@ class TE_Scraper(object):
         - series (pd.Series): The extracted series data.
         """
 
-        self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML")
+        if self.chart_type != "lineChart":
+            self.select_line_chart()
+        if set_max_datespan and self.date_span != "MAX":
+            self.set_date_span("MAX")
+        logger.info(f"Series path extraction method: Extracting series data from chart soup.") 
+        logger.info(f"Date span: {self.date_span}. Chart type: {self.chart_type}, best to use MAX date span for this.. URL: {self.last_url}.")
+        self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML") 
         self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')  # Update the chart soup 
         
         datastrlist = self.chart_soup.select(".highcharts-series-group")
-        print("Data string list: ", len(datastrlist))
+        #print("Data string list: ", len(datastrlist))
         
         if len(datastrlist) > 1:
             print("Multiple series found in the chart. Got to figure out which one to use... wor to do here...")
             raise ValueError("Multiple series found in the chart. Got to figure out which one to use... work to do here...")
         else:
             raw_series = self.chart_soup.select_one(".highcharts-line-series").path["d"].split(" ")
-        print(raw_series)
+    
         ser = pd.Series(raw_series)
         ser_num = pd.to_numeric(ser, errors='coerce').dropna()
 
@@ -360,7 +514,7 @@ class TE_Scraper(object):
         return self.series
     
     def get_xlims_from_tooltips(self):
-        """ Use the get_tooltip class to get the start and end dates and some other points of the time series using the tooltip box displayed on the chart.
+        """ Use the TooltipScraper class to get the start and end dates and some other points of the time series using the tooltip box displayed on the chart.
         Takes the latest num_points points from the chart and uses them to determine the frequency of the time series. The latest data is used
         in case the earlier data is of lower frequency which can sometimes occurr.
         
@@ -369,26 +523,32 @@ class TE_Scraper(object):
         - force_rerun (bool): Whether to force a rerun of the method to get the start and end dates and frequency of the time series again. The method
         will not run again by default if done a second time and start_end and frequency attributes are already set. If the first run resulted in erroneous
         assignation of these attributes, set this to True to rerun the method. However, something may need to be changed if it is not working..."""
+        if self.date_span != "MAX":
+            self.set_date_span("MAX")  ##Set date_span to MAX for start and end date pull...
+        if self.chart_type != "lineChart":
+            self.select_chart_type("Line")
 
         if hasattr(self, "tooltip_scraper"):
             pass    
         else: 
-            self.tooltip_scraper = utils.get_tooltip(driver=self.driver, chart_x=335.5, chart_y=677.0)  #Note: update this later to use self.width and height etc...
+            self.tooltip_scraper = utils.TooltipScraper(driver=self.driver, chart_x=335.5, chart_y=677.0)  #Note: update this later to use self.width and height etc...
         
         self.start_end = self.tooltip_scraper.first_last_dates()
         print("Start and end dates scraped from tooltips: ", self.start_end)
-        return None
 
-    def make_x_index(self, force_rerun: bool = False, return_index: bool = False):
+    def make_x_index(self, return_index: bool = False):
         """Make the DateTime Index for the series using the start and end dates scraped from the tooltips. 
         This does a few things and uses Selenium to scrape the dates from the tooltips on the chart as well as
         some more points to determine the frequency of the time series. It will take some time....
         """
-        
-        print("Using selenium and toltip scraping to construct the date time index for the time-series, this'll take a bit...")
-        self.get_xlims_from_tooltips(force_rerun = force_rerun)  # Get the first and last datapoints from the chart at MAX datespan
-        if self.click_button(self.date_spans["1Y"]):  # Set the datespan to 1 year to look just at the latest data points
-            datapoints = self.tooltip_scraper.get_latest_points(num_points = 10)  # Get the latest 10 points from the chart
+        ## Update chart...
+        elapsed_time = timeit(self.update_chart, number=1)
+        print(f"Time taken to update chart: {elapsed_time} seconds")
+
+        print("Using selenium and tooltip scraping to construct the date time index for the time-series, this'll take a bit...")
+        elapsed_time2 = timeit(self.get_xlims_from_tooltips(), number=1)
+        print(f"Time taken to get first_last dates: {elapsed_time2} seconds")
+        # Get the first and last datapoints from the chart at MAX datespan
 
         if self.start_end is not None:
             logger.info(f"Start and end values scraped from tooltips: {self.start_end}")
@@ -397,6 +557,20 @@ class TE_Scraper(object):
             print("Error: Start and end values not found...pulling out....")
             logger.debug(f"Error: Start and end values not found...pulling out....")
             return None
+        
+        if self.date_span != "1Y": # Set the datespan to 1 year to look just at the latest data points
+            self.set_date_span("1Y")
+        if self.chart_type != "lineChart":
+            self.select_chart_type("Line")
+        
+        datapoints = self.tooltip_scraper.get_latest_points(num_points = 10)  # Get the latest 10 points from the chart
+        latest_dates = [datapoint["date"] for datapoint in datapoints]
+        print("Latest dates: ", latest_dates)
+
+        ## Get the frequency of the time series
+        date_series = pd.Series(latest_dates[::-1]).astype("datetime64[ns]")
+        self.frequency = utils.get_date_frequency(date_series)
+        print(self.frequency)
 
         try:
             start_date = self.start_end["start_date"]; end_date = self.start_end["end_date"]
@@ -410,7 +584,7 @@ class TE_Scraper(object):
         except Exception as e:
             print(f"Error creating date index: {str(e)}")
        
-    def get_y_axis(self):
+    def get_y_axis(self, update_chart: bool = False):
         """Get y-axis values from chart to make a y-axis series with tick labels and positions (pixel positions).
         Also gets the limits of both axis in pixel co-ordinates. A series containing the y-axis values and their pixel positions (as index) is assigned
         to the "y_axis" attribute. The "axis_limits" attribute is made too & is  dictionary containing the pixel co-ordinates of the max and min for both x and y axis.
@@ -418,8 +592,8 @@ class TE_Scraper(object):
 
         ##Get positions of y-axis gridlines
         y_heights = []
-        self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML")
-        self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')  #Make a bs4 object from the #chart element of the page.
+        if update_chart:
+            self.update_chart()
 
         ## First get the pixel values of the max and min for both x and y axis.
         self.axis_limits = self.extract_axis_limits()

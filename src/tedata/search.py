@@ -1,4 +1,3 @@
-from typing import Literal
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -14,71 +13,39 @@ wd = os.path.dirname(__file__)
 fdel= os.path.sep
 
 ## Import the TE_Scraper class from the scraper module ################
+from . import utils, logger
+from .base import Generic_Webdriver
 from .scraper import scrape_chart
-from . import utils
-from . import logger
 
 # Create module-specific logger
 logger = logger.getChild('search')
 
 ######## Search class to search Trading Economics website and extract search results ##############################
-class search_TE(object):
+class search_TE(Generic_Webdriver):
     """Class for searching Trading Economics website and extracting search results.
     This class is designed to search the Trading Economics website for a given term and extract the search results.
     It can load the search page, enter a search term, and extract the URLs of the search results.
 
     **Init Parameters:**
 
-    - driver (webdriver): A Selenium WebDriver object, can put in an active one or make a new one for a new URL.
-    - use_existing_driver (bool): Whether to use an existing driver or make a new one.
-    - browser (str): The browser to use for scraping, either 'chrome' or 'firefox'.
-    - search_term (str): The term to search for on the website. Optional, can also provide it in the search_trading_economics method.
-    - headless (bool): Whether to run the browser in headless mode (show no window).
+    - load_homepage (bool): If True, the class will load the Trading Economics home page when initialized.
+    - **kwargs: Additional keyword arguments to pass to the Generic_Webdriver class. These are the same as the Generic_Webdriver class.
+    These are:
+        - browser (str): The browser to use for the webdriver. Options are 'chrome' or 'firefox'.
+        - headless (bool): If True, the browser will run in headless mode.
+        - use_existing_driver (bool): If True, the class will attempt to use an existing 'spare' webdriver instance if one is found.
+        - driver (webdriver): If provided, the class will use this webdriver instance instead of creating a new one.
+
     """
-    # Define browser type with allowed values
-    BrowserType = Literal["chrome", "firefox"]
-    
-    def __init__(self, driver: webdriver = None, 
-                 use_existing_driver: bool = False,
-                 browser: BrowserType = "firefox", 
-                 search_term: str = "US ISM Services PMI",
-                 headless: bool = True,
-                 load_homepage: bool = True):
-        
-        self.browser = browser
-        self.headless = headless
 
-        logger.debug(f"Initializing search object with browser: {browser}, headless: {headless}, use_existing_driver: {use_existing_driver}")
-        active = utils.find_active_drivers() 
-        if len(active) <= 1:
-            use_existing_driver = False
-
-        if driver is None and not use_existing_driver:
-            if browser == "chrome":
-                print("Chrome browser not supported yet. Please use Firefox.")
-                # self.driver = utils.setup_chrome_driver(headless = headless)
-            elif browser == "firefox":
-                options = webdriver.FirefoxOptions()
-                if headless:
-                    options.add_argument('--headless')
-                self.driver = utils.TimestampedFirefox(options=options)
-            else:
-                logger.debug(f"Error on driver initialization: Unsupported browser: {browser}")
-                raise ValueError("Unsupported browser! Use 'chrome' or 'firefox'.")
-            logger.debug(f"New webdriver object initialized: {self.driver}")
-            logger.info(f"New webdriver object initialized: {self.driver}")
-        elif use_existing_driver:   ## May want to change this later to make sure a scraper doesn't steal the driver from a search object.
-            self.driver = active[-1][0]
-            logger.debug(f"Using existing webdriver object: {self.driver}")
-            logger.info(f"Using existing webdriver object: {self.driver}")
-        else:
-            self.driver = driver
-            logger.debug(f"Using provided webdriver object: {self.driver}")
-            logger.info(f"Using provided webdriver object: {self.driver}")
+    def __init__(self,
+                load_homepage: bool = True,
+                **kwargs):
         
-        self.wait = WebDriverWait(self.driver, timeout=10)
-        logger.debug(f"Driver of search_TE object initialized: {self.driver}")
-        self.search_term = search_term
+        super().__init__(**kwargs)
+
+        logger.debug(f"Initializing search object with parameters: {kwargs}")
+
         if load_homepage:
             self.home_page()
 

@@ -1,6 +1,5 @@
-from typing import Literal
+from typing import Union
 from bs4 import BeautifulSoup
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -12,11 +11,9 @@ import time
 import pandas as pd
 import os 
 import re 
-import gc
 import warnings
-import weakref
 
-from . import logger
+from . import logger, scraper
 
 # Create module-specific logger
 logger = logger.getChild('utils')
@@ -95,6 +92,18 @@ def map_frequency(diff):
         return "AS"
     else:
         return "Multi-year"
+    
+def get_date_frequency(date_series: pd.Series):
+    """Get the frequency of a date series"""
+    if date_series.is_monotonic_increasing or date_series.is_monotonic_decreasing:
+        diff = date_series.diff().dropna().mean()
+        freq = pd.infer_freq(date_series)
+        if freq is not None:
+            return freq
+        else:
+            return map_frequency(diff)
+    else:
+        return None
     
 # BeautifulSoup approach
 def check_element_exists_bs4(soup, selector):
@@ -198,54 +207,59 @@ def find_zero_crossing(series):
             
     return None
 
-
 ########### Classes ##############################################################################
 
-class get_tooltip(object):  #To do: Get chart_x and chart_y from the chart element of the TE_Scraper  itself.
-    """Class to scrape tooltip data from a chart element using Selenium.
+
+class TooltipScraper(scraper.TE_Scraper):
+    """ Extended version of TE_Scraper with additional functionality to scrape tooltip data from a chart element using Selenium.
+    Can be initilized using a TE_Scraper object or a new URL. If using a new URL, a new webdriver will be created. If using an existing
+    TE_Scraper object, the webdriver from that object will be used and all attributes will be copied over.
     This can get x, y data from the tooltip box displayed by a site such as Trading Economics when the cursor
     is moved over a chart. It can move the cursor to specific points on the chart and extract tooltip text.
     It extracts date and value data from the tooltip text.
+    Initialize the scraper with a URL and chart coordinates
+
+    **init Parameters:**
+    - parent_instance (scraper.TE_Scraper): A parent scraper object to copy attributes from. This is the most efficient way to initialize.
+    - **kwargs: Keyword arguments to pass to the parent class, these are TE_Scraper init key word arguments.
+    Generally you would not supply keyword arguments if you are using a parent_instance for initilization. The kwargs apply to creation
+    of a new TE_Scraper object. See TE_scraper class for details on initialization of a fresh instance.
+
     """
-
-    def __init__(self, 
-                    driver: webdriver = None, 
-                    url: str = None,
-                    chart_x: int = 600, chart_y: int = 375):
-        
-        """Initialize the scraper with a URL and chart coordinates
-        **Parameters:**
-        - driver (webdriver): A Selenium WebDriver object, can put in an active one or make a new one for a new URL.
-        - url (str): The URL of the webpage to scrape. Unnecessary if driver is provided.
-        - chart_x (float): The total length in pixels of the svg chart image that we are trying to scrape. 
-        - chart_y (float): The total height in pixels of the svg chart image that we are trying to scrape.
-        """
-        if driver is None:
-            self.driver = webdriver.Firefox()
-            self.driver.get(url)
+    
+    def __init__(self, parent_instance=None, **kwargs):
+        """ Initialize the TooltipScraper object"""
+        if parent_instance:  # Copy attributes from parent instance
+            self.__dict__.update(parent_instance.__dict__)
+            self.observers.append(self)
         else:
-            self.driver = driver
-        self.chart_x = round(chart_x)
-        self.chart_y = round(chart_y)
+            super().__init__(**kwargs)
 
-        self.last_url = url
-
-        #wait for the chart element to be present
-        chart_selector = '.highcharts-plot-background'
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, chart_selector))
-        )
-
-        # Locate the chart element
-        self.chart_element = self.driver.find_element(By.CSS_SELECTOR, chart_selector)
-
-        # Initialize ActionChains
-        self.actions = ActionChains(self.driver)
-
+    def get_chart_dims(self):
+        """Get dimensions of chart and plotting area"""
+        try:
+            # Ensure full_chart is WebElement
+            self.chart_element = self.driver.find_element(By.CSS_SELECTOR, "#chart")
+                
+            # Get overall chart dimensions
+            self.chart_rect = {k: round(float(v), 1) for k, v in self.chart_element.rect.items()}
+            
+            # Get plot area dimensions
+            self.plot_background = self.driver.find_element(By.CSS_SELECTOR, '.highcharts-plot-background')
+            self.axes_rect = {k: round(float(v), 1) for k, v in self.plot_background.rect.items()}
+            self.chart_x = self.axes_rect["width"]
+            self.chart_y = self.axes_rect["height"]
+            return True
+        
+        except Exception as e:
+            print(f"Failed to get chart dimensions: {e}")
+            logger.error(f"Failed to get chart dimensions: {e}")
+            return False
+    
     def move_cursor(self, x: int = 0, y: int = 0):
-        self.actions.move_to_element_with_offset(self.chart_element, x, y).perform()
+        self.actions.move_to_element_with_offset(self.full_chart, x, y).perform()
         print(f"Moved cursor to ({x}, {y})")
-        return
+        return None
                         
     def move_pointer(self, x_offset: int = None, y_offset: int = 1, x_increment: int = 1):
         """Move cursor to a specific x-offset and y-offset from the chart element.
@@ -267,62 +281,69 @@ class get_tooltip(object):  #To do: Get chart_x and chart_y from the chart eleme
                 return True
             else:
                 return False
-            
-    def first_last_dates(self):  ## Maybe put MAX history selection in here rather than external...
+    
+    def first_last_dates(self):
         """Scrape first and last data points for the data series on the chart at TE using viewport coordinates.
 
         **Returns:**
+        - start_end: dict containing the start and end dates and values of the data series.
 
-        - data_points (list): A list of dictionaries containing scraped data points.
-        - num_points (int): The number of data points scraped."""
+        """
+
+        # try:
+        self.update_chart()
+        self.determine_chart_type()
+        self.determine_date_span()
+
+        if self.date_span != "MAX":
+            self.set_date_span("MAX")
+        time.sleep(1)
+        if self.chart_type != "lineChart":
+            print("Selecting Line chart type.")
+            self.select_chart_type("Line")
         
-        # Get chart element and viewport info
-        chart_rect = self.chart_element.rect # x, y, width, height
-        logger.info("Getting first and last data points from chart at MAX data history... Chart rect: ", chart_rect)
-        viewport_width = self.driver.execute_script("return window.innerWidth;")
-        viewport_height = self.driver.execute_script("return window.innerHeight;")
+        print("Getting chart dimensions and plot bakground element.")
+        if self.get_chart_dims():
+            print("Got chart dimensions and plot bakground element.")
+
+        # Calculate exact positions of left and right extremes
+        left_x =  self.axes_rect['x'] # Left edge x-coordinate
+        right_x = self.axes_rect['x'] + self.axes_rect['width'] # Right edge x-coordinate
+        y_pos = self.axes_rect["y"] + self.axes_rect["height"] - 15  # Near bottom of chart y-coordinate
         
-        print(f"Viewport dimensions: {viewport_width} x {viewport_height}")
-        print(f"Chart position in viewport: x={chart_rect['x']}, y={chart_rect['y']}")
-        
-        viewport_y = chart_rect['y'] + (chart_rect['height'] / 2)
-        firstlast = {("start_date", "start_value"): chart_rect['x'],
-        ("end_date", "end_value"): chart_rect['x'] + chart_rect['width']}
+        # Initialize ActionChains
+        actions = ActionChains(self.driver)
         start_end = {}
+        
+        # For each extreme (left and right)
+        positions = {
+            ("start_date", "start_value"): left_x,
+            ("end_date", "end_value"): right_x
+        }
 
-        for key, value in firstlast.items():
-            date = None; num = None
-            offset = 0
-            while len(start_end) < 4:
-                # Use ActionChains to move to absolute viewport position
-                actions = ActionChains(self.driver)
-                x_pos = value + offset
-
-                actions.move_by_offset(x_pos, viewport_y).perform()
-                actions.reset_actions()  # Reset for next move
-                #print(f"Moving to point at viewport coordinates ({x_pos}, {viewport_y})")
-                time.sleep(0.05)
-                
-                tooltip = self.get_tooltip_text()
-                if tooltip and tooltip is not None:
-                    date, num = self.extract_date_value_tooltip(tooltip)
-                    #print("Date: ", date, "Value: ", value)
-                    break
-                else:
-                    print(f"No tooltip found at point xpos: {x_pos}")
-                    if key[0] == "start_date":
-                        offset += 1
-                    else:
-                        offset += 1
-                    continue
-
-            if date and num:
-                start_end[key[0]] = date
-                start_end[key[1]] = num
-            else:
-                print(f"No tooltip found at point")
+        for (date_key, value_key), x_pos in positions.items():
+            # Reset cursor by moving to plot background first
+            actions.move_to_element(self.plot_background).perform()
+            actions.reset_actions()
+            
+            # Move to exact position
+            actions.move_by_offset(x_pos, y_pos).perform()
+            print(f"Moved cursor to ({x_pos}, {y_pos})")
+            time.sleep(0.5)
+            
+            # Get tooltip
+            tooltip = self.get_tooltip_text()
+            if tooltip:
+                date, value = self.extract_date_value_tooltip(tooltip)
+                if date and value:
+                    start_end[date_key] = date
+                    start_end[value_key] = value
         
         return start_end
+            
+        # except Exception as e:
+        #     logger.error(f"Error in first_last_dates: {e}")
+        #     return None
     
     def get_latest_points(self, num_points: int = 10, x_increment: int = 1): #To do: The tooltip scraper class should perhaps inherit from this TE_SCraper so attrubutes such as datespan can be accessed.
         """ Scrape the latest points to determine the time-series frequency. Will also check if end_date is correct.
@@ -337,77 +358,64 @@ class get_tooltip(object):  #To do: Get chart_x and chart_y from the chart eleme
 
         - data_points (list): A list of dictionaries containing scraped data points.
         - num_points (int): The number of data points scraped."""
+
+        if self.date_span != "1Y":
+            self.set_date_span("1Y")
+        if self.chart_type != "lineChart":
+            self.select_chart_type("Line")
         
-        # Get chart element and viewport info
-        chart_rect = self.chart_element.rect
-        viewport_width = self.driver.execute_script("return window.innerWidth;")
-        viewport_height = self.driver.execute_script("return window.innerHeight;")
+        self.update_chart()
+        self.get_chart_dims()
+
+        if not hasattr(self, "viewport_width"):
+            self.viewport_width = self.driver.execute_script("return window.innerWidth;")
+            self.viewport_height = self.driver.execute_script("return window.innerHeight;")
         
-        print(f"Viewport dimensions: {viewport_width} x {viewport_height}")
-        print(f"Chart position in viewport: x={chart_rect['x']}, y={chart_rect['y']}")
+        print(f"Viewport dimensions: {self.viewport_width} x {self.viewport_height}")
+        print(f"Chart position in viewport: x={self.axes_rect['x']}, y={self.axes_rect['y']}")
         
         data_points = []
-        i = 0
         last_tooltip = ""
-        viewport_y = chart_rect['y'] + (chart_rect['height'] / 2)
-        date_change = []
-        just_run = False
-        date_change_count = 0
+        viewport_y = self.axes_rect['y'] + (self.axes_rect['height'] / 2)
 
+        actions = ActionChains(self.driver); actions.reset_actions()
+        actions.move_to_element_with_offset(self.plot_background, round(self.chart_x/2), round(self.chart_y/2) - 1).perform() # Move to chart middle to start
+        chart_edge = self.axes_rect["x"] + round(self.chart_x/2); print(chart_edge)
+        i = 1
         while len(data_points) < num_points:
-            try: 
-                # Use ActionChains to move to absolute viewport position
-                actions = ActionChains(self.driver)
-                x_pos = chart_rect['x'] + chart_rect['width'] - (i*x_increment)
-
-                actions.move_by_offset(x_pos, viewport_y).perform()
-                actions.reset_actions()  # Reset for next move
-                print(f"Moving to point at viewport coordinates ({x_pos}, {viewport_y})")
-                time.sleep(0.05)
-                
-                tooltip = self.get_tooltip_text()
-                if tooltip:
-                    if not just_run:
-                        if tooltip == last_tooltip:
-                            i += 1
-                            date_change_count += 1
-                            continue
-                        else:
-                            date, value = self.extract_date_value_tooltip(tooltip)   
-                            date_change.append(date_change_count)
-                            date_change_count = 0
-                            # Here we're trying to find the average number of pixels needed to move betweeen dates from the 1st 3 points to speed up subsequent scraping.
-                            if len(date_change) == 3:
-                                print("Here's the date change list: ", date_change[1::])
-                                av_incs = sum(date_change[1::])/2
-                                x_increment = round(av_incs)
-                                just_run == True
-                
-                if tooltip == last_tooltip:
-                    #print(f"Date not changed from last point, skipping: {date}")
-                    i += 1
-                    continue
-
-                if tooltip and date and value:
-                    print("Data point scraped: ", date, value)  
-                    data_points.append({
-                        'viewport_x': x_pos,
-                        'viewport_y': viewport_y,
-                        'tooltip_data': tooltip,
-                        "date": date,
-                        "value": value
-                    })
-                else:
-                    print(f"No tooltip found at point")
-                
-                last_tooltip = tooltip
-            except Exception as e:
-                logger.debug(f"Error scraping tooltip at ({x_pos}, {viewport_y}), error: {str(e)}, moving to next point..")
-                print(f"Error scraping tooltip at ({x_pos}, {viewport_y}), error: {str(e)}, moving to next point..")
+            #try: 
+            actions.move_by_offset(-i, 0).perform()
+            time.sleep(0.05)
+            
+            tooltip = self.get_tooltip_text()
+            date, value = self.extract_date_value_tooltip(tooltip)
+            
+            if tooltip == last_tooltip:
+                print(f"Date not changed from last point, skipping: {date}")
+                i += 1
                 continue
+
+            if tooltip and date and value:
+                print("Data point scraped: ", date, value)  
+                data_points.append({
+                    'viewport_x': self.axes_rect["x"] + i,
+                    'viewport_y': viewport_y,
+                    'tooltip_data': tooltip,
+                    "date": date,
+                    "value": value
+                })
+                i += 1
+            else:
+                print(f"No tooltip found at point")
+            
+            last_tooltip = tooltip
         
         return data_points
     
+    def get_device_pixel_ratio(self):
+        """Get device pixel ratio to scale movements"""
+        return self.driver.execute_script('return window.devicePixelRatio;')
+        
     def extract_date_value_tooltip(self, tooltip_element: str):
         """Extract date and value from a single tooltip HTML"""
 
@@ -454,9 +462,11 @@ class get_tooltip(object):  #To do: Get chart_x and chart_y from the chart eleme
         I don't know if this is working atm, this approcach of pulling each datapoint one at a time from the tooltips
         may be implemented later yet it will need javascript implementation to work fast enough.
         Currently this is very slow when done this way. """
+
+        self.update_chart()
         
         # Get chart dimensions and position
-        chart_rect = self.chart_element.rect
+        chart_rect = self.full_chart.rect
         chart_width = chart_rect['width']
         chart_height = chart_rect['height']
         
@@ -482,7 +492,7 @@ class get_tooltip(object):  #To do: Get chart_x and chart_y from the chart eleme
                 x_offset = current_x - chart_center_x
                 
                 # Move cursor using offset from center
-                self.actions.move_to_element(self.chart_element)\
+                self.actions.move_to_element(self.full_chart)\
                         .move_by_offset(x_offset, 0)\
                         .perform()
                 
@@ -517,100 +527,151 @@ class get_tooltip(object):  #To do: Get chart_x and chart_y from the chart eleme
         else:
             #print("Tooltip not found")
             return None
+        
+        
+    def show_position_marker(self, x: int, y: int, duration_ms: int = 5000):
+        """Add visual marker at specified coordinates"""
+        js_code = """
+            // Create dot element
+            const dot = document.createElement('div');
+            dot.style.cssText = `
+                position: absolute;
+                left: ${arguments[0]}px;
+                top: ${arguments[1]}px;
+                width: 10px;
+                height: 10px;
+                background-color: red;
+                border-radius: 50%;
+                z-index: 9999;
+                pointer-events: none;
+            `;
+            document.body.appendChild(dot);
+            
+            // Remove after duration
+            setTimeout(() => dot.remove(), arguments[2]);
+        """
+        self.driver.execute_script(js_code, x, y, duration_ms)
+
+    def mark_cursor_position(self, duration_ms: int = 5000):
+        """Mark current cursor position with dot"""
+        js_code = """
+            let cursor_x = 0;
+            let cursor_y = 0;
+            
+            document.addEventListener('mousemove', function(e) {
+                cursor_x = e.pageX;
+                cursor_y = e.pageY;
+            });
+            
+            return [cursor_x, cursor_y];
+        """
+        coords = self.driver.execute_script(js_code)
+        if coords and len(coords) == 2:
+            self.show_position_marker(coords[0], coords[1], duration_ms)
+            return coords
+        return None
+
+    def move_cursor_on_chart(self, x: int = 0, y: int = 0):
+        """Move cursor to chart origin (0,0) point"""
+        
+        print(f"Chart rect: {self.axes_rect}")
+        # Calculate origin coordinates in viewport
+        x_pos = self.full_chart.rect["x"] + float(self.axes_rect['x'])  + x
+        y_pos = self.full_chart.rect["y"] + float(self.axes_rect['y']) + float(self.axes_rect["height"]) - y  
+        
+        # Move to origin
+        actions = ActionChains(self.driver)
+        actions.move_by_offset(x_pos, y_pos).perform()
+        actions.reset_actions()
+        self.show_position_marker(x_pos, y_pos)
+        print(f"Moved cursor to chart pposition ({x_pos}, {y_pos})")
     
     def bail_out(self):
         self.driver.quit()
         return None
-
-
-##### Webdriver classes ##############################################################
-class TimestampedFirefox(webdriver.Firefox):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.created_at = time.time()
-
-class TimestampedChrome(webdriver.Chrome):   #Chrome can work for other things but it's not working for scraping Trading Economics charts at the moment....
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.created_at = time.time()
-
-class generic_webdriver(object):
-    """Generic webdriver class for initializing a Selenium WebDriver"""
-
-    # Define browser type with allowed values
-    BrowserType = Literal["chrome", "firefox"]
-    def __init__(self, driver: webdriver = None, 
-                 browser: BrowserType = "firefox", 
-                 headless: bool = True):
-        
-        self.browser = browser
-        self.headless = headless
-
-        if driver is None:
-            if browser == "chrome":
-                self.driver = setup_chrome_driver(headless = headless)
-            elif browser == "firefox":
-                options = webdriver.FirefoxOptions()
-                if headless:
-                    options.add_argument('--headless')
-                self.driver = webdriver.Firefox(options=options)
-            else:
-                raise ValueError("Unsupported browser! Use 'chrome' or 'firefox'.")
-        else:
-            self.driver = driver
-        
-        self.wait = WebDriverWait(self.driver, timeout=10)
-        self.created_at = time.time()
-        self.driver.created_at = self.created_at
-
-### More utility functions ##############################################################
-
-def setup_chrome_driver(headless: bool = True):  #Been trying to get it running with Chrome as well but having issues still......
-    chrome_options = webdriver.ChromeOptions()
-    if headless:
-        chrome_options.add_argument("--headless")
-    # Disable notifications
-    chrome_options.add_argument("--disable-notifications")
-    # Additional preference to block notifications
-    prefs = {
-        "profile.default_content_setting_values.notifications": 2,
-        "profile.default_content_settings.popups": 0
-    }
-    chrome_options.add_experimental_option("prefs", prefs)
     
-    # Initialize driver with options
-    driver = TimestampedChrome(options=chrome_options)
-    return driver
-
-def find_active_drivers(quit_all: bool = False) -> list:
-    """Find all active selenium webdriver instances in memory sorted by age.
+    def move_with_marker(self, x: int, y: int):
+        """Move to position and show marker"""
+        actions = ActionChains(self.driver)
+        actions.move_by_offset(x, y).perform()
+        actions.reset_actions()
+        self.show_position_marker(x, y)
     
-    Args:
-        quit_all (bool): If True, quit all found drivers
-        
-    Returns:
-        list: List of tuples (driver, age_in_seconds) sorted by age, excluding weakproxies
+
+### Other utility functions for the TooltipScraper class ##########################################
+
+def get_chart_datespans(scraper_object: Union[scraper.TE_Scraper, TooltipScraper], selector: str = "#dateSpansDiv"):
+    """Get the date spans from the Trading Economics chart currently displayed in the scraper object. The scraper object can be a TE_Scraperfrom the scraper module
+    or TooltipScraper object from the utils module.
+    
+    ** Parameters:**
+    - scraper_object (TE_Scraper or TooltipScraper): The scraper object with the chart to scrape.
+    - selector (str): The CSS selector to find the date spans element. Default is '#dateSpansDiv'.
+    
+    ** Returns:**
+    - date_spans (dict): A dictionary with date span names as keys and CSS selectors for the button to select that span as values.
     """
-    active_drivers = []
-    current_time = time.time()
+    if not isinstance(scraper_object, TooltipScraper) or not isinstance(scraper_object, scraper.TE_Scraper):
+        print("get_chart_datespans function: Invalid scraper object supplies as first arg, must be a scraper.TE_Scraper or utils.TooltipScraper object.")
+        return None
+    try:
+        buts = scraper_object.page_soup.select_one(selector)
+        datebut = buts[0] if isinstance(buts, list) else buts
+        scraper_object.date_spans = {child.text: f"a.{child['class'][0] if isinstance(child['class'], list) else child['class']}:nth-child({i+1})" for i, child in enumerate(datebut.children)}
+        return scraper_object.date_spans
+    except Exception as e:
+        print(f"get_chart_datespans function: Error finding date spans, error: {str(e)}")
+        return None
+
+def click_button(scraper_object: Union[scraper.TE_Scraper, TooltipScraper], 
+                 selector: str = "#dateSpansDiv", 
+                 selector_type=By.CSS_SELECTOR):
     
-    for obj in gc.get_objects():
-        try:
-            if isinstance(obj, (TimestampedFirefox, TimestampedChrome)) and not isinstance(obj, weakref.ProxyType):
-                creation_time = getattr(obj, 'created_at', current_time)
-                age = current_time - creation_time
-                active_drivers.append((obj, age))
-        except ReferenceError:
-            continue
+    """Click button and wait for response..."""
+
+    try:
+        # Wait for element to be clickable
+        button =  WebDriverWait(scraper_object.driver, timeout=10).until(
+            EC.element_to_be_clickable((selector_type, selector))
+        )
+        # Scroll element into view
+        #self.driver.execute_script("arguments[0].scrollIntoView(true);", button)
+        time.sleep(0.25)  # Brief pause after scroll
+        button.click()
+        #logger.info("Button clicked successfully, waiting 1s for response...")
+        logger.info(f"Button clicked successfully: {selector} on object {scraper_object}")
+        time.sleep(0.75)
+        return True
+
+    except Exception as e:
+        logger.info(f"Error clicking button: {str(e)} on object {scraper_object}")
+        return False
     
-    # Sort by age (second element of tuple)
-    active_drivers.sort(key=lambda x: x[1])
+def show_position_marker(scraper_object: Union[scraper.TE_Scraper, TooltipScraper], 
+                         x: int, y: int, duration_ms: int = 5000):
+    """Add visual marker at specified coordinates"""
+
+    if not isinstance(scraper_object, TooltipScraper) or not isinstance(scraper_object, scraper.TE_Scraper):
+        print("get_chart_datespans function: Invalid scraper object supplies as first arg, must be a scraper.TE_Scraper or utils.TooltipScraper object.")
+        return None
     
-    if quit_all:
-        for driver, _ in active_drivers:
-            try:
-                driver.quit()
-            except:
-                pass
-                
-    return active_drivers
+    js_code = """
+        // Create dot element
+        const dot = document.createElement('div');
+        dot.style.cssText = `
+            position: absolute;
+            left: ${arguments[0]}px;
+            top: ${arguments[1]}px;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        `;
+        document.body.appendChild(dot);
+        
+        // Remove after duration
+        setTimeout(() => dot.remove(), arguments[2]);
+    """
+    scraper_object.driver.execute_script(js_code, x, y, duration_ms)
