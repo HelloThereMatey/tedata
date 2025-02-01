@@ -294,7 +294,7 @@ class TooltipScraper(scraper.TE_Scraper):
         self.update_chart()
         # determine_chart_method is inactive as of now...
         #self.determine_chart_type()
-        self.select_line_chart ()
+        self.select_line_chart() ## MAKE SURE IT IS A LINECHART.
         self.determine_date_span()
 
         if self.date_span != "MAX":
@@ -308,7 +308,8 @@ class TooltipScraper(scraper.TE_Scraper):
         # Calculate exact positions of left and right extremes
         left_x =  self.axes_rect['x'] # Left edge x-coordinate
         right_x = self.axes_rect['x'] + self.axes_rect['width'] # Right edge x-coordinate
-        y_pos = self.axes_rect["y"] + self.axes_rect["height"] - 15  # Near bottom of chart y-coordinate
+        y_pos = self.axes_rect["y"] + round(self.axes_rect["height"]/2)  # Middle of chart
+        # NOTE: USING THE MIDDLE OF THE CHART WILL REQUIRE LINE CHART_TYPE.
         
         # Initialize ActionChains
         actions = ActionChains(self.driver)
@@ -360,8 +361,8 @@ class TooltipScraper(scraper.TE_Scraper):
 
         if self.date_span != "1Y":
             self.set_date_span("1Y")
-        if self.chart_type != "lineChart":
-            self.select_chart_type("Line")
+        
+        self.select_line_chart() #Force line chart selection - very important.
         
         self.update_chart()
         self.get_chart_dims()
@@ -375,10 +376,11 @@ class TooltipScraper(scraper.TE_Scraper):
         
         data_points = []
         last_tooltip = ""
-        viewport_y = self.axes_rect['y'] + (self.axes_rect['height'] / 2)
+        viewport_y = self.axes_rect['y'] + round(self.axes_rect['height'] / 2)
 
         actions = ActionChains(self.driver); actions.reset_actions()
-        actions.move_to_element_with_offset(self.plot_background, round(self.chart_x/2), round(self.chart_y/2) - 1).perform() # Move to chart middle to start
+        # Move cursor to chart middle to start at right edge.
+        actions.move_to_element_with_offset(self.plot_background, round(self.chart_x/2), 0).perform()
         chart_edge = self.axes_rect["x"] + round(self.chart_x/2); print(chart_edge)
         i = 1
         while len(data_points) < num_points:

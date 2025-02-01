@@ -562,8 +562,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         print(f"Time taken to update chart: {elapsed_time} seconds")
 
         print("Using selenium and tooltip scraping to construct the date time index for the time-series, this'll take a bit...")
-        elapsed_time2 = timeit(self.get_xlims_from_tooltips(), number=1)
-        print(f"Time taken to get first_last dates: {elapsed_time2} seconds")
+        self.get_xlims_from_tooltips()
         # Get the first and last datapoints from the chart at MAX datespan
 
         if self.start_end is not None:
