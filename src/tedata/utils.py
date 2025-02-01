@@ -292,16 +292,15 @@ class TooltipScraper(scraper.TE_Scraper):
 
         # try:
         self.update_chart()
-        self.determine_chart_type()
+        # determine_chart_method is inactive as of now...
+        #self.determine_chart_type()
+        self.select_line_chart ()
         self.determine_date_span()
 
         if self.date_span != "MAX":
             self.set_date_span("MAX")
-        time.sleep(1)
-        if self.chart_type != "lineChart":
-            print("Selecting Line chart type.")
-            self.select_chart_type("Line")
-        
+        time.sleep(0.5)
+
         print("Getting chart dimensions and plot bakground element.")
         if self.get_chart_dims():
             print("Got chart dimensions and plot bakground element.")

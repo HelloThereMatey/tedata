@@ -168,6 +168,12 @@ Overwriting the data in the object will be faster than creating a new TE_Scraper
 scrape_chart(scraper = scr, id = "gdp", country: str = "united-states")
 ```
 
+### Additional Notes
+
+- If using a headless webdriver instance, i.e a browser window is shown, DO NOT CHANGE ANY SETTINGS ON THE CHART MANUALLY.
+- Specifically changing the chart_type cannot be detected as the code stands now. This could then lead to scraping failures.
+- Best to run in headless mode or if running with head, only use the browser window for veiwing the actions as they are taken by the webdriver.
+
 ### Reporting issues and debugging
 
 The package has extensive logging which should help me identify where things went wrong if you encounter a problem. Please log an issue or pull request and send me your logfile if you run into a problem. logfiles are stored in `/src/tedata/logs`.

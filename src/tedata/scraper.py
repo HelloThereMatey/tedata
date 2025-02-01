@@ -263,6 +263,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         hart_types = self.chart_soup.select_one("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > div")
         self.chart_types = {child["title"]: "."+child["class"][0]+" ."+ child.button["class"][0] for child in hart_types.children}
+        self.expected_types = {chart_type: self.chart_types[chart_type].split(" ")[0].replace(".", '') for chart_type in self.chart_types.keys()}
         logger.info(f"Chart types dictionary created successfully: {self.chart_types}")
 
     def select_line_chart(self, update_chart: bool = False):
@@ -293,6 +294,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         - chart_type (str): The chart type to select on the chart. This must be one of the keys of the chart_types dictionary attribute of the class.
         List the options by printing self.chart_types.keys()
         """
+        if not hasattr(self, "chart_types") or not hasattr(self, "expected_types"):
+            self.create_chart_types_dict()
 
         if chart_type in self.chart_types.keys():
             if self.click_button("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > button"):
@@ -307,31 +310,44 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         else:
             logger.debug(f"Chart type not found: {chart_type}")
             return False
+
+    ## Determine chart type from the chart displayed in the webdriver. This is not working yet,
+    # the buttons are not easi;y distinguishable, leave for now. chart_type will have to bve remembered and
+    # only set via the select_chart_type or select_line chart methods.  
+    # def determine_chart_type(self, update_chart: bool = True):
+    #     """ Determine the chart type from the Trading Economics chart currently displayed in webdriver.
+    #     This is done by checking the class of the selected chart type button in the chart. The chart type is determined by the class of the SVG element
+    #     in the chart. This method will return the chart type as a string. 
+
+    #     **Parameters:**
+    #     - update_chart (bool): Whether to update the chart before determining the chart type. Default is False.
+    #     """
+    #     if update_chart:
+    #         self.update_chart()
+    #     if not hasattr(self, "chart_types") or not hasattr(self, "expected_types"):
+    #         self.create_chart_types_dict()
+
+    #     print("Chart types: ", self.chart_types)
+    #     print("determine_chart_type method: Expected chart types: ", self.expected_types)
+    #     res = self.chart_soup.select(".dkLabels-label-btn.selectedChartType")
         
-    def determine_chart_type(self, update_chart: bool = True):
-        """ Determine the chart type from the Trading Economics chart currently displayed in webdriver.
-        This is done by checking the class of the selected chart type button in the chart. The chart type is determined by the class of the SVG element
-        in the chart. This method will return the chart type as a string. 
-
-        **Parameters:**
-        - update_chart (bool): Whether to update the chart before determining the chart type. Default is False.
-        """
-        if update_chart:
-            self.update_chart()
-        if not hasattr(self, "chart_types"):
-            self.create_chart_types_dict()
-
-        self.expected_types = {chart_type: self.chart_types[chart_type].split(" ")[0].replace(".", '') for chart_type in self.chart_types.keys()}
-        logger.debug("determine_chart_type method: Expected chart types: ", self.expected_types)
-        res = self.chart_soup.select(".dkLabels-label-btn.selectedChartType")
-        for r in res:  # This is a list of the selected chart type buttons.
-            #print("Parent class: ", r.parent["class"])
-            if any(expected_type in r.parent["class"] for expected_type in self.expected_types.values()):
-                self.chart_type = r.parent["class"][0]
-                logger.debug(f"Chart type determined: {self.chart_type}")
-                return self.chart_type
-        logger.debug("Error determining chart tyoe: Chart type not found.")
-        return None
+    #     self.chart_type_svgs = {
+    #         'Column': 'M4,9.2h2.057143v9.8L4,19v-9.8ZM9.04,5h1.92v14h-1.92v-14Zm5.04,8h1.92v6h-1.92v-6Z',
+    #         'Spline': 'M1 15v-15h-1v16h16v-1h-15z',
+    #         'Areaspline': 'M1 15v-15h-1v16h16v-1h-15z',
+    #         'Stepline': <rect height="0.8" rx="0" ry="0" stroke-width="0" transform="translate(2.2081 12.419091)" width="10.1919"></rect>,
+    #         'Line': 'M3.5 18.49L9.5 12.48L13.5 16.48L22 6.92L20.59 5.51L13.5 13.48L9.5 9.48L2 16.99L3.5 18.49Z',
+    #         'Area': 'M1 15v-15h-1v16h16v-1h-15z'}
+    #     return res
+    #     # print("Selected chart type buttons: ", "\n", res,"\n")
+    #     # for r in res:  # This is a list of the selected chart type buttons.
+    #     #     print("Parent class: ", r.parent, "\n", r, "\n", "Child class: ", r.children)
+    #     #     if any(expected_type in r.parent["class"] for expected_type in self.expected_types.values()):
+    #     #         self.chart_type = r.parent["class"][0]
+    #     #         logger.info(f"Chart type determined: {self.chart_type}")
+    #     #         return self.chart_type
+    #     logger.debug("Error determining chart tyoe: Chart type not found.")
+    #     return None
     
     def get_element(self, selector: str = ".highcharts-series path", selector_type=By.CSS_SELECTOR):
         """Find element by selector. The data trace displayed on a Trading Economics chart is a PATH element in the SVG chart.
