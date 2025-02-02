@@ -432,20 +432,22 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         - series (pd.Series): The extracted series data.
         """
 
+        self.update_chart() # Update chart..
+
         if self.chart_type != "lineChart":
             self.select_line_chart()
         if set_max_datespan and self.date_span != "MAX":
             self.set_date_span("MAX")
         logger.info(f"Series path extraction method: Extracting series data from chart soup.") 
-        logger.info(f"Date span: {self.date_span}. Chart type: {self.chart_type}, best to use MAX date span for this.. URL: {self.last_url}.")
-        self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML") 
-        self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')  # Update the chart soup 
+        logger.info(f"Date span: {self.date_span}. best to use MAX date span. Chart type: {self.chart_type}, URL: {self.last_url}.")
+        # self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML") 
+        # self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')  # Update the chart soup 
         
         datastrlist = self.chart_soup.select(".highcharts-series-group")
         #print("Data string list: ", len(datastrlist))
         
         if len(datastrlist) > 1:
-            print("Multiple series found in the chart. Got to figure out which one to use... wor to do here...")
+            print("Multiple series found in the chart. Got to figure out which one to use... work to do here... This will not work yet, please report error.")
             raise ValueError("Multiple series found in the chart. Got to figure out which one to use... work to do here...")
         else:
             raw_series = self.chart_soup.select_one(".highcharts-line-series").path["d"].split(" ")
@@ -463,8 +465,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         self.series = series
 
         self.pix0 = self.series.iloc[0]; self.pix1 = self.series.iloc[-1]
-        logger.debug(f"Raw data series extracted successfully: {series.head()}")
-        logger.info(f"Raw data series extracted successfully.")
+        logger.info(f"Raw data series extracted successfully: {series.head()}")
         if return_series:
             return series
     
@@ -858,7 +859,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         self.close()
 
 ############################################################################################################
-############ Convenience function to run the full scraper from scraper.py ##########################################
+############ Convenience function to run the full scraper from scraper module ##########################################
 
 def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business-confidence", 
                  id: str = None,
@@ -919,16 +920,16 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
         logger.debug(f"Error loading page at: {url}")
         return None
 
-    if sel.click_button(sel.find_max_button()):  ## This is the "MAX" button on the Trading Economics chart to set the chart to max length.
-        print("Clicked the MAX button successfully.")
+    if sel.set_date_span("MAX"):  ## This is the "MAX" button on the Trading Economics chart to set the chart to max length.
+        #print("Clicked the MAX button successfully.")
         logger.debug(f"Clicked the MAX button successfully.")
         clicked_button = True
     else:
-        print("Error clicking the MAX button.")
+        print("Error setting date_span to MAX.")
         logger.debug(f"Error clicking the MAX button.")
         return None
     
-    time.sleep(1)
+    time.sleep(0.25)
     try:
         yaxis = sel.get_y_axis()
         print("Successfully scraped y-axis values from the chart:", " \n", yaxis) 
@@ -938,26 +939,23 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
         logger.debug(f"Error scraping y-axis: {str(e)}")
     
     try:
-        sel.get_element()
-        series = sel.series_from_element(invert_the_series=True, return_series=True)
+        series = sel.series_from_chart_soup(invert_the_series=True, return_series=True)
         print("Successfully scraped raw pixel co-ordinate series from the path element in chart:", " \n", series)
-        time.sleep(1)
+        time.sleep(0.25)
     except Exception as e:
         print(f"Error scraping y-axis: {str(e)}")
         logger.debug(f"Error scraping y-axis: {str(e)}")
 
     try:
         x_index = sel.make_x_index(return_index=True)
-        time.sleep(1)
+        time.sleep(0.25)
     except Exception as e:
         print(f"Error creating date index: {str(e)}")
         logger.debug(f"Error creating date index: {str(e)}")
 
-    try:
-        #datamax, datamin = sel.get_datamax_min()   
+    try:  
         scaled_series = sel.scale_series()   
         logger.info("Successfully scaled series.")    
-        logger.debug("Successfully scaled series.") 
     except Exception as e:
         print(f"Error scaling series: {str(e)}")
         logger.debug(f"Error scaling series: {str(e)}")
