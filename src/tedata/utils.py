@@ -207,6 +207,29 @@ def find_zero_crossing(series):
             
     return None
 
+def round_to_month_start(dates: pd.DatetimeIndex):
+    """Round dates to nearest month start.
+    
+    Args:
+        dates: DatetimeIndex of dates to round
+        
+    Returns:
+        DatetimeIndex: Dates rounded to nearest month start
+    """
+    def _round_single_date(dt):
+        if dt.day > 15:
+            # Roll forward to next month start
+            if dt.month == 12:
+                return pd.Timestamp(f"{dt.year + 1}-01-01")
+            else:
+                return pd.Timestamp(f"{dt.year}-{dt.month + 1:02d}-01")
+        else:
+            # Roll back to current month start
+            return pd.Timestamp(f"{dt.year}-{dt.month:02d}-01")
+
+    rounded_dates = [_round_single_date(dt) for dt in dates]
+    return pd.DatetimeIndex(rounded_dates)
+
 ########### Classes ##############################################################################
 
 
@@ -297,19 +320,16 @@ class TooltipScraper(scraper.TE_Scraper):
         self.select_line_chart() ## MAKE SURE IT IS A LINECHART.
         self.determine_date_span()
 
-        if self.date_span != "MAX":
-            self.set_date_span("MAX")
-        time.sleep(0.5)
-
-        print("Getting chart dimensions and plot bakground element.")
-        if self.get_chart_dims():
-            print("Got chart dimensions and plot bakground element.")
+        if not hasattr(self, "axes_rect"):
+            print("Getting chart dimensions and plot background element.")
+            if self.get_chart_dims():
+                print("Got chart dimensions and plot background element.")
 
         # Calculate exact positions of left and right extremes
         left_x =  self.axes_rect['x'] # Left edge x-coordinate
         right_x = self.axes_rect['x'] + self.axes_rect['width'] # Right edge x-coordinate
         y_pos = self.axes_rect["y"] + round(self.axes_rect["height"]/2)  # Middle of chart
-        # NOTE: USING THE MIDDLE OF THE CHART WILL REQUIRE LINE CHART_TYPE.
+        # NOTE: USING THE MIDDLE OF THE CHART (in Y) WILL REQUIRE LINE CHART_TYPE.
         
         # Initialize ActionChains
         actions = ActionChains(self.driver)
@@ -347,7 +367,7 @@ class TooltipScraper(scraper.TE_Scraper):
     
     def get_latest_points(self, num_points: int = 10, x_increment: int = 1): #To do: The tooltip scraper class should perhaps inherit from this TE_SCraper so attrubutes such as datespan can be accessed.
         """ Scrape the latest points to determine the time-series frequency. Will also check if end_date is correct.
-        This will work best if the chart is set to 1Y datespan first before the tooltip scrape robject is initialized.
+        This will work best if the chart is set to 1Y datespan first before the tooltip scraper object is initialized.
 
         **Parameters:**
 
@@ -365,7 +385,8 @@ class TooltipScraper(scraper.TE_Scraper):
         self.select_line_chart() #Force line chart selection - very important.
         
         self.update_chart()
-        self.get_chart_dims()
+        if not hasattr(self, "axes_rect"):
+            self.get_chart_dims()
 
         if not hasattr(self, "viewport_width"):
             self.viewport_width = self.driver.execute_script("return window.innerWidth;")
@@ -392,12 +413,12 @@ class TooltipScraper(scraper.TE_Scraper):
             date, value = self.extract_date_value_tooltip(tooltip)
             
             if tooltip == last_tooltip:
-                print(f"Date not changed from last point, skipping: {date}")
+                #print(f"Date not changed from last point, skipping: {date}")
                 i += 1
                 continue
 
             if tooltip and date and value:
-                print("Data point scraped: ", date, value)  
+                #print("Data point scraped: ", date, value)  
                 data_points.append({
                     'viewport_x': self.axes_rect["x"] + i,
                     'viewport_y': viewport_y,

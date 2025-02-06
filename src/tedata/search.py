@@ -197,7 +197,7 @@ class search_TE(Generic_Webdriver):
         if hasattr(self, "result_table"):
             url = self.result_table.loc[result_num, "url"]
             print(f"Scraping data from: {url}")
-            self.scraped_data = scrape_chart(url, driver = self.driver, headless=self.headless, browser=self.browser)
+            self.scraped_data = scrape_chart(url, headless=self.headless, browser=self.browser)
             if self.scraped_data is not None:
                 print(f"Data scraped successfully from: {url}")
                 logger.debug(f"Data scraped successfully from: {url}")

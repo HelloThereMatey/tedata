@@ -2,14 +2,14 @@ from typing import Literal
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 import time
+import datetime
 import pandas as pd
+import numpy as np
 import os 
-from timeit import timeit
 
 fdel = os.path.sep
 
@@ -55,53 +55,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         SharedWebDriverState.__init__(self)
         self.observers.append(self)  # Register self as observer
         self._shared_state = self  # Since we inherit SharedWebDriverState, we are our own shared state
-        self.start_end = None
-        self.start_end = None
-        self.chart_type = None
 
-    # @property
-    # def date_span(self):
-    #     return self._shared_state.date_span
-    # @date_span.setter
-    # def date_span(self, value):
-    #     self._shared_state.date_span = value
-
-    # @property
-    # def chart_type(self):
-    #     return self._shared_state.chart_type
-    # @chart_type.setter
-    # def chart_type(self, value):
-    #     self._shared_state.chart_type = value
-
-    # @property
-    # def page_source(self):
-    #     return self._shared_state.page_source
-    # @page_source.setter
-    # def page_source(self, value):
-    #     self._shared_state.page_source = value
-        
-    # @property
-    # def page_soup(self):
-    #     return self._shared_state.page_soup
-    # @page_soup.setter
-    # def page_soup(self, value):
-    #     self._shared_state.page_soup = value
-        
-    # @property
-    # def chart_soup(self):
-    #     return self._shared_state.chart_soup
-    # @chart_soup.setter
-    # def chart_soup(self, value):
-    #     self._shared_state.chart_soup = value
-        
-    # @property
-    # def full_chart(self):
-    #     return self._shared_state.full_chart
-    # @full_chart.setter
-    # def full_chart(self, value):
-    #     self._shared_state.full_chart = value
-
-    def load_page(self, url, wait_time=5):
+    def load_page(self, url, wait_time=2):
         """Load page and wait for it to be ready"""
 
         self.last_url = url
@@ -203,9 +158,13 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             return None
 
         for r in result:
+            print("Date span element: ", r)
             if "selected"in r["class"]:
                 date_span = {r.text: r}
-        return date_span
+                return date_span
+            else:
+                print("No selected date span found.")
+                return None
 
     def update_chart(self):
         """Update the chart attributes after loading a new page or clicking a button. This will check the page source and update the 
@@ -377,59 +336,22 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.debug(f"Error finding element: {str(e)}")
             return None
         
-    def series_from_element(self, element: str = None, invert_the_series: bool = True, return_series: bool = False):
-        """Extract series data from element text. This extracts the plotted series from the svg chart by taking the PATH 
-        element of the data tarace on the chart. Series values are pixel co-ordinates on the chart.
-
-        **Parameters:**
-
-        - element (str): The element to extract data from. Will use self.current_element if not provided.
-        - invert_the_series (bool): Whether to invert the series values.
-
-        **Returns:**
-
-        - series (pd.Series): The extracted series data.
-        """
-
-        if element is None:
-            element = self.current_element
-        if self.current_element is None:
-            self.get_element()
-        
-        print("Element: ", element)
-        datastrlist = element.get_attribute("d").split(" ")
-        
-        print("Data string list: ", datastrlist)
-
-        ser = pd.Series(datastrlist)
-        ser_num = pd.to_numeric(ser, errors='coerce').dropna()
-
-        exvals = ser_num[::2]; yvals = ser_num[1::2]
-        exvals = exvals.sort_values().to_list()
-        yvals = yvals.to_list()
-        series = pd.Series(yvals, index = exvals, name = "Extracted Series")
-
-        if invert_the_series:
-            series = utils.invert_series(series, max_val = self.y_axis.index.max())
-        self.series = series
-
-        self.pix0 = self.series.iloc[0]; self.pix1 = self.series.iloc[-1]
-        logger.debug(f"Raw data series extracted successfully: {series.head()}")
-        logger.info(f"Raw data series extracted successfully.")
-        if return_series:
-            return series
-        
-    def series_from_chart_soup(self, invert_the_series: bool = True, return_series: bool = False, set_max_datespan: bool = True):
+    def series_from_chart_soup(self, invert_the_series: bool = True, return_series: bool = False, 
+                               set_max_datespan: bool = False,
+                               local_run: bool = False):    
         """Extract series data from element text. This extracts the plotted series from the svg chart by taking the PATH 
         element of the data tarace on the chart. Series values are pixel co-ordinates on the chart.
 
         **Parameters:**
         - invert_the_series (bool): Whether to invert the series values.
         - return_series (bool): whether or not to return the series at end. Series is assigned to self.series always.
+        - set_max_datespan (bool): Whether to set the date span to MAX before extracting the series data. Default is False.
+        - local_run (bool): Whether the method is being run to get the full date_span series or just extacting part of the series
+        to then aggregate together the full series. Default is False.
 
         **Returns:**
 
-        - series (pd.Series): The extracted series data.
+        - series (pd.Series): The extracted series data that is the raw pixel co-ordinate values of the data trace on the svg chart.
         """
 
         self.update_chart() # Update chart..
@@ -439,12 +361,9 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if set_max_datespan and self.date_span != "MAX":
             self.set_date_span("MAX")
         logger.info(f"Series path extraction method: Extracting series data from chart soup.") 
-        logger.info(f"Date span: {self.date_span}. best to use MAX date span. Chart type: {self.chart_type}, URL: {self.last_url}.")
-        # self.full_chart = self.get_element(selector = "#chart").get_attribute("outerHTML") 
-        # self.chart_soup = BeautifulSoup(self.full_chart, 'html.parser')  # Update the chart soup 
-        
+        logger.info(f"Date span: {self.date_span}. Chart type: {self.chart_type}, URL: {self.last_url}.")
+    
         datastrlist = self.chart_soup.select(".highcharts-series-group")
-        #print("Data string list: ", len(datastrlist))
         
         if len(datastrlist) > 1:
             print("Multiple series found in the chart. Got to figure out which one to use... work to do here... This will not work yet, please report error.")
@@ -460,14 +379,57 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         yvals = yvals.to_list()
         series = pd.Series(yvals, index = exvals, name = "Extracted Series")
 
-        if invert_the_series:
-            series = utils.invert_series(series, max_val = self.y_axis.index.max())
-        self.series = series
+        if local_run:
+            y_axis = self.get_y_axis()
+        else:
+            y_axis = self.y_axis
 
-        self.pix0 = self.series.iloc[0]; self.pix1 = self.series.iloc[-1]
+        if invert_the_series:
+            series = utils.invert_series(series, max_val = y_axis.index.max())
+        
+        if not local_run:
+            self.trace_path_series_raw = series.copy()
+         # Keep the raw pixel co-ordinate valued series extracted from the svg path element.
+
+        start_end_px = {"pix0": series.iloc[0],  "pix1": series.iloc[-1]}
         logger.info(f"Raw data series extracted successfully: {series.head()}")
-        if return_series:
-            return series
+        return series
+    
+    def custom_date_span(self, start_date: str = "1900-01-01", end_date: str = datetime.date.today().strftime("%Y-%m-%d")) -> bool:
+        """Set the date range on the active chart in the webdriver window. 
+        This is done by entering the start and end dates into the date range input boxes
+        
+        Args:
+            start_date (str): Start date in format YYYY-MM-DD
+            end_date (str): End date in format YYYY-MM-DD
+        """
+
+        if self.click_button("#dateInputsToggle"):
+            time.sleep(1)
+            try:
+                # Find elements
+                start_input = self.wait.until(EC.presence_of_element_located((By.ID, "d1")))
+                end_input = self.wait.until(EC.presence_of_element_located((By.ID, "d2")))
+                
+                # Clear existing text
+                start_input.clear()
+                end_input.clear()
+                
+                # Enter new dates
+                start_input.send_keys(start_date)
+                end_input.send_keys(end_date)
+                
+                # Press Enter to confirm
+                end_input.send_keys(Keys.RETURN)
+                self.date_span = {"Custom": {"start_date": start_date, "end_date": end_date}}
+                return True
+                
+            except Exception as e:
+                logger.info(f"Failed to enter dates: {e}")
+                return False
+        else:
+            logger.info("Failed to open date range inputs")
+            return False
     
     def get_datamax_min(self):
         """Get the max and min data values for the series using y-axis values... This is deprecated and not used in the current version of the code."""
@@ -495,7 +457,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if hasattr(self, "start_end"):
             y0 = self.start_end["start_value"]; y1 = self.start_end["end_value"]
             pix0 = self.series.iloc[0]; pix1 = self.series.iloc[-1]
-            logger.debug(f"scale_series method: Start value, end value: {y0}, {y1}, {pix0}, {pix1}, {pix0}, {pix1}")
+            logger.info(f"scale_series method: Start value, end value: {y0}, {y1}, {pix0}, {pix1}, {pix0}, {pix1}")
             
             self.unit_per_px_alt = abs(y1 - y0) / abs(pix1 - pix0)  # Calculated from the start and end datapoints.
             
@@ -505,7 +467,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.axlims_upp = (self.y_axis.iloc[-1] - self.y_axis.iloc[0]) / (self.axis_limits["y_max"] - self.axis_limits["y_min"])
 
             # if the start and end points are at similar values this will be problematic though. 
-            logger.debug(f"Start value, end value: {y0}, {y1}, pix0, pix1: {pix0}, {pix1}, "
+            logger.info(f"Start value, end value: {y0}, {y1}, pix0, pix1: {pix0}, {pix1}, "
                          f"data units per chart pixel from start & end points: {self.unit_per_px_alt}, "
                          f"unit_per_pix calculated from the y axis ticks: {self.unit_per_pix}, "
                          f"inverse of that: {1/self.unit_per_pix}, "
@@ -545,25 +507,34 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if self.chart_type != "lineChart":
             self.select_chart_type("Line")
 
-        if hasattr(self, "tooltip_scraper"):
-            pass    
-        else: 
-            self.tooltip_scraper = utils.TooltipScraper(driver=self.driver, chart_x=335.5, chart_y=677.0)  #Note: update this later to use self.width and height etc...
+        if not hasattr(self, "tooltip_scraper"):
+            self.tooltip_scraper = utils.TooltipScraper(parent_instance = self) # Create a tooltip scraper child object
         
         self.start_end = self.tooltip_scraper.first_last_dates()
         print("Start and end dates scraped from tooltips: ", self.start_end)
 
-    def make_x_index(self, return_index: bool = False):
+    def make_x_index(self, 
+                     force_rerun_xlims: bool = False,
+                     force_rerun_freqdet: bool = False):
         """Make the DateTime Index for the series using the start and end dates scraped from the tooltips. 
-        This does a few things and uses Selenium to scrape the dates from the tooltips on the chart as well as
-        some more points to determine the frequency of the time series. It will take some time....
+        This uses Selenium and also scrapes the some of the latest datapoints from the tooltips on the chart in order to determine
+        the frequency of the time series. It will take a bit of time to run.
+
+        **Parameters:**
+        - force_rerun_xlims (bool): Whether to force a rerun of the method to get the start and end dates and frequency of the time series again. The method
+        will not run again by default if done a second time and start_end and frequency attributes are already set. 
+        - force_rerun_freqdet (bool): Whether to force a rerun of the method to get the frequency of the time series again. The method
+        will not run again by default if done a second time and frequency attribute is already set. 
         """
         ## Update chart...
-        elapsed_time = timeit(self.update_chart, number=1)
-        print(f"Time taken to update chart: {elapsed_time} seconds")
+        self.update_chart()
+
+        if not hasattr(self, "tooltip_scraper"):  # If the tooltip scraper object is not already created, create it.
+            self.tooltip_scraper = utils.TooltipScraper(parent_instance = self) # Create a tooltip scraper child object
 
         print("Using selenium and tooltip scraping to construct the date time index for the time-series, this'll take a bit...")
-        self.get_xlims_from_tooltips()
+        if force_rerun_xlims or not hasattr(self, "start_end"):
+            self.get_xlims_from_tooltips()
         # Get the first and last datapoints from the chart at MAX datespan
 
         if self.start_end is not None:
@@ -576,34 +547,89 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         
         if self.date_span != "1Y": # Set the datespan to 1 year to look just at the latest data points
             self.set_date_span("1Y")
-        if self.chart_type != "lineChart":
-            self.select_chart_type("Line")
         
-        datapoints = self.tooltip_scraper.get_latest_points(num_points = 10)  # Get the latest 10 points from the chart
+        ## Get the latest 10 or so points from the chart, date and value from tooltips, in order to determine the frequency of the time series.
+        if force_rerun_freqdet or not hasattr(self, "latest_points"):
+            datapoints = self.tooltip_scraper.get_latest_points(num_points = 10)  # Get the latest 10 points from the chart.
+            self.latest_points = datapoints
         latest_dates = [datapoint["date"] for datapoint in datapoints]
         print("Latest dates: ", latest_dates)
 
         ## Get the frequency of the time series
-        date_series = pd.Series(latest_dates[::-1]).astype("datetime64[ns]")
-        self.frequency = utils.get_date_frequency(date_series)
-        print(self.frequency)
+        self.date_series = pd.Series(latest_dates[::-1]).astype("datetime64[ns]")
+        self.frequency = utils.get_date_frequency(self.date_series)
+        print("Frequency of time-series: ", self.frequency)
 
-        try:
-            start_date = self.start_end["start_date"]; end_date = self.start_end["end_date"]
-            dtIndex = self.dtIndex(start_date=start_date, end_date=end_date, ser_name=self.series_name)
-            #print("Date index created successfully. Take a look at the final series: \n", dtIndex)
-            logger.debug(f"Date index created successfully: {dtIndex.index}")
-            logger.info(f"Date index created successfully.")
-            if return_index:
-                return dtIndex.index
+        start_date = self.start_end["start_date"]; end_date = self.start_end["end_date"]
+        dtIndex = self.dtIndex(start_date=start_date, end_date=end_date, ser_name=self.series_name)
+        if dtIndex is not None:
+            logger.info(f"DateTimeIndex created successfully for the time-series.")
+            return dtIndex  
+        else:
+            logger.info(f"Error creating DateTimeIndex for the time-series.")
+            return None
         
-        except Exception as e:
-            print(f"Error creating date index: {str(e)}")
-       
-    def get_y_axis(self, update_chart: bool = False):
+    def assess_num_scrapes_reqd(self):
+        """Assess the number of scrapes that will be required to get the full time series data. The datetimeIndex for the full series
+        will first be created. If this exceeds the maximum number of points that can be scraped in one go (450), the number of scrapes required
+        will be calculated...."""
+
+        self.x_index = self.make_x_index(force_rerun_xlims = True, force_rerun_freqdet = True)
+        if self.x_index is None:
+            print("Error creating datetime index.")
+            return None
+        elif len(self.x_index) > 450:
+            self.num_scrapes = int(np.ceil(len(self.x_index)/450))
+            print(f"Number of scrapes required to get full series: {self.num_scrapes}")
+            return self.num_scrapes
+        else:
+            print("Full series can be scraped in one go.")
+            self.num_scrapes = 1
+
+    def get_full_series(self, force_recalc: bool = False, force_single_scrape: bool = False):
+        """ """
+        if not hasattr(self, "x_index") or force_recalc:
+            self.num_scrapes = self.assess_num_scrapes_reqd()
+        if self.num_scrapes is None:
+            print("Error assessing number of scrapes required, num_scrapes is None.")
+            return None
+        elif self.num_scrapes == 1 or force_single_scrape:
+            if self.date_span != "MAX":
+                self.set_date_span("MAX")
+            if not hasattr(self, "y_axis"):
+                self.get_y_axis(update_chart = True, set_global_y_axis = True)
+            self.series = self.series_from_chart_soup(local_run = False)
+        else:
+            dtIndexes = [self.x_index[i*450:(i+1)*450] for i in range(self.num_scrapes)]
+            for i, dti in enumerate(dtIndexes):
+                if len(dti) < 12:
+                    # Concat with previous index if too short
+                    dtIndexes[i-1] = dtIndexes[i-1].union(dti)
+                    dtIndexes.pop(i)
+                    self.num_scrapes -= 1
+
+            for i in range(self.num_scrapes):
+                print("Attempting to set custom date span for: ", dtIndexes[i][0].strftime("%Y-%m-%d"), dtIndexes[i][-1].strftime("%Y-%m-%d"))
+                self.custom_date_span(start_date = dtIndexes[i][0].strftime("%Y-%m-%d"), end_date = dtIndexes[i][-1].strftime("%Y-%m-%d"))
+                print("date_span set to: ", self.date_span)
+                time.sleep(1)
+                if i == 0:
+                    subseries = self.series_from_chart_soup(local_run = True)
+                    print("Subseries: ", subseries)
+                else:
+                    subseries = pd.concat([subseries, self.series_from_chart_soup(local_run = True)], axis = 0)
+                    print("Subseries: ", subseries)
+            self.series = subseries
+
+        
+    def get_y_axis(self, update_chart: bool = False, set_global_y_axis: bool = False):
         """Get y-axis values from chart to make a y-axis series with tick labels and positions (pixel positions).
         Also gets the limits of both axis in pixel co-ordinates. A series containing the y-axis values and their pixel positions (as index) is assigned
         to the "y_axis" attribute. The "axis_limits" attribute is made too & is  dictionary containing the pixel co-ordinates of the max and min for both x and y axis.
+
+        **Parameters:**
+        - update_chart (bool): Whether to update the chart before scraping the y-axis values. Default is False.
+        - set_global_y_axis (bool): Whether to set the y-axis series as a global attribute of the class. Default is False.
         """
 
         ##Get positions of y-axis gridlines
@@ -637,23 +663,27 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         ##Get px per unit for y-axis
         pxPerUnit = [abs((yaxlabs[i+1]- yaxlabs[i])/(pixheights[i+1]- pixheights[i])) for i in range(len(pixheights)-1)]
         average = sum(pxPerUnit)/len(pxPerUnit)
-        self.unit_per_pix = average
+        if set_global_y_axis:
+            self.unit_per_pix = average
         logger.debug(f"Average px per unit for y-axis: {average}")  #Calculate the scaling for the chart so we can convert pixel co-ordinates to data values.
 
         yaxis = pd.Series(yaxlabs, index = pixheights, name = "ytick_label")
         yaxis.index.rename("pixheight", inplace = True)
         try:
-            yaxis = yaxis.astype(int)
+            yaxis = yaxis.astype(float)
         except:
             pass
 
-        self.y_axis = yaxis
-        if self.y_axis is not None:
+        if yaxis is not None:
             logger.debug(f"Y-axis values scraped successfully.")
             logger.info(f"Y-axis values scraped successfully.")
+        
+        if set_global_y_axis:
+            self.y_axis = yaxis
+
         return yaxis
     
-    def dtIndex(self, start_date: str, end_date: str, ser_name: str = "Time-series"):
+    def dtIndex(self, start_date: str, end_date: str, ser_name: str = "Time-series") -> pd.DatetimeIndex:
         """
 
         Create a date index for your series in self.series. Will first make an index to cover the full length of your series 
@@ -665,14 +695,60 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         - ser_name (str): The name TO GIVE the series
         """
 
-        dtIndex = pd.date_range(start = start_date, end=end_date, periods=len(self.series))
-        new_ser = pd.Series(self.series.to_list(), index = dtIndex, name = ser_name)
-        if hasattr(self, "frequency"):
+        if hasattr(self, "series") and not hasattr(self, "frequency"):
+            logger.info("Series found but frequency not known. Creating a datetime x-index for series with frequency determined by length of series.\
+                        Returning dtIndex only.")
+            dtIndex = pd.date_range(start = start_date, end=end_date, periods=len(self.series))
+            return dtIndex
+        elif hasattr(self, "series") and hasattr(self, "frequency"):
+            dtIndex = pd.date_range(start = start_date, end=end_date, freq = self.frequency)
+            new_ser = pd.Series(self.series.to_list(), index = dtIndex, name = ser_name)
+            self.trace_path_series = new_ser.copy()
             new_ser = new_ser.resample(self.frequency).first()
+            self.series = new_ser
+            logger.info(f"Series is already scraped, frequency and start, end dates are known. DatetimeIndex created\
+                        for series, set as index and series resampled at the frequency: {self.frequency}. series attribute updated.")
+            return dtIndex
+        elif not hasattr(self, "series") and hasattr(self, "frequency"):
+            logger.info("No series found, using frequency and start and end dates to create a datetime x-index.")
+            dtIndex = pd.date_range(start = start_date, end=end_date, freq = self.frequency)
+            return dtIndex
         else:
-            new_ser = new_ser.resample("MS").first()  ## Use First to match the MS freq.
-        self.series = new_ser
-        return new_ser
+            logger.info("No series found, frequenc unknown get the series or frequency first. Returning None")
+            return None 
+        
+    def apply_x_index(self, x_index: pd.DatetimeIndex = None):
+        """Apply a datetime index to the series. This will set the datetime index as the index of the series and resample the series to the frequency
+        of the datetime index. The series attribute of the class will be updated with the new series.
+
+        **Parameters:**
+        - x_index (pd.DatetimeIndex): The datetime index to apply to the series. If None, the x_index attribute of the class will be used.
+        """
+        if x_index is None and not hasattr(self, "x_index"):
+            print("No datetime x-index found. Run make_x_index() first.")
+            return None
+        elif x_index is None:
+            x_index = self.x_index
+        else:
+            pass
+
+        if hasattr(self, "series"):
+            if len(x_index) == len(self.series):
+                new_ser = pd.Series(self.series.to_list(), index = self.x_index, name = self.series_name)
+            elif len(x_index) > len(self.series):
+                print("Length of x_index is greater than length of series. This is unfortunate, dunno what to do here...")
+                return None
+            else:
+                temp_index = pd.date_range(start = x_index[0], end = x_index[-1], periods=len(self.series))
+                print("temp_index: ", temp_index, "len series: ", len(self.series), "len x_index: ", len(x_index))
+                new_ser = pd.Series(self.series.to_list(), index = temp_index, name = self.series_name)
+                self.trace_path_series = new_ser.copy()
+                new_ser = new_ser.resample(self.frequency).first()
+            self.series = new_ser
+            logger.info(f"DateTimeIndex applied to series, series resampled at the frequency: {self.frequency}. series attribute updated.")
+        else:
+            logger.info("No series found, get the series first.")
+            return None
 
     def extract_axis_limits(self):
         """Extract axis limits from the chart in terms of pixel co-ordinates."""
@@ -703,13 +779,17 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.debug(f"Error extracting axis limits: {str(e)}")
             return None
     
-    def plot_series(self, annotation_text: str = None, dpi: int = 300, ann_box_pos: tuple = (0, - 0.23)):
+    def plot_series(self, series: pd.Series = None, 
+                    annotation_text: str = None, 
+                    dpi: int = 300, 
+                    ann_box_pos: tuple = (0, - 0.23)):
         """
         Plots the time series data using pandas with plotly as the backend. Plotly is set as the pandas backend in __init__.py for tedata.
         If you want to use matplotlib or other plotting library don't use this method, plot the series attribute data directly. If using jupyter
         you can set 
 
         **Parameters**
+        - series (pd.Series): The series to plot. Default is None. If None, the series attribute of the class will be plotted.
         - annotation_text (str): Text to display in the annotation box at the bottom of the chart. Default is None. If None, the default annotation text
         will be created from the metadata.
         - dpi (int): The resolution of the plot in dots per inch. Default is 300.
@@ -717,8 +797,11 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         **Returns** None
         """
+        
+        if series is None:
+            series = self.series
 
-        fig = self.series.plot()  # Plot the series using pandas, plotly needs to be set as the pandas plotting backend.
+        fig = series.plot()  # Plot the series using pandas, plotly needs to be set as the pandas plotting backend.
 
          # Existing title and label logic
         if hasattr(self, "series_metadata"):
