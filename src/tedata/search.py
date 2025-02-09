@@ -67,10 +67,12 @@ class search_TE(Generic_Webdriver):
                 logger.info("Home page at https://tradingeconomics.com loaded successfully! Search box element found.")
             else:
                 logger.info("Home page at https://tradingeconomics.com loaded successfully! Search box element not found though.")
+            return search_box
             
         except Exception as e:
             logger.info(f"Error occurred, check internet connection. Error details: {str(e)}")
             logger.debug(f"Error occurred, check internet connection. Error details: {str(e)}")
+            return None
 
     def search_trading_economics(self, search_term: str = None, home_page: bool = False):
         """Search Trading Economics website for a given term and extract URLs of search results.
@@ -82,11 +84,13 @@ class search_TE(Generic_Webdriver):
 
         - search_term (str): The term to search for on the website.
         """
-
-        self.current_page = self.driver.current_url
-        if home_page:
-            self.home_page()
+        # Load home page, can't yet figure ourt how to work the search bar from other pages
+        if self.driver.current_url != "https://tradingeconomics.com/":
+            search_box = self.home_page()
             time.sleep(1)
+        else:
+            search_box = WebDriverWait(self.driver, 30).until(
+                EC.presence_of_element_located((By.ID, "thisIstheSearchBoxIdTag")))
  
         if search_term is None:
             search_term = self.search_term
@@ -96,9 +100,6 @@ class search_TE(Generic_Webdriver):
         
         try:
         # Wait for search box - using the ID from the HTML
-            search_box = WebDriverWait(self.driver, 30).until(
-                EC.presence_of_element_located((By.ID, "thisIstheSearchBoxIdTag")))
-   
             # Click search box
             logger.info("Clicking search box...")
             search_box.click()
@@ -109,12 +110,12 @@ class search_TE(Generic_Webdriver):
             time.sleep(0.5)  # Small delay to let suggestions appear
             
             # Press Enter
-            logger.info("Submitting search...")
+            logger.info("Submitting search, waiting 10s for page to load...")
             search_box.send_keys(Keys.RETURN)
             
             # Wait a moment to see results  
             ## Need to figure a better way to figure when the search results are loaded...
-            time.sleep(5)
+            time.sleep(10)
 
             self.results = self.extract_search_results(self.driver.page_source)
             self.results_table()
