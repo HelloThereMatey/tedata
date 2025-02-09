@@ -60,10 +60,9 @@ class search_TE(Generic_Webdriver):
             logger.info("Loading home page at https://tradingeconomics.com/ ...")
             self.driver.get("https://tradingeconomics.com/")
 
-            # Wait for 5 seconds
-            time.sleep(5)
             # Check if search box exists
-            search_box = self.driver.find_elements(By.ID, "thisIstheSearchBoxIdTag")
+            search_box = WebDriverWait(self.driver, 30).until(
+                EC.presence_of_element_located((By.ID, "thisIstheSearchBoxIdTag")))
             if search_box:
                 logger.info("Home page at https://tradingeconomics.com loaded successfully! Search box element found.")
             else:
@@ -73,7 +72,7 @@ class search_TE(Generic_Webdriver):
             logger.info(f"Error occurred, check internet connection. Error details: {str(e)}")
             logger.debug(f"Error occurred, check internet connection. Error details: {str(e)}")
 
-    def search_trading_economics(self, search_term: str = None):
+    def search_trading_economics(self, search_term: str = None, home_page: bool = False):
         """Search Trading Economics website for a given term and extract URLs of search results.
         This method will search the Trading Economics website for a given term and extract the URLs of the search results.
         It will enter the search term in the search box, submit the search, and extract the URLs of the search results.
@@ -85,9 +84,9 @@ class search_TE(Generic_Webdriver):
         """
 
         self.current_page = self.driver.current_url
-        if self.current_page != "https://tradingeconomics.com/":
+        if home_page:
             self.home_page()
-            time.sleep(2)
+            time.sleep(1)
  
         if search_term is None:
             search_term = self.search_term
@@ -107,14 +106,15 @@ class search_TE(Generic_Webdriver):
             # Enter search term
             logger.info(f"Entering search term: {search_term}")
             search_box.send_keys(search_term)
-            time.sleep(1)  # Small delay to let suggestions appear
+            time.sleep(0.5)  # Small delay to let suggestions appear
             
             # Press Enter
             logger.info("Submitting search...")
             search_box.send_keys(Keys.RETURN)
             
-            # Wait a moment to see results
-            time.sleep(3)
+            # Wait a moment to see results  
+            ## Need to figure a better way to figure when the search results are loaded...
+            time.sleep(5)
 
             self.results = self.extract_search_results(self.driver.page_source)
             self.results_table()
@@ -128,6 +128,15 @@ class search_TE(Generic_Webdriver):
     def extract_search_results(self, html_content):
         """Extract URLs from search results page"""
         
+        results_container = WebDriverWait(self.driver, 30).until(
+            EC.all_of(
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".list-group")),
+                #EC.visibility_of_element_located((By.CSS_SELECTOR, ".list-group")),
+            )
+        )
+        
+        print("Found search results on page.")
+        time.sleep(1)
         soup = BeautifulSoup(html_content, 'html.parser')
         
         # Find all list items in search results
@@ -197,7 +206,7 @@ class search_TE(Generic_Webdriver):
         if hasattr(self, "result_table"):
             url = self.result_table.loc[result_num, "url"]
             print(f"Scraping data from: {url}")
-            self.scraped_data = scrape_chart(url, headless=self.headless, browser=self.browser)
+            self.scraped_data = scrape_chart(url, driver=self.driver, headless=self.headless, browser=self.browser)
             if self.scraped_data is not None:
                 print(f"Data scraped successfully from: {url}")
                 logger.debug(f"Data scraped successfully from: {url}")

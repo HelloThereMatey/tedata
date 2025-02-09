@@ -14,3 +14,4 @@ __pycache__/
 
 # Keep your existing patterns
 *__*
+/src/tedata/logs/*

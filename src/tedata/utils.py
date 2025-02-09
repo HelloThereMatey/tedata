@@ -94,14 +94,21 @@ def map_frequency(diff):
         return "Multi-year"
     
 def get_date_frequency(date_series: pd.Series):
-    """Get the frequency of a date series"""
+    """Get the frequency of a date series, for weekly returns day-specific frequency (e.g. W-SUN)"""
     if date_series.is_monotonic_increasing or date_series.is_monotonic_decreasing:
         diff = date_series.diff().dropna().mean()
         freq = pd.infer_freq(date_series)
-        if freq is not None:
-            return freq
+        
+        if freq is None:
+            freq = map_frequency(diff)
+        # If weekly frequency, determine the day
+        if freq == 'W':
+            day_map = {0: 'MON', 1: 'TUE', 2: 'WED', 3: 'THU', 
+                        4: 'FRI', 5: 'SAT', 6: 'SUN'}
+            weekday = date_series.iloc[0].dayofweek
+            return f'W-{day_map[weekday]}'
         else:
-            return map_frequency(diff)
+            return freq
     else:
         return None
     
@@ -226,6 +233,43 @@ def round_to_month_start(dates: pd.DatetimeIndex):
         else:
             # Roll back to current month start
             return pd.Timestamp(f"{dt.year}-{dt.month:02d}-01")
+
+    rounded_dates = [_round_single_date(dt) for dt in dates]
+    return pd.DatetimeIndex(rounded_dates)
+
+def round_to_freq(dates: pd.DatetimeIndex, freq: str) -> pd.DatetimeIndex:
+    """Round dates to nearest frequency start.
+    
+    Args:
+        dates: DatetimeIndex to round
+        freq: Frequency string (e.g. 'MS', 'QS', 'AS', 'W-SUN')
+    
+    Returns:
+        DatetimeIndex: Dates rounded to nearest frequency start
+    """
+    # Map common frequencies to period frequencies
+    freq_map = {
+        'MS': 'M',  # Month Start -> Month
+        'QS': 'Q',  # Quarter Start -> Quarter
+        'AS': 'A',  # Year Start -> Year
+        'W-SUN': 'W'  # Week Start (Sunday) -> Week
+    }
+    
+    # Convert frequency if needed
+    period_freq = freq[0] #Try just taking the first letter of the frequency string.
+    #freq_map.get(freq, freq)
+    
+    def _round_single_date(dt):
+        # Get current and next period starts
+        current_period = pd.Timestamp(dt).normalize().to_period(period_freq).to_timestamp()
+        next_period = (pd.Timestamp(dt).normalize().to_period(period_freq) + 1).to_timestamp()
+        
+        # Calculate distances
+        dist_to_current = abs((dt - current_period).total_seconds())
+        dist_to_next = abs((dt - next_period).total_seconds())
+        
+        # Return closest period start
+        return next_period if dist_to_next < dist_to_current else current_period
 
     rounded_dates = [_round_single_date(dt) for dt in dates]
     return pd.DatetimeIndex(rounded_dates)
@@ -365,14 +409,12 @@ class TooltipScraper(scraper.TE_Scraper):
         #     logger.error(f"Error in first_last_dates: {e}")
         #     return None
     
-    def get_latest_points(self, num_points: int = 10, x_increment: int = 1): #To do: The tooltip scraper class should perhaps inherit from this TE_SCraper so attrubutes such as datespan can be accessed.
+    def get_latest_points(self, num_points: int = 6): #To do: The tooltip scraper class should perhaps inherit from this TE_SCraper so attrubutes such as datespan can be accessed.
         """ Scrape the latest points to determine the time-series frequency. Will also check if end_date is correct.
         This will work best if the chart is set to 1Y datespan first before the tooltip scraper object is initialized.
 
         **Parameters:**
-
         - num_points (int): The number of data points to scrape from the 1Y chart.
-        - x_increment (int): The number of pixels to move cursor horizontally between points.
 
         **Returns:**
 
