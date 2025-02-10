@@ -1,6 +1,16 @@
 ## tedata
 
-Download data from Trading Economics without an account or API key. Uses Selenium and BeautifulSoup4 to scrape data from charts. Should run on linux, mac OS or windows.
+Download data from Trading Economics without an account or API key. Trading Economics API costs upwards of $100 USD per month for data access. Using this you will be able to download a large part of the data available on the site for free. Trading Economics has one of the greatest repositories of macroeconomic data on Earth. Download data series into a Jupyter notebook environment or save series directly to an exel file (.xlsx) using command line. This utilizes Selenium and BeautifulSoup4 to scrape data from charts displayed on the site. Should run on linux, mac OS or windows.
+
+Note that the current version (v0.2.0) only supports scraping of data from the economic data type of chart shown on trading view (example below). The more interactive type chart (second example chart image below) that displays higher frequency data for stocks, commodities etc is not yet working for data download.
+
+![Static plot](docs/te_chart.png)
+
+**Above:** You can download the data from charts that look like this.
+
+![Static plot](docs/te_chart2.png)
+
+**Above:** You cannot yet download the data from these types of chart.
 
 ### System Requirements
 
