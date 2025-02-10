@@ -1,6 +1,6 @@
 ## tedata
 
-Download data from Trading Economics without an account or API key. Uses Selenium and BeautifulSoup4 to scrape data directly from charts. Should run on linux, mac OS or windows.
+Download data from Trading Economics without an account or API key. Uses Selenium and BeautifulSoup4 to scrape data from charts. Should run on linux, mac OS or windows.
 
 ### System Requirements
 
