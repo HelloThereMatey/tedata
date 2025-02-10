@@ -74,7 +74,7 @@ class search_TE(Generic_Webdriver):
             logger.debug(f"Error occurred, check internet connection. Error details: {str(e)}")
             return None
 
-    def search_trading_economics(self, search_term: str = None, home_page: bool = False):
+    def search_trading_economics(self, search_term: str = None, wait_time: int = 5):
         """Search Trading Economics website for a given term and extract URLs of search results.
         This method will search the Trading Economics website for a given term and extract the URLs of the search results.
         It will enter the search term in the search box, submit the search, and extract the URLs of the search results.
@@ -83,7 +83,10 @@ class search_TE(Generic_Webdriver):
         **Parameters:**
 
         - search_term (str): The term to search for on the website.
+        - wait_time (int): The time to wait for the search results to load, in seconds (if you get an empty table 
+        of results, increase this time).
         """
+
         # Load home page, can't yet figure ourt how to work the search bar from other pages
         if self.driver.current_url != "https://tradingeconomics.com/":
             search_box = self.home_page()
@@ -110,12 +113,14 @@ class search_TE(Generic_Webdriver):
             time.sleep(0.5)  # Small delay to let suggestions appear
             
             # Press Enter
-            logger.info("Submitting search, waiting 10s for page to load...")
+            logger.info(f"Submitting search, waiting {wait_time}s for page to load...")
             search_box.send_keys(Keys.RETURN)
             
             # Wait a moment to see results  
             ## Need to figure a better way to figure when the search results are loaded...
-            time.sleep(10)
+            results = WebDriverWait(self.driver, 30).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".list-group-item")))
+            time.sleep(wait_time)
 
             self.results = self.extract_search_results(self.driver.page_source)
             self.results_table()

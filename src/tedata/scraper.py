@@ -1,4 +1,5 @@
 from typing import Literal
+from collections import OrderedDict
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -140,7 +141,10 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         ## Populate the date spans dictionary
         buts = self.chart_soup.select("#dateSpansDiv")
         datebut = buts[0] if isinstance(buts, list) else buts
-        self.date_spans = {child.text: f"a.{child['class'][0] if isinstance(child['class'], list) else child['class']}:nth-child({i+1})" for i, child in enumerate(datebut.children)}
+        self.date_spans = OrderedDict()
+        for i, child in enumerate(datebut.children):
+            selector = f"a.{child['class'][0] if isinstance(child['class'], list) else child['class']}:nth-child({i+1})"
+            self.date_spans[child.text] = selector
 
         ## Find the selected date span
         if len(buts) == 1:
@@ -537,9 +541,6 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             print("Error: Start and end values not found...pulling out....")
             logger.debug(f"Error: Start and end values not found...pulling out....")
             return None
-        
-        if self.date_span != "1Y": # Set the datespan to 1 year to look just at the latest data points
-            self.set_date_span("1Y")
         
         ## Get the latest 10 or so points from the chart, date and value from tooltips, in order to determine the frequency of the time series.
         if force_rerun_freqdet or not hasattr(self, "latest_points"):

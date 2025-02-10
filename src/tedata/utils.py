@@ -421,8 +421,9 @@ class TooltipScraper(scraper.TE_Scraper):
         - data_points (list): A list of dictionaries containing scraped data points.
         - num_points (int): The number of data points scraped."""
 
-        if self.date_span != "1Y":
-            self.set_date_span("1Y")
+        shortest_span = list(self.date_spans.keys())[0]
+        if self.date_span != shortest_span: # Set the datespan to 1 year to look just at the latest data points
+            self.set_date_span(shortest_span)
         
         self.select_line_chart() #Force line chart selection - very important.
         
@@ -434,8 +435,8 @@ class TooltipScraper(scraper.TE_Scraper):
             self.viewport_width = self.driver.execute_script("return window.innerWidth;")
             self.viewport_height = self.driver.execute_script("return window.innerHeight;")
         
-        print(f"Viewport dimensions: {self.viewport_width} x {self.viewport_height}")
-        print(f"Chart position in viewport: x={self.axes_rect['x']}, y={self.axes_rect['y']}")
+        #print(f"Viewport dimensions: {self.viewport_width} x {self.viewport_height}")
+        #print(f"Chart position in viewport: x={self.axes_rect['x']}, y={self.axes_rect['y']}")
         
         data_points = []
         last_tooltip = ""
