@@ -105,7 +105,7 @@ scraped.plot_series()
 #Export the plot as a static png image. You can use format = "html" to export an interactive chart.
 scraped.save_plot(format="png")
 ```
-![Static plot](./docs/ISM_Manufacturing.png)
+![Static plot](docs/ISM_Manufacturing.png)
 
 Metadata for the series is stored in the "metadata" attribte of the TE_Scraper object as a dict and as a pd.Series in the "series_metadata" attribute.
 
