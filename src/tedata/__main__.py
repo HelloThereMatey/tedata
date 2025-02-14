@@ -20,13 +20,21 @@ def main():
         type=str,
         help='URL of Trading Economics chart to scrape'
     )
+    
+    # Optional arguments
+    parser.add_argument(
+        '--head',
+        '-he',
+        action='store_false',
+        help='Run browser with head i.e show the broswer window. Default is headless/hidden window.'
+    )
 
     # Parse arguments
     args = parser.parse_args()
     
     try:
         # Run scraper
-        result = scraper.scrape_chart(url=args.url)
+        result = scraper.scrape_chart(url=args.url, headless=args.head)
         
         if result is not None:
             # Create output filename from URL
@@ -37,9 +45,10 @@ def main():
                 # Save series data
                 result.series.to_excel(writer, sheet_name='Data')
                 # Save metadata
-                result.metadata.to_excel(writer, sheet_name='Metadata')
+                result.series_metadata.to_excel(writer, sheet_name='Metadata')
             
-            print(f"Data saved to {filename}")
+            print(f"\n\nData saved to {filename}")
+            result.plot_series()  #Plot the data in an interactive html plotly chart.
         else:
             print("Error: Scraping failed")
             

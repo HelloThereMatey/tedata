@@ -1,6 +1,6 @@
 [project]
 name = "tedata"
-version = "0.1.0"
+version = "0.2.0"
 description = "Download data from Trading Economics for free and without any account or API key. Uses selenium and bs4 to scrape the data from the website. Trading Economics is one of the greatest stores of economic data on the web and contains millions of time-series for hundreds of different countries."
 authors = [
     {name = "the_macro_bootlegger"}
@@ -10,9 +10,11 @@ readme = "README.md"
 requires-python = ">= 3.9"
 dependencies = [
     "beautifulsoup4>=4.12.3",
-    "pandas>=2.2.2",
+    "pandas>=2.2.1",
+    "numpy>=2.1.0",
     "selenium>=4.27.1",
     "plotly>=5.18.0"
+    "kaleido>=0.2.1",
 ]
 
 [project.urls]

@@ -325,7 +325,7 @@ class TooltipScraper(scraper.TE_Scraper):
     
     def move_cursor(self, x: int = 0, y: int = 0):
         self.actions.move_to_element_with_offset(self.full_chart, x, y).perform()
-        print(f"Moved cursor to ({x}, {y})")
+        #print(f"Moved cursor to ({x}, {y})")
         return None
                         
     def move_pointer(self, x_offset: int = None, y_offset: int = 1, x_increment: int = 1):
@@ -365,7 +365,7 @@ class TooltipScraper(scraper.TE_Scraper):
         self.determine_date_span()
 
         if not hasattr(self, "axes_rect"):
-            print("Getting chart dimensions and plot background element.")
+            #print("Getting chart dimensions and plot background element.")
             if self.get_chart_dims():
                 print("Got chart dimensions and plot background element.")
 
@@ -392,7 +392,7 @@ class TooltipScraper(scraper.TE_Scraper):
             
             # Move to exact position
             actions.move_by_offset(x_pos, y_pos).perform()
-            print(f"Moved cursor to ({x_pos}, {y_pos})")
+            #print(f"Moved cursor to ({x_pos}, {y_pos})")
             time.sleep(0.5)
             
             # Get tooltip
@@ -405,11 +405,7 @@ class TooltipScraper(scraper.TE_Scraper):
         
         return start_end
             
-        # except Exception as e:
-        #     logger.error(f"Error in first_last_dates: {e}")
-        #     return None
-    
-    def get_latest_points(self, num_points: int = 6): #To do: The tooltip scraper class should perhaps inherit from this TE_SCraper so attrubutes such as datespan can be accessed.
+    def get_latest_points(self, num_points: int = 5): #To do: The tooltip scraper class should perhaps inherit from this TE_SCraper so attrubutes such as datespan can be accessed.
         """ Scrape the latest points to determine the time-series frequency. Will also check if end_date is correct.
         This will work best if the chart is set to 1Y datespan first before the tooltip scraper object is initialized.
 
@@ -435,44 +431,45 @@ class TooltipScraper(scraper.TE_Scraper):
             self.viewport_width = self.driver.execute_script("return window.innerWidth;")
             self.viewport_height = self.driver.execute_script("return window.innerHeight;")
         
-        #print(f"Viewport dimensions: {self.viewport_width} x {self.viewport_height}")
-        #print(f"Chart position in viewport: x={self.axes_rect['x']}, y={self.axes_rect['y']}")
-        
         data_points = []
         last_tooltip = ""
         viewport_y = self.axes_rect['y'] + round(self.axes_rect['height'] / 2)
 
         actions = ActionChains(self.driver); actions.reset_actions()
         # Move cursor to chart middle to start at right edge.
+        chart_x = self.axes_rect["x"]
         actions.move_to_element_with_offset(self.plot_background, round(self.chart_x/2), 0).perform()
-        chart_edge = self.axes_rect["x"] + round(self.chart_x/2); print(chart_edge)
+        chart_edge = chart_x + round(self.chart_x/2); print(chart_edge)
         i = 1
         while len(data_points) < num_points:
-            #try: 
-            actions.move_by_offset(-i, 0).perform()
-            time.sleep(0.05)
-            
-            tooltip = self.get_tooltip_text()
-            date, value = self.extract_date_value_tooltip(tooltip)
-            
-            if tooltip == last_tooltip:
-                #print(f"Date not changed from last point, skipping: {date}")
-                i += 1
-                continue
+            try: 
+                actions.move_by_offset(-i, 0).perform()
+                time.sleep(0.05)
+                
+                tooltip = self.get_tooltip_text()
+                date, value = self.extract_date_value_tooltip(tooltip)
+                
+                if tooltip == last_tooltip:
+                    #print(f"Date not changed from last point, skipping: {date}")
+                    i += 1
+                    continue
 
-            if tooltip and date and value:
-                #print("Data point scraped: ", date, value)  
-                data_points.append({
-                    'viewport_x': self.axes_rect["x"] + i,
-                    'viewport_y': viewport_y,
-                    'tooltip_data': tooltip,
-                    "date": date,
-                    "value": value
-                })
-                i += 1
-            else:
-                print(f"No tooltip found at point")
-            
+                if tooltip and date and value:
+                    #print("Data point scraped: ", date, value)  
+                    data_points.append({
+                        'viewport_x': self.axes_rect["x"] + i,
+                        'viewport_y': viewport_y,
+                        'tooltip_data': tooltip,
+                        "date": date,
+                        "value": value
+                    })
+                    i += 1
+                else:
+                    print(f"No tooltip found at point")
+            except Exception as e:
+                logger.info(f"Iteration {i}, error scraping data point at {chart_x} + {i}, {viewport_y}: {str(e)}")
+                logger.info("We may have got enough points though already to determine the frequency, returning points.")
+                return data_points
             last_tooltip = tooltip
         
         return data_points

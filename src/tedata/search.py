@@ -61,7 +61,7 @@ class search_TE(Generic_Webdriver):
             self.driver.get("https://tradingeconomics.com/")
 
             # Check if search box exists
-            search_box = WebDriverWait(self.driver, 30).until(
+            search_box = WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located((By.ID, "thisIstheSearchBoxIdTag")))
             if search_box:
                 logger.info("Home page at https://tradingeconomics.com loaded successfully! Search box element found.")

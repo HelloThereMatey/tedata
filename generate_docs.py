@@ -12,6 +12,7 @@ def generate_docs():
     # Run pdoc
     subprocess.run([
         'pdoc',
+        '--html',
         '--output-dir', 'docs',
         'src/tedata'
     ], cwd=root_dir)
