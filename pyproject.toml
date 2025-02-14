@@ -1,6 +1,6 @@
 [project]
 name = "tedata"
-version = "0.2.0"
+version = "0.2.1"
 description = "Download data from Trading Economics for free and without any account or API key. Uses selenium and bs4 to scrape the data from the website. Trading Economics is one of the greatest stores of economic data on the web and contains millions of time-series for hundreds of different countries."
 authors = [
     {name = "the_macro_bootlegger"}
