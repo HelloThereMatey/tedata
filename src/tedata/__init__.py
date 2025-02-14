@@ -7,7 +7,7 @@ from .logger_setup import setup_logger
 pd.options.plotting.backend = "plotly"
 
 # Version of the tedata package
-__version__ = "0.10"
+__version__ = "0.2.0"
 
 # Setup logger first
 logger = setup_logger()
