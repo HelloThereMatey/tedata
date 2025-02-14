@@ -8,7 +8,7 @@ Note that the current version (v0.2.0) only supports scraping of data from the e
 
 **Above:** You can download the data from charts that look like this. The highest frequency data I've seen on these is weekly. I suspect weekly is the highest data frequency accessible via tedata at the moment.
 
-![Static plot](/docs/te_chart2.png)
+![Static plot](docs/te_chart2.png)
 
 **Above:** You cannot yet download the high frequency data from these types of chart. I'm sure we'll figure out how to do it soon though...
 
