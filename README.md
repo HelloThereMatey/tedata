@@ -4,7 +4,7 @@ Download data from Trading Economics without an account or API key. Trading Econ
 
 Note that the current version (v0.2.0) only supports scraping of data from the economic data type of chart shown on trading economics (example below). The more interactive type chart (second example chart image below) that displays higher frequency data for stocks, commodities etc is not yet working for data download.
 
-![Static plot](/docs/te_chart.png)
+![Static plot](docs/ISM_Manufacturing.png)
 
 **Above:** You can download the data from charts that look like this. The highest frequency data I've seen on these is weekly. I suspect weekly is the highest data frequency accessible via tedata at the moment.
 
