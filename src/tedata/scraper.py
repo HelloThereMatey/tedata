@@ -9,7 +9,6 @@ from selenium.webdriver.common.keys import Keys
 import time
 import datetime
 import pandas as pd
-import numpy as np
 import os 
 
 fdel = os.path.sep

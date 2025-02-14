@@ -27,10 +27,10 @@ You can download firefox from: [firefox](https://www.mozilla.org/firefox/new/)
 - beautifulsoup4
 - selenium
 - pandas
-- numpy
 - kaleido (optional, for export of plotly fig to image)
+- openpyxl (optional, for export of pandas datastructures to excel)
 
-These will be automaticaly installed if you use pip to install tedata from pypi.
+These will be autosmaticaly installed if you use pip to install tedata from pypi.
 
 ### Installation
 
