@@ -2,7 +2,7 @@
 
 Download data from Trading Economics without an account or API key. Trading Economics API costs upwards of $100 USD per month for data access. Using this you will be able to download a large part of the data available on the site for free. Trading Economics has one of the greatest repositories of macroeconomic data on Earth. Download data series into a Jupyter notebook environment or save series directly to an excel file (.xlsx) using command line. This utilizes Selenium and BeautifulSoup4 to scrape data from charts displayed on the site. Should run on linux, mac OS or windows.
 
-Note that the current version (v0.2.0) only supports scraping of data from the economic data type of chart shown on trading economics (example below). The more interactive type chart (second example chart image below) that displays higher frequency data for stocks, commodities etc is not yet working for data download.
+Note that the current version (v0.2.x) only supports scraping of data from the economic data type of chart shown on trading economics (example below). The more interactive type chart (second example chart image below) that displays higher frequency data for stocks, commodities etc is not yet working for data download.
 
 ![Static plot](docs/ISM_Manufacturing.png)
 
