@@ -20,9 +20,9 @@ dependencies = [
 ]
 
 [project.urls]
-"Repository" = "https://github.com/yourusername/tedata"
-"Documentation" = "https://yourusername.github.io/tedata"
-"Bug Tracker" = "https://github.com/yourusername/tedata/issues"
+"Repository" = "https://github.com/HelloThereMatey/tedata"
+"Documentation" = "https://HelloThereMatey.github.io/tedata"
+"Bug Tracker" = "https://github.com/HelloThereMatey/tedata/issues"
 "Firefox Download" = "https://www.mozilla.org/firefox/new/"
 
 [project.scripts]
