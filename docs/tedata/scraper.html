@@ -102,7 +102,7 @@ el.replaceWith(d);
     - driver (webdriver): A Selenium WebDriver object to use for scraping the data. If this is passed, the function will not create a new one. If 
     scraper and driver are both passed, the webdriver of the scraper object will be used rather than the supplied webdriver.
     - headless (bool): Whether to run the browser in headless mode (display no window).
-    - browser (str): The browser to use, either &#39;chrome&#39; or &#39;firefox&#39;. Default is &#39;firefox&#39;. Only firefox is supported at the moment (v0.2.0).
+    - browser (str): The browser to use, either &#39;chrome&#39; or &#39;firefox&#39;. Default is &#39;firefox&#39;. Only firefox is supported at the moment (v0.2.2).
 
     **Returns**
     - TE_Scraper object with the scraped data or None if an error occurs.
@@ -199,7 +199,7 @@ for fastest results.</li>
 <li>driver (webdriver): A Selenium WebDriver object to use for scraping the data. If this is passed, the function will not create a new one. If
 scraper and driver are both passed, the webdriver of the scraper object will be used rather than the supplied webdriver.</li>
 <li>headless (bool): Whether to run the browser in headless mode (display no window).</li>
-<li>browser (str): The browser to use, either 'chrome' or 'firefox'. Default is 'firefox'. Only firefox is supported at the moment (v0.2.0).</li>
+<li>browser (str): The browser to use, either 'chrome' or 'firefox'. Default is 'firefox'. Only firefox is supported at the moment (v0.2.2).</li>
 </ul>
 <p><strong>Returns</strong>
 - TE_Scraper object with the scraped data or None if an error occurs.</p></div>
@@ -235,7 +235,7 @@ scraper and driver are both passed, the webdriver of the scraper object will be 
     &#34;&#34;&#34;
 
     # Define browser type with allowed values
-    BrowserType = Literal[&#34;chrome&#34;, &#34;firefox&#34;]  #Chrome still not working as of v0.2.0..
+    BrowserType = Literal[&#34;chrome&#34;, &#34;firefox&#34;]  #Chrome still not working as of v0.2.2..
     def __init__(self, **kwargs):
         Generic_Webdriver.__init__(self, **kwargs)
         SharedWebDriverState.__init__(self)
