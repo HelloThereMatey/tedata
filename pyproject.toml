@@ -1,9 +1,9 @@
 [project]
 name = "tedata"
 version = "0.2.2"
-description = "Download data from Trading Economics for free and without any account or API key. Uses selenium and bs4 to scrape the data from the website. Trading Economics is one of the greatest stores of economic data on the web and contains millions of time-series for hundreds of different countries.
- If installing from testpypi, don't copy the install command in the box, you need to add pyp as the extra-index, use: pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple tedata"
-"
+
+description = "Download data from Trading Economics for free and without any account or API key. Uses selenium and bs4 to scrape the data from the website. Trading Economics is one of the greatest stores of economic data on the web and contains millions of time-series for hundreds of different countries. If installing from testpypi, don't copy the install command in the box, you need to add pyp as the extra-index, use: pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple tedata"
+
 authors = [
     {name = "the_macro_bootlegger"}
 ]
