@@ -50,7 +50,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
     """
 
     # Define browser type with allowed values
-    BrowserType = Literal["chrome", "firefox"]  #Chrome still not working as of v0.2.3..
+    BrowserType = Literal["chrome", "firefox"]  #Chrome still not working as of v0.2.4..
     def __init__(self, **kwargs):
         Generic_Webdriver.__init__(self, **kwargs)
         SharedWebDriverState.__init__(self)
@@ -72,6 +72,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.chart_soup = self.page_soup.select_one("#chart")  #Make a bs4 object from the #chart element of the page.
             self.full_chart = self.chart_soup.contents
             self.create_chart_types_dict() # Create the chart types dictionary for the chart.
+            self.determine_date_span()  # Determine the date span from the chart.
             return True
         except Exception as e:
             print(f"Error loading page: {str(e)}")
@@ -203,6 +204,13 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         else:
             logger.info(f"Error setting date span: {date_span}, check that the supplied date span matches one of the keys in the self.date_spans attribute (dict).")
             return False
+        
+    def set_max_date_span_viaCalendar(self):
+        """ Looks like Trading Economics have gone ahead and made the "MAX" button on charts a subscriber only feature. No problem, we can still set the max date range
+        by using the calendar widget on the chart. This method will click the calendar button and then enter an arbitrary date far in the past as start date and the 
+        current date as the end date."""
+
+        self.custom_date_span(start_date="1850-01-01", end_date=datetime.date.today().strftime("%Y-%m-%d"))
 
     def update_date_span(self, update_chart: bool = False):
         """Update the date span after clicking a button. This will check the page source and update the date span attribute.
@@ -364,7 +372,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         self.update_chart() # Update chart..
 
-        self.select_chart_type(use_chart_type) ## Use a certain chart type for the extraction of the series data. May fail with certain types of charts.
+        if self.chart_type != self.expected_types[use_chart_type]:
+            self.select_chart_type(use_chart_type) ## Use a certain chart type for the extraction of the series data. May fail with certain types of charts.
 
         if set_max_datespan and self.date_span != "MAX":
             self.set_date_span("MAX")
@@ -413,7 +422,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         """
 
         if self.click_button("#dateInputsToggle"):
-            time.sleep(1)
+            time.sleep(0.1)
             try:
                 # Find elements
                 start_input = self.wait.until(EC.presence_of_element_located((By.ID, "d1")))
@@ -510,10 +519,13 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         - force_rerun (bool): Whether to force a rerun of the method to get the start and end dates and frequency of the time series again. The method
         will not run again by default if done a second time and start_end and frequency attributes are already set. If the first run resulted in erroneous
         assignation of these attributes, set this to True to rerun the method. However, something may need to be changed if it is not working..."""
+
+        print("get_xlims_from_tooltips method: date_span: ", self.date_span, ", chart_type:", self.chart_type)
+
         if self.date_span != "MAX":
             self.set_date_span("MAX")  ##Set date_span to MAX for start and end date pull...
-        if self.chart_type != "lineChart":
-            self.select_chart_type("Line")
+        self.select_chart_type("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
+        #Chart type must be spline or line for this to work. Sometimes the chart_type chnages automatically when datespan is altered.
 
         if not hasattr(self, "tooltip_scraper"):
             self.tooltip_scraper = utils.TooltipScraper(parent_instance = self) # Create a tooltip scraper child object
@@ -541,6 +553,19 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.tooltip_scraper = utils.TooltipScraper(parent_instance = self) # Create a tooltip scraper child object
 
         print("Using selenium and tooltip scraping to construct the date time index for the time-series, this'll take a bit...")
+        ## Get the latest 10 or so points from the chart, date and value from tooltips, in order to determine the frequency of the time series.
+        if force_rerun_freqdet or not hasattr(self, "latest_points"):
+            #datapoints = self.tooltip_scraper.get_latest_points(num_points = 5)  # Python version, slow
+            datapoints = self.tooltip_scraper.latest_points_js(num_points=10)  # js version, faster
+            self.latest_points = datapoints
+            latest_dates = [datapoint["date"] for datapoint in datapoints]
+            print("Latest dates: ", latest_dates)
+
+            ## Get the frequency of the time series
+            self.date_series = pd.Series(latest_dates[::-1]).astype("datetime64[ns]")
+            self.frequency = utils.get_date_frequency(self.date_series)
+        print("Frequency of time-series: ", self.frequency)
+
         if force_rerun_xlims or not hasattr(self, "start_end"):
             self.get_xlims_from_tooltips()
         # Get the first and last datapoints from the chart at MAX datespan
@@ -551,18 +576,6 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             print("Error: Start and end values not found...pulling out....")
             logger.debug(f"Error: Start and end values not found...pulling out....")
             return None
-        
-        ## Get the latest 10 or so points from the chart, date and value from tooltips, in order to determine the frequency of the time series.
-        if force_rerun_freqdet or not hasattr(self, "latest_points"):
-            datapoints = self.tooltip_scraper.get_latest_points(num_points = 5)  # Get the latest 10 points from the chart.
-            self.latest_points = datapoints
-            latest_dates = [datapoint["date"] for datapoint in datapoints]
-            print("Latest dates: ", latest_dates)
-
-            ## Get the frequency of the time series
-            self.date_series = pd.Series(latest_dates[::-1]).astype("datetime64[ns]")
-            self.frequency = utils.get_date_frequency(self.date_series)
-        print("Frequency of time-series: ", self.frequency)
 
         start_date = self.start_end["start_date"]; end_date = self.start_end["end_date"]
         dtIndex = self.dtIndex(start_date=start_date, end_date=end_date, ser_name=self.series_name)
@@ -636,7 +649,19 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.y_axis = yaxis
 
         return yaxis
-    
+     
+    def init_tooltipScraper(self):
+        """Initialise the TooltipScraper object for the class. This is used to scrape the tooltip box on the chart to get the start and end dates of the time series.
+        The tooltip scraper is a child object of the class and is used
+        to scrape the tooltip box on the chart to get the start and end dates of the time series. The tooltip scraper is a child object of the class an shares some synced 
+        attributes with the parent class. """
+
+        if not hasattr(self, "tooltip_scraper"):
+            self.tooltip_scraper = utils.TooltipScraper(parent_instance = self)
+            logger.info(f"TooltipScraper object initialised successfully.")
+        else:    
+            logger.info(f"TooltipScraper object already initialised.")
+
     def dtIndex(self, start_date: str, end_date: str, ser_name: str = "Time-series") -> pd.DatetimeIndex:
         """
 
@@ -916,6 +941,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
                  country: str = "united-states",
                  scraper: TE_Scraper = None,
                  driver: webdriver = None, 
+                 use_existing_driver: bool = False,
                  headless: bool = True, 
                  browser: str = 'firefox') -> TE_Scraper:
     
@@ -940,7 +966,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
     - driver (webdriver): A Selenium WebDriver object to use for scraping the data. If this is passed, the function will not create a new one. If 
     scraper and driver are both passed, the webdriver of the scraper object will be used rather than the supplied webdriver.
     - headless (bool): Whether to run the browser in headless mode (display no window).
-    - browser (str): The browser to use, either 'chrome' or 'firefox'. Default is 'firefox'. Only firefox is supported at the moment (v0.2.3).
+    - browser (str): The browser to use, either 'chrome' or 'firefox'. Default is 'firefox'. Only firefox is supported at the moment (v0.2.4).
 
     **Returns**
     - TE_Scraper object with the scraped data or None if an error occurs.
@@ -953,7 +979,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
         else:
             scraper.driver = driver
     else:
-        sel = TE_Scraper(driver = driver, browser = browser, headless = headless, use_existing_driver=True)
+        sel = TE_Scraper(driver = driver, browser = browser, headless = headless, use_existing_driver=use_existing_driver)
 
     if id is not None:   #Use country and id to create the URL if URL not supplied.
         url = f"https://tradingeconomics.com/{country}/{id}"

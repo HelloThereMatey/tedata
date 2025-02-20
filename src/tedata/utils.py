@@ -119,36 +119,68 @@ def check_element_exists_bs4(soup, selector):
         return element.text if element else None
     except:
         return None
-
+    
 def convert_metric_prefix(value_str: str) -> float:
-    """Convert string with metric prefix to float
-    e.g., '1.3K' -> 1300, '2.6M' -> 2600000
+    """Convert string with metric prefix to float, handling various formats.
+    
+    Examples:
+        '2.27K Thousand units' -> 2270.0
+        '10 K units' -> 10000.0
+        '1.3M' -> 1300000.0
+        '5B Points' -> 5000000000.0
+    
+    Args:
+        value_str (str): String containing number and optional metric prefix
+        
+    Returns:
+        float: Converted numeric value
     """
     # Dictionary of metric prefixes and their multipliers
     metric_prefixes = {
         'K': 1000,
-        'M': 1000000, 
+        'M': 1000000,
         'B': 1000000000,
         'G': 1000000000,
-        'T': 1000000000000}
+        'T': 1000000000000
+    }
     
-    # Clean and standardize input
-    value_str = value_str.strip().upper()
+    # Additional word forms of prefixes
+    word_prefixes = {
+        'THOUSAND': 'K',
+        'MILLION': 'M',
+        'BILLION': 'B',
+        'GIGA': 'G',
+        'TERA': 'T'
+    }
     
     try:
-        # Match number and prefix
-        match = re.match(r'^(-?\d*\.?\d+)([KMGBT])?$', value_str)
-        if match:
-            number, prefix = match.groups()
-            number = float(number)
-            # Multiply by prefix value if present
-            if prefix and prefix in metric_prefixes:
-                number *= metric_prefixes[prefix]
-            return number
-        return float(value_str)  # No prefix case
-    except:
-        print(f"Error converting value: {value_str}")
-        return value_str  # Return original if conversion fails
+        # Clean and standardize input
+        value_str = value_str.strip().upper()
+        
+        # First try to match pattern like "2.27K" or "10K"
+        match = re.match(r'^(-?\d*\.?\d+)\s*([KMGBT])?', value_str)
+        if not match:
+            return float(value_str)  # No prefix case
+            
+        number = float(match.group(1))
+        prefix = match.group(2)
+        
+        # If no direct prefix found, look for word form
+        if not prefix:
+            for word, letter in word_prefixes.items():
+                if word in value_str:
+                    prefix = letter
+                    break
+        
+        # Apply multiplier if prefix found
+        if prefix and prefix in metric_prefixes:
+            number *= metric_prefixes[prefix]
+            
+        return number
+        
+    except Exception as e:
+        logger.debug(f"Error converting value '{value_str}': {str(e)}")
+        return float(value_str) if value_str else 0.0
     
 def ready_datestr(date_str: str):
     """Replace substrings in datestr using a dictionary to get the string ready
@@ -357,13 +389,6 @@ class TooltipScraper(scraper.TE_Scraper):
 
         """
 
-        # try:
-        self.update_chart()
-        # determine_chart_method is inactive as of now...
-        #self.determine_chart_type()
-        self.select_line_chart() ## MAKE SURE IT IS A LINECHART.
-        self.determine_date_span()
-
         if not hasattr(self, "axes_rect"):
             #print("Getting chart dimensions and plot background element.")
             if self.get_chart_dims():
@@ -393,7 +418,7 @@ class TooltipScraper(scraper.TE_Scraper):
             # Move to exact position
             actions.move_by_offset(x_pos, y_pos).perform()
             #print(f"Moved cursor to ({x_pos}, {y_pos})")
-            time.sleep(0.5)
+            time.sleep(0.1)
             
             # Get tooltip
             tooltip = self.get_tooltip_text()
@@ -439,7 +464,7 @@ class TooltipScraper(scraper.TE_Scraper):
         # Move cursor to chart middle to start at right edge.
         chart_x = self.axes_rect["x"]
         actions.move_to_element_with_offset(self.plot_background, round(self.chart_x/2), 0).perform()
-        chart_edge = chart_x + round(self.chart_x/2); print(chart_edge)
+
         i = 1
         while len(data_points) < num_points:
             try: 
@@ -473,7 +498,58 @@ class TooltipScraper(scraper.TE_Scraper):
             last_tooltip = tooltip
         
         return data_points
-    
+
+    def latest_points_js(self, num_points: int = 10, increment: int = None, wait_time: int = None, 
+                        force_shortest_span: bool = True):
+        """Get data points by moving cursor across chart within viewport bounds using JavaScript.
+        Gets date and values from the tooltips that show up.
+        
+        Args:
+            num_points (int): Number of unique data points to collect before stopping. Use "all" to collect all points
+            increment (int, optional): Override the default increment calculation. Pixels to move per step
+            wait_time (int, optional): Override the default wait time between moves (milliseconds)
+            force_shortest_span (bool): Whether to force the chart to shortest timespan before scraping
+        
+        Returns:
+            list: List of data points as dictionaries with 'date' and 'value' keys
+        """
+
+        if force_shortest_span:
+            shortest_span = list(self.date_spans.keys())[0]
+            if self.date_span != shortest_span: # Set the datespan to 1 year to look just at the latest data points
+                self.set_date_span(shortest_span)
+
+        self.select_chart_type("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
+        #Chart type must be spline or line for this to work. Sometimes the chart_type chnages automatically when datespan is altered.
+
+        try:
+            js_file_path = os.path.join(os.path.dirname(__file__), 'js_parts.js')
+            
+            with open(js_file_path, 'r') as file:
+                js_code = file.read()
+            
+            # Build options object, only including provided values
+            options = {'num_points': num_points}
+            if increment is not None:
+                options['increment_override'] = increment
+            if wait_time is not None:
+                options['wait_time_override'] = wait_time
+            
+            # Pass single options object to async script
+            result = self.driver.execute_async_script(js_code, options)
+            
+            if isinstance(result, dict):
+                for log in result.get('logs', []):
+                    logger.debug(f"JS Console: {log}")
+                return result.get('dataPoints', [])
+            else:
+                logger.debug("Unexpected result format")
+                return []
+                
+        except Exception as e:
+            logger.info(f"Error in test cursor movement: {str(e)}")
+            return []
+        
     def get_device_pixel_ratio(self):
         """Get device pixel ratio to scale movements"""
         return self.driver.execute_script('return window.devicePixelRatio;')

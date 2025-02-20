@@ -27,8 +27,9 @@ You can download firefox from: [firefox](https://www.mozilla.org/firefox/new/)
 - beautifulsoup4
 - selenium
 - pandas
-- kaleido (optional, for export of plotly fig to image)
-- openpyxl (optional, for export of pandas datastructures to excel)
+- kaleido (optional, for export of plotly fig to image).
+- openpyxl (optional, for export of pandas datastructures to excel).
+- nbformat (optional, for interactive plotly charts in jupyter notebooks).
 
 These will be autosmaticaly installed if you use pip to install tedata from pypi.
 
@@ -36,8 +37,9 @@ These will be autosmaticaly installed if you use pip to install tedata from pypi
 
 #### Install from pypi
 
+Currently the package is still in the early testing phase. It has been pubished to test pypi but not yet pypi. You can install from testpypi. You need to specifiy both index urls in order to install the dependencies from pypi. Use the command below:
 ```bash
-pip install tedata
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple tedata
 ```
 
 Ensure that you also have firefox browser installed.
@@ -170,7 +172,7 @@ It uses selenium to get data from the tooltips for the first date & last 5 or so
 scr.get_y_axis(set_global_y_axis=True) ## Get the y-axis tick positions (pixel co-ordinates) and values. 
 scr.series_from_chart_soup(set_max_datespan=True)  #Get the series data from path element that is the series trace on the svg chart.
 scr.apply_x_index()  ## Apply the x_index to the series, this will resample the data to the frequency of the x_index.
-sel.scale_series()  ## Scale the series to the y-axis values to convert the pixel co-ordinates to actual data values.
+scr.scale_series()  ## Scale the series to the y-axis values to convert the pixel co-ordinates to actual data values.
 ```
 
 ```python
@@ -187,9 +189,29 @@ scrape_chart(scraper = scr, id = "gdp", country = "united-states")
 ### Additional Notes
 
 - If not using a headless webdriver instance, i.e a browser window is shown, DO NOT CHANGE ANY SETTINGS ON THE CHART MANUALLY.
-- Specifically, changing the chart_type (e.g line chart to bar) cannot be detected as the code stands now (v0.2.3). This could then lead to scraping failures.
+- Specifically, changing the chart_type (e.g line chart to bar) cannot be detected as the code stands now (v0.2.4). This could then lead to scraping failures.
 - Best to run in headless mode or if running with head, only use the browser window for viewing the actions as they are taken by the webdriver.
 
 ### Reporting issues and debugging
 
 The package has extensive logging which should help me identify where things went wrong if you encounter a problem. Please log an issue or pull request and send me your logfile if you run into a problem. logfiles are stored in `/src/tedata/logs`.
+
+### Troubleshooting
+
+There are a number of webdriver based errors that you may run into when attempting to download data. Generally, this is a result of stale webdriver objects being re-used. Create a new webdriver object and attempt the data download again. We create a new webdriver object by setting ```use_existing_driver = False``` on initilization of any of the webdriver containing objects such as ```TE_Scaper``` or ```search_TE```. If you encounter an error like this when using ```scrape_chart``` function, be sure to provide no webdriver or scraper object as a keyword argument and set ```use_existing_driver = False```. This will create a fresh webdriver when run. Sometimes it does work when re-using the same scraper object though, so can be worth trying.
+
+#### Examples of stale webdriver error messages
+
+- Error loading page: Message: Failed to decode response from marionette
+- Error loading page: Message: Tried to run command without establishing a connection
+
+```text
+Error with the x-axis scraping & frequency deterination using Selenium and tooltips: Message: The element with the reference cd433d12-0d9a-4834-b50b-22e04ff49474 is stale; either its node document is not the active document, or it is no longer connected to the DOM; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#stale-element-reference-exception
+Stacktrace:
+RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
+WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:193:5
+StaleElementReferenceError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:725:5
+...
+json.deserialize@chrome://remote/content/marionette/json.sys.mjs:297:10
+receiveMessage@chrome://remote/content/marionette/actors/MarionetteCommandsChild.sys.mjs:
+```

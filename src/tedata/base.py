@@ -13,7 +13,7 @@ def find_active_drivers(quit_all: bool = False) -> list:
     """Find all active selenium webdriver instances in memory sorted by age.
     
     Args:
-        quit_all (bool): If True, quit all found drivers
+        quit_all (bool): If True, quit all found drivers and clear references
         
     Returns:
         list: List of tuples (driver, age_in_seconds) sorted by age, excluding weakproxies
@@ -21,6 +21,7 @@ def find_active_drivers(quit_all: bool = False) -> list:
     active_drivers = []
     current_time = time.time()
     
+    # Find all webdriver instances
     for obj in gc.get_objects():
         try:
             if isinstance(obj, (TimestampedFirefox, TimestampedChrome)) and not isinstance(obj, weakref.ProxyType):
@@ -33,12 +34,19 @@ def find_active_drivers(quit_all: bool = False) -> list:
     # Sort by age (second element of tuple)
     active_drivers.sort(key=lambda x: x[1])
     
-    if quit_all:
-        for driver, _ in active_drivers:
+    if quit_all and active_drivers:
+        logger.info(f"Quitting {len(active_drivers)} active webdriver instances...")
+        for driver, age in active_drivers:
             try:
-                driver.quit()
-            except:
-                pass
+                logger.debug(f"Quitting driver (age: {age:.1f}s)")
+                driver.quit()  # Close the browser
+                del driver    # Remove the reference
+            except Exception as e:
+                logger.error(f"Error quitting driver: {str(e)}")
+        
+        # Force garbage collection
+        gc.collect()
+        active_drivers = []  # Clear the list since all drivers are quit
                 
     return active_drivers
 
