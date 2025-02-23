@@ -210,6 +210,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         current date as the end date."""
 
         self.custom_date_span(start_date="1850-01-01", end_date=datetime.date.today().strftime("%Y-%m-%d"))
+        self.date_span = "MAX"
 
     def update_date_span(self, update_chart: bool = False):
         """Update the date span after clicking a button. This will check the page source and update the date span attribute.
@@ -507,7 +508,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 self.metadata["min_value"] = float(self.series.min())
                 self.metadata["max_value"] = float(self.series.max())
                 self.metadata["length"] = len(self.series)
-                self.metadata["frequency"] = self.frequency  
+                self.series_metadata = pd.Series(self.metadata)
         else:
             print("start_end not found, run get_datamax_min() first.")
             logger.debug("start_end not found, run get_datamax_min() first.")
@@ -593,7 +594,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.info(f"Error creating DateTimeIndex for the time-series.")
             return None
     
-    def full_series_fromTooltips(self):
+    def full_series_fromTooltips(self, set_max_datespan: bool = False):
         """Scrape the full series from the dates and values displayed on the tooltips as the cursor is dragged across the chart. Uses javscript to handle the cursor 
         movement and tooltip retrieval and parsing. This is way faster than using a python loop. I suspect this may end up missing some points for series that 
         have many datapoints. However, it has worked for all series tested thus far. Assigns the resultant series to the series attribute.
@@ -602,7 +603,10 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if not hasattr(self, "tooltip_scraper"):
             self.init_tooltipScraper()  ## Initialize the tooltip scraper.
 
-        self.select_chart_type("Spline") # Force spline chart type so that Y position of cursor does not matter for tooltip retrieval.
+        if set_max_datespan:
+            print("Setting max date span using calendar...")
+            self.tooltip_scraper.set_max_date_span_viaCalendar()
+        self.tooltip_scraper.select_chart_type("Spline") # Force spline chart type so that Y position of cursor does not matter for tooltip retrieval.
 
         ## Javascript based method here.
         try:
@@ -611,7 +615,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.info("Tooltip scraping of full series has failed, error: ", e)
             return None
         #Powerful one line pandas connversion...
-        self.series = pd.Series([utils.convert_metric_prefix(value["value"]) for value in datapoints][::-1], index = pd.DatetimeIndex([date["date"] for date in datapoints][::-1]), name = "tooltip_data").astype(float)
+        self.series = pd.Series([utils.convert_metric_prefix(value["value"]) for value in datapoints][::-1], \
+                                index = pd.DatetimeIndex([utils.ready_datestr(date["date"]) for date in datapoints][::-1]), name = "tooltip_data").astype(float)
 
         # Add some more metadata about the series. 
         if hasattr(self, "metadata"):
@@ -627,6 +632,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 if freq is None:
                     freq = "Unknown/irregular"
                 self.metadata["frequency"] = freq
+            self.series_metadata = pd.Series(self.metadata)
         logger.info("Successfully scraped full series from tooltips.")
         if self.metadata["frequency"] == "Unknown/irregular":
             logger.info("Frequency of the series is unknown or irregular, the tooltip scraping may have missed points. Retry scraping using 'path' method instead of 'tooltips'.")
@@ -782,6 +788,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 return None
             
             self.series = new_ser  # Update the series attribute with the new series.
+            if hasattr(self, "metadata"):
+                self.metadata["frequency"] = self.frequency  # Update the frequency in the metadata.
             logger.info(f"DateTimeIndex applied to series, series attribute updated.")
         else:
             logger.info("No series found, get the series first.")
@@ -846,7 +854,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             ylabel = str(self.series_metadata["units"]).capitalize()
             
             # Create default annotation text from metadata
-            frequency = self.metadata["frequency"] if self.metadata["frequency"] is not None else "Unknown"
+            frequency = self.metadata["frequency"] if "frequency" in self.metadata.keys() else "Unknown"
             if annotation_text is None:
                 annotation_text = (
                     f"Source: {self.metadata['source']}<br>"
@@ -957,6 +965,25 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if self.metadata is not None:
             logger.debug(f"Metadata scraped successfully: {self.metadata}")
 
+    def export_data(self, savePath: str = os.getcwd(), filename: str = None):
+        """ Export the series data to an excel .xlsx file. The series and metadata attributes must be set before running this method.
+        Only do it after scraping the series data. The metadata will be saved in a separate sheet in the same file.
+        
+        **Parameters**
+        - savePath (str): The directory to save the file to. Default is the current working directory.
+        - filename (str): The name of the file to save the data to. Default is the name of the series. """
+        
+        if not hasattr(self, "series"):
+            print("No series found. Run the series_from_chart_soup method first.")
+            return None
+        if filename is None:
+            filename = self.series_name
+
+        with pd.ExcelWriter(f"{savePath}{fdel}{filename}.xlsx") as writer:
+            self.series.to_excel(writer, sheet_name='Data')
+            self.series_metadata.to_excel(writer, sheet_name='Metadata')
+            logger.info(f"Data exported to {savePath}{fdel}{filename}")
+
     def get_page_source(self):
         """Get current page source after interactions"""
         return self.driver.page_source
@@ -983,7 +1010,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
                  method: Literal["path", "tooltips"] = "path",
                  scraper: TE_Scraper = None,
                  driver: webdriver = None, 
-                 use_existing_driver: bool = False,
+                 use_existing_driver: bool = True,
                  headless: bool = True, 
                  browser: str = 'firefox') -> TE_Scraper:
     
@@ -1046,6 +1073,12 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
         return None
 
     if method == "tooltips":
+        if start_date is None:
+            start_date = "1850-01-01"
+        if end_date is None:
+            end_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        if not hasattr(sel, "tooltip_scraper"):
+            sel.init_tooltipScraper()  ## Initialize the tooltip scraper.
         try:
             sel.custom_date_span(start_date, end_date)  # Set the date span for the chart.
         except Exception as e:
@@ -1103,4 +1136,5 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
 
         print(f"Got metadata. \n\nSeries tail: {sel.series.tail()} \n\nScraping complete! Happy pirating yo!")
         logger.debug(f"Scraping complete, data series retrieved successfully from chart at: {url}")
-        return sel
+    
+    return sel #Return the TE_Scraper object with the series data in the 'series' attribute.

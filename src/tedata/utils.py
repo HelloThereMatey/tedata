@@ -573,7 +573,7 @@ class TooltipScraper(scraper.TE_Scraper):
             pass
         
         try:
-            date = pd.to_datetime(date)
+            date = pd.to_datetime(ready_datestr(date))
         except:
             print(f"Error converting date string: {date}")
             pass

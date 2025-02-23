@@ -67,7 +67,6 @@ async function moveCursor(options, done) {
         
         while (x > rect.x && dataPoints.length < target_points) {
             cursor.style.left = x + 'px';
-            console.log("Datapoints length:", dataPoints.length);
             
             // Create and dispatch events
             const moveEvent = new MouseEvent('mousemove', {
@@ -84,8 +83,6 @@ async function moveCursor(options, done) {
                 t.querySelector('.tooltip-date') && t.querySelector('.tooltip-value')
             );
             
-            console.log('Found tooltip with date/value:', tooltip ? 'yes' : 'no');
-            
             if (tooltip) {
                 const dateElement = tooltip.querySelector('.tooltip-date');
                 const valueElement = tooltip.querySelector('.tooltip-value');
@@ -94,7 +91,6 @@ async function moveCursor(options, done) {
                 const value = valueElement?.textContent;
                 
                 if (date && value && date !== lastDate) {
-                    console.log('Adding point:', date, value);
                     dataPoints.push({
                         date: date.trim(),
                         value: value.trim(),

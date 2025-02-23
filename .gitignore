@@ -15,3 +15,5 @@ __pycache__/
 # Keep your existing patterns
 *__*
 /src/tedata/logs/
+/tests/test_runs/
+/tests/test_urls*
