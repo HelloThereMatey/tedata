@@ -10,7 +10,7 @@ fdel = os.path.sep
 sys.path.append(parent+fdel+"src")
 print(parent+fdel+"src")
 
-from tedata import scrape_chart
+import tedata as ted
 # Add parent directory to path to import tedata
 #List of urls to test
 with open(wd+fdel+"test_urls.csv", "r") as f:
@@ -29,32 +29,39 @@ def setup_test_logger(output_dir):
         f'scraping_test_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
     )
     
-    # Get logger and set its level
-    logger = logging.getLogger('test_logger')
-    logger.setLevel(logging.DEBUG)
+    # Get root logger and tedata logger
+    root_logger = logging.getLogger()
+    tedata_logger = logging.getLogger('tedata')
     
-    # Remove any existing handlers
-    if logger.hasHandlers():
-        logger.handlers.clear()
+    # Clear all existing handlers
+    root_logger.handlers.clear()
+    tedata_logger.handlers.clear()
     
-    # Configure file handler
+    # Configure file handler for all logging
     fh = logging.FileHandler(log_file)
     fh.setLevel(logging.DEBUG)
     file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     fh.setFormatter(file_formatter)
     
-    # Configure console handler
+    # Configure console handler for test logger only
     ch = logging.StreamHandler(sys.stdout)
-    ch.setLevel(logging.INFO)  # Console shows INFO and above
+    ch.setLevel(logging.INFO)
     console_formatter = logging.Formatter('%(levelname)s - %(message)s')
     ch.setFormatter(console_formatter)
     
-    # Add both handlers
-    logger.addHandler(fh)
-    logger.addHandler(ch)
+    # Add file handler to root logger to capture everything
+    root_logger.setLevel(logging.DEBUG)
+    root_logger.addHandler(fh)
     
-    # Prevent propagation to root logger
-    logger.propagate = False
+    # Create test logger with console output
+    logger = logging.getLogger('test_logger')
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(ch)
+    logger.propagate = True  # Allow file logging via root logger
+    
+    # Prevent tedata logger from propagating to console
+    tedata_logger.propagate = False
+    tedata_logger.addHandler(fh)  # Add direct file handler
     
     # Log start of session
     logger.info("=== Test Session Started ===")
@@ -124,7 +131,7 @@ def test_url(url):
             logger.info(f"Testing {method} method")
             
             # Scrape data
-            scraper = scrape_chart(url, method=method)
+            scraper =ted.scrape_chart(url, method=method)
             if scraper is None:
                 logger.error(f"{method} method failed to return scraper")
                 continue

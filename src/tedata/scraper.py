@@ -57,27 +57,39 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         self.observers.append(self)  # Register self as observer
         self._shared_state = self  # Since we inherit SharedWebDriverState, we are our own shared state
 
-    def load_page(self, url, wait_time=2):
+    def load_page(self, url, extra_wait_time=3):
         """Load page and wait for it to be ready"""
-
         self.last_url = url
         self.series_name = url.split("/")[-1].replace("-", " ")
+        
         try:
+            # This waits for initial page load
             self.driver.get(url)
-            logger.info(f"WebPage at {url} loaded successfully.")
-            time.sleep(wait_time)  # Basic wait for page load
+            
+            # Now explicitly wait for your critical elements
+            self.wait.until(
+                EC.presence_of_element_located((By.ID, "chart")),
+                message="Chart element not found after page load")
+            # For dynamic charts, also wait for the actual chart content
+            self.wait.until(
+                EC.presence_of_element_located((By.CLASS_NAME, "highcharts-series-group")),
+                message="Chart series not loaded")
+            
+            time.sleep(extra_wait_time)  # Extra wait time after page load just to be sure...
+            # Now it's safe to get the page source
             self.full_page = self.get_page_source()
             self.page_soup = BeautifulSoup(self.full_page, 'html.parser')
             self.chart_soup = self.page_soup.select_one("#chart")  #Make a bs4 object from the #chart element of the page.
             self.full_chart = self.chart_soup.contents
-            self.create_chart_types_dict() # Create the chart types dictionary for the chart.
-            self.determine_date_span()  # Determine the date span from the chart.
-            return True
         except Exception as e:
             print(f"Error loading page: {str(e)}")
             logger.debug(f"Error loading page: {str(e)}")
             return False
-    
+        
+        self.create_chart_types_dict() # Create the chart types dictionary for the chart.
+        self.update_date_span()
+        return True
+        
     def click_button(self, selector, selector_type=By.CSS_SELECTOR):
         """Click button using webdriver and wait for response.
         
@@ -140,7 +152,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         
     def determine_date_span(self, update_chart: bool = True):
         """Determine the selected date span from the Trading Economics chart currently displayed in webdriver."""
-
+        problematic
         if update_chart: 
             self.update_chart()
         ## Populate the date spans dictionary
@@ -163,11 +175,11 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         for r in result:
             #print("Date span element: ", r)
-            if "selected"in r["class"]:
+            if "selected" in r["class"] and r.text in list(self.date_spans.keys()):
                 date_span = {r.text: r}
                 return date_span
             else:
-                return None
+                return "No date span found."
 
     def update_chart(self):
         """Update the chart attributes after loading a new page or clicking a button. This will check the page source and update the 
@@ -224,7 +236,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if update_chart:
             self.update_chart()
         self.date_span_dict = self.determine_date_span()
-        self.date_span = list(self.date_span_dict.keys())[0]
+        self.date_span = list(self.date_spans.keys())[0]
     
     def create_chart_types_dict(self):
         """Create a dictionary of chart types and their CSS selectors. This is used to select the chart type on the Trading Economics chart.
