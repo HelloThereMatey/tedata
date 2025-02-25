@@ -546,6 +546,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         self.set_max_date_span_viaCalendar()  ##Set date_span to MAX for start and end date pull...
         time.sleep(0.5)
+        self.update_chart()
         self.select_chart_type("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
         #Chart type must be spline or line for this to work. Sometimes the chart_type chnages automatically when datespan is altered.
 
@@ -568,9 +569,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         - force_rerun_freqdet (bool): Whether to force a rerun of the method to get the frequency of the time series again. The method
         will not run again by default if done a second time and frequency attribute is already set. 
         """
-        ## Update chart...
-        self.update_chart()
-
+        
         if not hasattr(self, "tooltip_scraper"):  # If the tooltip scraper object is not already created, create it.
             self.tooltip_scraper = utils.TooltipScraper(parent_instance = self) # Create a tooltip scraper child object
 
