@@ -10,7 +10,9 @@ fdel = os.path.sep
 sys.path.append(parent+fdel+"src")
 print(parent+fdel+"src")
 
+from tedata import base
 import tedata as ted
+
 # Add parent directory to path to import tedata
 #List of urls to test
 with open(wd+fdel+"test_urls.csv", "r") as f:
@@ -43,25 +45,24 @@ def setup_test_logger(output_dir):
     file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     fh.setFormatter(file_formatter)
     
-    # Configure console handler for test logger only
+    # Configure console handler for all loggers
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.INFO)
-    console_formatter = logging.Formatter('%(levelname)s - %(message)s')
+    console_formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
     ch.setFormatter(console_formatter)
     
-    # Add file handler to root logger to capture everything
+    # Set up root logger to capture everything
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(fh)
+    root_logger.addHandler(ch)  # Add console handler to root logger
     
-    # Create test logger with console output
+    # Create test logger
     logger = logging.getLogger('test_logger')
     logger.setLevel(logging.DEBUG)
-    logger.addHandler(ch)
-    logger.propagate = True  # Allow file logging via root logger
+    logger.propagate = True  # Allow propagation to root logger
     
-    # Prevent tedata logger from propagating to console
-    tedata_logger.propagate = False
-    tedata_logger.addHandler(fh)  # Add direct file handler
+    # Allow tedata logger to propagate to root logger
+    tedata_logger.propagate = True
     
     # Log start of session
     logger.info("=== Test Session Started ===")
@@ -128,10 +129,10 @@ def test_url(url):
     
     for method in ["path", "tooltips"]:
         try:
-            logger.info(f"Testing {method} method")
+            logger.info(f"Testing {method} method for {url}")
             
             # Scrape data
-            scraper =ted.scrape_chart(url, method=method)
+            scraper =ted.scrape_chart(url, method=method, use_existing_driver=False, headless=True)
             if scraper is None:
                 logger.error(f"{method} method failed to return scraper")
                 continue
@@ -178,6 +179,7 @@ def main():
     all_results = {}
     for url in TEST_URLS:
         all_results[url] = test_url(url)
+        base.find_active_drivers(quit_all=True)
         
     logger.info("Tests completed")
     return all_results

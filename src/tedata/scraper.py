@@ -246,7 +246,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         The dictionary is stored in the chart_types attribute of the class. The keys are the names of the chart types and the values are the CSS selectors
         for the chart type buttons on the chart."""
 
-        hart_types = self.chart_soup.select_one("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > div")
+        hart_types = self.chart_soup.select_one(".chartTypesWrapper")
         self.chart_types = {child["title"]: "."+child["class"][0]+" ."+ child.button["class"][0] for child in hart_types.children}
         self.expected_types = {chart_type: self.chart_types[chart_type].split(" ")[0].replace(".", '') for chart_type in self.chart_types.keys()}
         logger.info(f"Chart types dictionary created successfully: {self.chart_types.keys()}")
@@ -579,7 +579,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             #datapoints = self.tooltip_scraper.get_latest_points(num_points = 5)  # Python version, slow
             datapoints = self.tooltip_scraper.latest_points_js(num_points=10)  # js version, faster
             self.latest_points = datapoints
-            latest_dates = [datapoint["date"] for datapoint in datapoints]
+            latest_dates = [utils.ready_datestr(datapoint["date"]) for datapoint in datapoints]
             print("Latest dates: ", latest_dates)
 
             ## Get the frequency of the time series
