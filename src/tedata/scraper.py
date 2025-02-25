@@ -152,7 +152,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         
     def determine_date_span(self, update_chart: bool = True):
         """Determine the selected date span from the Trading Economics chart currently displayed in webdriver."""
-        problematic
+    
         if update_chart: 
             self.update_chart()
         ## Populate the date spans dictionary
@@ -179,7 +179,10 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 date_span = {r.text: r}
                 return date_span
             else:
-                return "No date span found."
+                # No button has been slected already in this case.
+                shortest_span = list(self.date_spans.keys())[0]
+                self.set_date_span(shortest_span)
+                return shortest_span
 
     def update_chart(self):
         """Update the chart attributes after loading a new page or clicking a button. This will check the page source and update the 
