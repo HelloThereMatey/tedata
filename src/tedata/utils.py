@@ -12,6 +12,8 @@ import pandas as pd
 import os 
 import re 
 import warnings
+import timeit
+import plotly.graph_objects as go
 
 from . import logger, scraper
 
@@ -516,15 +518,18 @@ class TooltipScraper(scraper.TE_Scraper):
             shortest_span = list(self.date_spans.keys())[0]
             if self.date_span != shortest_span: # Set the datespan to 1 year to look just at the latest data points
                 self.set_date_span(shortest_span)
-
+        spline_step = timeit.default_timer()
         self.select_chart_type("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
         #Chart type must be spline or line for this to work. Sometimes the chart_type chnages automatically when datespan is altered.
+        print(f"Time taken to select chart type: {timeit.default_timer() - spline_step}")
 
         try:
+            load_js_step = timeit.default_timer()
+            # Load JavaScript code from file
             js_file_path = os.path.join(os.path.dirname(__file__), 'js_parts.js')
-            
             with open(js_file_path, 'r') as file:
                 js_code = file.read()
+            print(f"Time taken to load JS code: {timeit.default_timer() - load_js_step}")
             
             # Build options object, only including provided values
             options = {'num_points': num_points}
@@ -534,8 +539,10 @@ class TooltipScraper(scraper.TE_Scraper):
                 options['wait_time_override'] = wait_time
             
             # Pass single options object to async script
+            js_step = timeit.default_timer()
             result = self.driver.execute_async_script(js_code, options)
-            
+            print(f"Time taken to execute JS code: {timeit.default_timer() - js_step}")
+
             if isinstance(result, dict):
                 for log in result.get('logs', []):
                     logger.debug(f"JS Console: {log}")
@@ -547,7 +554,7 @@ class TooltipScraper(scraper.TE_Scraper):
         except Exception as e:
             logger.info(f"Error in test cursor movement: {str(e)}")
             return []
-        
+    
     def get_device_pixel_ratio(self):
         """Get device pixel ratio to scale movements"""
         return self.driver.execute_script('return window.devicePixelRatio;')
@@ -592,63 +599,6 @@ class TooltipScraper(scraper.TE_Scraper):
         #     return None
     
         return date, value
-        
-    def scrape_chart_data(self):
-        """Scrape data points by moving cursor across chart within viewport bounds
-        I don't know if this is working atm, this approcach of pulling each datapoint one at a time from the tooltips
-        may be implemented later yet it will need javascript implementation to work fast enough.
-        Currently this is very slow when done this way. """
-
-        self.update_chart()
-        
-        # Get chart dimensions and position
-        chart_rect = self.full_chart.rect
-        chart_width = chart_rect['width']
-        chart_height = chart_rect['height']
-        
-        # Find chart center in viewport coordinates
-        chart_center_x = chart_rect['x'] + (chart_width / 2)
-        chart_center_y = chart_rect['y'] + (chart_height / 2)
-        print(f"Chart center: ({chart_center_x}, {chart_center_y})")
-        
-        # Calculate valid x-coordinate range
-        x_start = chart_center_x - (chart_width / 2)  # Leftmost valid x
-        x_end = chart_center_x + (chart_width / 2)    # Rightmost valid x
-        
-        # Initialize data collection
-        data_points = []
-        x_increment = 2
-        
-        # Move cursor left to right within valid range
-        current_x = x_start
-
-        while current_x <= x_end:
-            try:
-                # Calculate offset from chart center
-                x_offset = current_x - chart_center_x
-                
-                # Move cursor using offset from center
-                self.actions.move_to_element(self.full_chart)\
-                        .move_by_offset(x_offset, 0)\
-                        .perform()
-                
-                time.sleep(0.2)
-                
-                # Get tooltip data
-                tooltip = self.get_tooltip_text()
-                if tooltip:
-                    data_points.append({
-                        'x_position': current_x,
-                        'tooltip_data': tooltip
-                    })
-                
-                current_x += x_increment
-                
-            except Exception as e:
-                print(f"Error at x={current_x}: {str(e)}")
-                current_x += x_increment
-                
-        return data_points
 
     def get_tooltip_text(self, tooltip_selector: str = '.highcharts-tooltip'):
         """Get tooltip text from the chart element"""
@@ -663,8 +613,7 @@ class TooltipScraper(scraper.TE_Scraper):
         else:
             #print("Tooltip not found")
             return None
-        
-        
+          
     def show_position_marker(self, x: int, y: int, duration_ms: int = 5000):
         """Add visual marker at specified coordinates"""
         js_code = """
@@ -811,3 +760,82 @@ def show_position_marker(scraper_object: Union[scraper.TE_Scraper, TooltipScrape
         setTimeout(() => dot.remove(), arguments[2]);
     """
     scraper_object.driver.execute_script(js_code, x, y, duration_ms)
+
+def plot_multi_series(series_list: dict = None, 
+                    metadata: dict = None,
+                    annotation_text: str = None, 
+                    ann_box_pos: tuple = (0, - 0.2),
+                    colors: list = None,
+                    show_fig: bool = True,
+                    return_fig: bool = False):
+    """
+    Plots multiple series on a single chart using Plotly. Each series is a pandas Series object.
+    The metadata dictionary should contain information about the series, such as country, title, source, etc. The series 
+    should be of similar values and indexes. Great for comparison of the results of different scraping methods for same series.
+
+    **Parameters**
+    - series_list (list of dicts containing pd.Series and optional strings to add to name on legend): The series to plot. Must be a list of dict like:
+    [{"series": series1, "add_name": "string"}, {"series": series2, "add_name": "string2"}] format.
+    - annotation_text (str): Text to display in the annotation box at the bottom of the chart. Default is None. If None, the default annotation text
+    will be created from the metadata.
+    - colors (list): List strings of color names to cycle through for traces. Default is None. If None, a default list of colors will be used.
+    - ann_box_pos (tuple): The position of the annotation box on the chart. Default is (0, -0.23) which is bottom left.
+    - metadata (dict): A dictionary containing metadata about the series. Must contain the keys such as "country" & "title" as obtained 
+      using TE_Scraper class. Default is None. If None, the title will be "Time Series Plot".
+    - return_fig (bool): If True, the plotly figure object will be returned instead of displayed. Default is False.
+
+    **Returns** 
+    - fig: Plotly figure object (if return_fig=True)
+    """
+    # Create a new figure
+    fig = go.Figure() # Plot the series using pandas, plotly needs to be set as the pandas plotting backend.
+    # Default colors if none provided
+    if colors is None:
+        colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray']
+    # Add each series as a trace
+
+    for i, series in enumerate(series_list):
+        if isinstance(series, pd.Series):
+            name = series.name+ser[i]["add_name"] if series.name else f"Series {i+1}"
+            color = colors[i % len(colors)]  # Cycle through colors
+            ser = series[i]["series"]
+            fig.add_trace(go.Scatter(x=ser.index, y=ser.values,
+                    name=name, line=dict(color=color), mode='lines'))
+
+    if metadata is not None:
+        title = str(metadata["country"]).capitalize() + ": " + str(metadata["title"]).capitalize()
+        ylabel = str(metadata["units"]).capitalize()
+        
+        # Create default annotation text from metadata
+        frequency = metadata["frequency"] if "frequency" in metadata.keys() else "Unknown"
+        if annotation_text is None:
+            annotation_text = (
+                f"Source: {metadata['source']}<br>"
+                f"Original Source: {metadata['original_source']}<br>"
+                f"Frequency: {frequency}<br>"
+            )
+    else:
+        title = "Time Series Plot"
+        ylabel = "Value"
+        annotation_text = annotation_text or "Source: Trading Economics"
+
+    # Add text annotation to bottom left
+    fig.add_annotation( text=annotation_text, xref="paper", yref="paper",
+        x=ann_box_pos[0], y=ann_box_pos[1], showarrow=False, font=dict(size=10),
+        align="left",  xanchor="left", yanchor="bottom", bgcolor="rgba(255, 255, 255, 0.8)",
+        bordercolor="black", borderwidth=1)
+
+    # Label x and y axis
+    fig.update_layout(
+        legend=dict(title_text="",  # Remove legend title
+        orientation="h", yanchor="bottom",
+        y=-0.2,  # Adjust this value to move the legend further down
+        xanchor="center", x=0.5),
+        yaxis_title=ylabel,
+        xaxis_title="",
+        title = title)
+
+    if show_fig:
+        fig.show()
+    if return_fig:
+        return fig
