@@ -715,6 +715,23 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.metadata["max_value"] = float(self.series.max())
             self.metadata["length"] = len(self.series)
             self.series_metadata = pd.Series(self.metadata)
+
+        ##Sometimes the first and last data points seem to be missed, luckily we have them already in the start_end attribute.
+        # Overwrite the first and last points with the start_end values.
+        if hasattr(self, "start_end"):
+            # Convert start_date and end_date to datetime objects
+            start_date = pd.to_datetime(self.start_end["start_date"])
+            end_date = pd.to_datetime(self.start_end["end_date"])
+            # Create Series objects for the start and end values
+            start_series = pd.Series({start_date: self.start_end["start_value"]})
+            end_series = pd.Series({end_date: self.start_end["end_value"]})
+            # Concatenate with the existing series
+            self.series = pd.concat([start_series, self.series, end_series])
+            # Drop duplicates keeping the last occurrence (which would be from start_end if dates already exist)
+            self.series = self.series[~self.series.index.duplicated(keep='last')]
+            # Sort by index to ensure the datetime index is in ascending order
+            self.series = self.series.sort_index()
+        logger.info("Successfully scraped full series from tooltips.")
         return True
         
     def get_y_axis(self, update_chart: bool = False, set_global_y_axis: bool = False):

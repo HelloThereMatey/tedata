@@ -3,6 +3,7 @@ import sys
 import logging
 import speedtest
 import time
+import timeit
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -17,7 +18,7 @@ import tedata as ted
 
 # Add parent directory to path to import tedata
 #List of urls to test
-with open(wd+fdel+"test_urls.csv", "r") as f:
+with open(wd+fdel+"test_urls_all.csv", "r") as f:
     TEST_URLS = [line.strip() for line in f.readlines()]
 print("Test URLS for which to download data: ",TEST_URLS)
 
@@ -173,17 +174,21 @@ def test_url(url):
     # Remove logger setup from here since we're using the global one
     logger.info(f"Testing URL: {url}")
     
-    results = {}
+    results = {}; succeded = True
     
     for method in ["path", "tooltips", "mixed"]:
         try:
             logger.info(f"Testing {method} method for {url}")
             
             # Scrape data
+            timer = timeit.default_timer()
             scraper =ted.scrape_chart(url, method=method, use_existing_driver=False, headless=True)
             if scraper is None:
                 logger.error(f"{method} method failed to return scraper")
+                succeded = False
                 continue
+            elapsed = timeit.default_timer() - timer
+            logger.info(f"scrape_chart method took: {elapsed:.2f} seconds to complete for {url} using method {method} and it succeded: {succeded}.")
                 
             # Store results
             results[method] = {
