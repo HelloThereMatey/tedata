@@ -1,6 +1,8 @@
 import os
 import sys
 import logging
+import speedtest
+import time
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -76,6 +78,52 @@ os.makedirs(output_dir, exist_ok=True)
 logger = setup_test_logger(output_dir)
 
 #### TEST FUNCTIONS ####
+def test_internet_speed():
+    """Test internet speed and return results"""
+    try:
+        logger.info("Testing internet speed...")
+        
+        st = speedtest.Speedtest()
+        st.get_best_server()
+        
+        # Test download speed
+        download_start = time.time()
+        download_speed = st.download() / 1_000_000  # Convert to Mbps
+        download_time = time.time() - download_start
+        
+        # Test upload speed
+        upload_start = time.time()
+        upload_speed = st.upload() / 1_000_000  # Convert to Mbps
+        upload_time = time.time() - upload_start
+        
+        # Get ping
+        ping = st.results.ping
+        
+        # Get server info
+        server = st.results.server
+        server_info = f"{server['sponsor']} ({server['name']}, {server['country']})"
+        
+        results = {
+            'download_speed': round(download_speed, 2),
+            'upload_speed': round(upload_speed, 2),
+            'ping': round(ping, 2),
+            'server': server_info,
+            'download_test_time': round(download_time, 2),
+            'upload_test_time': round(upload_time, 2)
+        }
+        
+        logger.info(f"Internet speed test results:")
+        logger.info(f"Download: {results['download_speed']} Mbps")
+        logger.info(f"Upload: {results['upload_speed']} Mbps")
+        logger.info(f"Ping: {results['ping']} ms")
+        logger.info(f"Server: {results['server']}")
+        
+        return results
+        
+    except Exception as e:
+        logger.error(f"Error testing internet speed: {str(e)}")
+        return None
+
 def compare_series(series1, series2, name=""):
     """Compare two series and log differences"""
     try:
@@ -127,7 +175,7 @@ def test_url(url):
     
     results = {}
     
-    for method in ["path", "tooltips"]:
+    for method in ["path", "tooltips", "mixed"]:
         try:
             logger.info(f"Testing {method} method for {url}")
             
@@ -146,7 +194,7 @@ def test_url(url):
             # Export data and plot
             base_name = f"{url.split('/')[-1]}_{method}"
             scraper.export_data(savePath=output_dir, filename=base_name)
-            scraper.plot_series()
+            scraper.plot_series(show_fig=False)
             scraper.save_plot(filename=base_name, save_path=output_dir, format="html")
             
         except Exception as e:
@@ -154,27 +202,47 @@ def test_url(url):
             continue
             
     # Compare results
-    if len(results) == 2:
-        series_match = compare_series(
+    if len(results) == 3:
+        series_match1 = compare_series(
             results["path"]["series"], 
             results["tooltips"]["series"],
-            name=url
-        )
+            name=url)
+        series_match2 = compare_series(results["path"]["series"], 
+            results["mixed"]["series"],
+            name=url)
+        series_match3 = compare_series(results["tooltips"]["series"], 
+            results["mixed"]["series"],
+            name=url)
+        
         metadata_match = compare_metadata(
             results["path"]["metadata"],
-            results["tooltips"]["metadata"],
+            results["mixed"]["metadata"],
             name=url
         )
         
         logger.info(f"Results for {url}:")
-        logger.info(f"Series match: {series_match}")
+        logger.info(f"Series match: {series_match1}")
+        logger.info(f"Series match: {series_match2}")
+        logger.info(f"Series match: {series_match3}")
         logger.info(f"Metadata match: {metadata_match}")
-        
+        series_list = [{"series": results["path"]["series"], "add_name": "path"},
+                       {"series": results["tooltips"]["series"], "add_name": "tooltips"},
+                       {"series": results["mixed"]["series"], "add_name": "mixed"}] 
+
+        # Make plot with all 3 traces
+        ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=True)
+    
     return results
 
+# Modify your main function
 def main():
     """Run tests for all URLs"""
-    logger.info("Starting scraping method comparison tests")
+    logger.info("=== Starting Test Run ===")
+    
+    # Test internet speed first
+    speed_results = test_internet_speed()
+    
+    logger.info("\nStarting scraping method comparison tests")
     
     all_results = {}
     for url in TEST_URLS:

@@ -282,8 +282,12 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if not hasattr(self, "chart_types"):
             self.create_chart_types_dict()
 
+        self.update_chart()
+
         if chart_type in self.chart_types.keys():
+            print("Attempting to select chart type: ", chart_type, "clicking top button....")
             if self.click_button("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > button"):
+                time.sleep(0.5)
                 self.click_button(self.chart_types[chart_type])
                 self.chart_type = self.expected_types[chart_type]
                 logger.info(f"Chart type set to: {chart_type}")
@@ -422,7 +426,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if not local_run:
             self.trace_path_series_raw = series.copy()
          # Keep the raw pixel co-ordinate valued series extracted from the svg path element.
-        logger.debug(f"Raw data series extracted successfully: {series.head(2)}")
+        logger.debug(f"Raw data series extracted successfully.")
         self.series_extracted_from = use_chart_type  #Add this attribute so that the apply_x_index method knows which chart_type the series came from.
         self.series = series
         return series
@@ -630,7 +634,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             return None
         #Powerful one line pandas connversion...
         self.series = pd.Series([utils.convert_metric_prefix(value["value"]) for value in datapoints][::-1], \
-                                index = pd.DatetimeIndex([utils.ready_datestr(date["date"]) for date in datapoints][::-1]), name = "tooltip_data").astype(float)
+                                index = pd.DatetimeIndex([utils.ready_datestr(date["date"]) for date in datapoints][::-1]), name = self.metadata["title"]).astype(float)
 
         # Add some more metadata about the series. 
         if hasattr(self, "metadata"):
@@ -652,6 +656,61 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.info("Frequency of the series is unknown or irregular, the tooltip scraping may have missed points. Retry scraping using 'path' method instead of 'tooltips'.")
         return self.series
 
+    def tooltip_multiScrape(self):
+        """ Use the TooltipScraper object to scrape the full series from the chart. This is the most accurate method of scraping the full
+        series but s the slowest. The x_index attribute must be set before running this method. The method will use multiple runs
+        of the javascript tooltip scraping script. It will be done in multiple runs to prevent points being missed. Number of runs
+        will depend upon the length of the x_index attribute. """
+
+        if not hasattr(self, "tooltip_scraper"):
+            self.init_tooltipScraper()
+        if not hasattr(self, "x_index"):
+            self.make_x_index()
+
+        max_chunk_size = 450  # Maximum number of points to scrape in one go. This is deterined by the density of datapoints on the chart. 
+        total_len = len(self.x_index) # Total number of points in the x_index attribute.
+        numscrapes = (total_len + max_chunk_size - 1) // max_chunk_size  # Ceiling division
+        sub_indexes = []  #The index will be brken up into this list of subIndexes.
+        base_size = total_len // numscrapes
+        remainder = total_len % numscrapes
+        logger.info(f" Using mixed scraping approach, slowest, highest accuracy. Splitting x_index into subIndexes\
+        Total points: {total_len}, Max chunk size: {max_chunk_size}, Number of chunks: {numscrapes}, remainder: {remainder}")
+
+        for i in range(numscrapes):
+            start_idx = i * base_size
+            # For last chunk, include all remaining points
+            end_idx = (i + 1) * base_size if i < numscrapes - 1 else total_len
+            sub_indexes.append(self.x_index[start_idx:end_idx])
+
+        logger.info(f"x_index Start date: {self.x_index[0]}, End date: {self.x_index[-1]}")
+        for i, idx in enumerate(sub_indexes): #Chec
+            logger.info(f"SubIndex {i}: {len(idx)} points, from {idx[0]} to {idx[-1]}, frequency: {pd.infer_freq(idx)}")
+            #Set the date span on the chart to cover the subIndex.
+            self.custom_date_span(start_date=idx[0].strftime("%Y-%m-%d"), end_date=idx[-1].strftime("%Y-%m-%d"))
+
+            try:
+                datapoints = self.tooltip_scraper.latest_points_js(num_points="all", force_shortest_span=False, wait_time=5)
+                #Powerful one line pandas connversion...
+                series = pd.Series([utils.convert_metric_prefix(value["value"]) for value in datapoints][::-1], \
+                                    index = pd.DatetimeIndex([utils.ready_datestr(date["date"]) for date in datapoints][::-1]), name = self.metadata["title"]).astype(float)
+            except Exception as e:
+                logger.info("Tooltip scraping of full series has failed, error: ", e)
+                return None
+            
+            if i == 0:
+                self.series = series
+            else:
+                self.series = pd.concat([self.series, series], axis = 0)
+
+        if hasattr(self, "metadata"):
+            self.metadata["start_date"] = self.series.index[0].strftime("%Y-%m-%d")
+            self.metadata["end_date"] = self.series.index[-1].strftime("%Y-%m-%d")
+            self.metadata["min_value"] = float(self.series.min())
+            self.metadata["max_value"] = float(self.series.max())
+            self.metadata["length"] = len(self.series)
+            self.series_metadata = pd.Series(self.metadata)
+        return True
+        
     def get_y_axis(self, update_chart: bool = False, set_global_y_axis: bool = False):
         """Get y-axis values from chart to make a y-axis series with tick labels and positions (pixel positions).
         Also gets the limits of both axis in pixel co-ordinates. A series containing the y-axis values and their pixel positions (as index) is assigned
@@ -707,7 +766,6 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             pass
 
         if yaxis is not None:
-            logger.debug(f"Y-axis values scraped successfully.")
             logger.info(f"Y-axis values scraped successfully.")
         
         if set_global_y_axis:
@@ -841,7 +899,9 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
     def plot_series(self, series: pd.Series = None, 
                     annotation_text: str = None, 
                     dpi: int = 300, 
-                    ann_box_pos: tuple = (0, - 0.2)):
+                    ann_box_pos: tuple = (0, - 0.2),
+                    show_fig: bool = True,
+                    return_fig: bool = False):
         """
         Plots the time series data using pandas with plotly as the backend. Plotly is set as the pandas backend in __init__.py for tedata.
         If you want to use matplotlib or other plotting library don't use this method, plot the series attribute data directly. If using jupyter
@@ -905,8 +965,11 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             title = title)
 
         # Show the figure
-        fig.show()
         self.plot = fig
+        if show_fig:
+            fig.show()
+        if return_fig:
+            return fig
 
     def save_plot(self, filename: str = "plot", save_path: str = os.getcwd(), dpi: int = 300, format: str = "png"):
         """Save the plot to a file. The plot must be created using the plot_series method. This method will save the plot as a PNG image file.
@@ -1021,7 +1084,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
                  country: str = "united-states",
                  start_date: str = None,
                  end_date: str = None,
-                 method: Literal["path", "tooltips"] = "path",
+                 method: Literal["path", "tooltips", "mixed"] = "path",
                  scraper: TE_Scraper = None,
                  driver: webdriver = None, 
                  use_existing_driver: bool = True,
@@ -1132,7 +1195,6 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
 
         try: 
             sel.apply_x_index()  ## Apply the x_index to the series, this will resample the data to the frequency of the x_index.
-            logger.debug("Successfully applied x_index scaling to series.")
         except Exception as e:
             print(f"Error applying x-axis scaling: {str(e)}")
             logger.debug(f"Error applying x-axis scaling: {str(e)}")
@@ -1150,5 +1212,31 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
 
         print(f"Got metadata. \n\nSeries tail: {sel.series.tail()} \n\nScraping complete! Happy pirating yo!")
         logger.debug(f"Scraping complete, data series retrieved successfully from chart at: {url}")
+    
+    ## Most accurate method but slowest. Determine start & end dates for full series and frequency, make x-index. Then scrape the data from tooltips
+    # using multiple runs of the chart with different date spans to capture all the data.
+    elif method == "mixed":
+        try: #Create the x_index for the series. This is the most complicated bit.
+            sel.make_x_index(force_rerun_xlims = True, force_rerun_freqdet = True)  
+        except Exception as e:
+            logger.info(f"Error with the x-axis scraping & frequency deterination using Selenium and tooltips: {str(e)}")
+            return None
+        
+        if not hasattr(sel, "tooltip_scraper"):
+            sel.init_tooltipScraper()  ## Initialize the tooltip scraper.
+        
+        try:  
+            if sel.tooltip_multiScrape():  ## Scrape the full series from the chart using multiple runs of the javascript tooltip scraper.
+                logger.info("Successfully scraped full series using mixed method.")
+            else:
+                raise Exception("Error scraping full series using mixed method.")
+        except Exception as e:
+            logger.info(f"Error scraping full series using mixed method: {str(e)}")
+            return None
+
+    else:
+        print("Invalid method supplied. Use 'path', 'tooltips' or 'mixed'.")
+        logger.debug("Invalid method supplied. Use 'path', 'tooltips' or 'mixed'.")
+        return
     
     return sel #Return the TE_Scraper object with the series data in the 'series' attribute.
