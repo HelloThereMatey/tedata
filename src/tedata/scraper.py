@@ -589,6 +589,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             ## Get the frequency of the time series
             self.date_series = pd.Series(latest_dates[::-1]).astype("datetime64[ns]")
             self.frequency = utils.get_date_frequency(self.date_series)
+            if hasattr(self, "metadata"):
+                self.metadata["frequency"] = self.frequency
         print("Frequency of time-series: ", self.frequency)
 
         if force_rerun_xlims or not hasattr(self, "start_end"):
@@ -665,7 +667,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if not hasattr(self, "tooltip_scraper"):
             self.init_tooltipScraper()
         if not hasattr(self, "x_index"):
-            self.make_x_index()
+            self.make_x_index(force_rerun_freqdet=True, force_rerun_xlims=True)
 
         max_chunk_size = 450  # Maximum number of points to scrape in one go. This is deterined by the density of datapoints on the chart. 
         total_len = len(self.x_index) # Total number of points in the x_index attribute.
@@ -686,7 +688,11 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         for i, idx in enumerate(sub_indexes): #Chec
             logger.info(f"SubIndex {i}: {len(idx)} points, from {idx[0]} to {idx[-1]}, frequency: {pd.infer_freq(idx)}")
             #Set the date span on the chart to cover the subIndex.
-            self.custom_date_span(start_date=idx[0].strftime("%Y-%m-%d"), end_date=idx[-1].strftime("%Y-%m-%d"))
+            if i == len(sub_indexes) - 1:
+                end_date = datetime.date.today().strftime("%Y-%m-%d")
+            else:
+                end_date = idx[-1].strftime("%Y-%m-%d")
+            self.custom_date_span(start_date=idx[0].strftime("%Y-%m-%d"), end_date = end_date)
 
             try:
                 datapoints = self.tooltip_scraper.latest_points_js(num_points="all", force_shortest_span=False, wait_time=5)

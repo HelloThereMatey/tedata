@@ -795,12 +795,16 @@ def plot_multi_series(series_list: dict = None,
     # Add each series as a trace
 
     for i, series in enumerate(series_list):
-        if isinstance(series, pd.Series):
-            name = series.name+ser[i]["add_name"] if series.name else f"Series {i+1}"
-            color = colors[i % len(colors)]  # Cycle through colors
-            ser = series[i]["series"]
+        print(series["series"].head(), series["add_name"], type(series["series"]))
+        try:
+            ser = series["series"]
+            name = ser.name+" (method: "+series["add_name"]+")" if ser.name else f"Series {i+1}"
+            color = colors[i % len(colors)]  # Cycle through colors 
             fig.add_trace(go.Scatter(x=ser.index, y=ser.values,
                     name=name, line=dict(color=color), mode='lines'))
+        except Exception as e:
+            print(f"Error adding series to plot: {str(e)}")
+            continue
 
     if metadata is not None:
         title = str(metadata["country"]).capitalize() + ": " + str(metadata["title"]).capitalize()
