@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.common.exceptions import WebDriverException
 import time
 import pandas as pd
+import numpy as np
 import os 
 import re 
 import warnings
@@ -137,6 +138,8 @@ def convert_metric_prefix(value_str: str) -> float:
     Returns:
         float: Converted numeric value
     """
+    if value_str == "NaN":
+        return np.nan
     # Dictionary of metric prefixes and their multipliers
     metric_prefixes = {
         'K': 1000,
@@ -421,83 +424,11 @@ class TooltipScraper(scraper.TE_Scraper):
             time.sleep(0.1)
             
             # Get tooltip
-            tooltip = self.get_tooltip_text()
-            if tooltip:
-                date, value = self.extract_date_value_tooltip(tooltip)
-                if date and value:
-                    start_end[date_key] = date
-                    start_end[value_key] = value
+            date, value = self.extract_date_value_tooltip()
+            start_end[date_key] = date
+            start_end[value_key] = value
         
         return start_end
-            
-    def get_latest_points(self, num_points: int = 5): #To do: The tooltip scraper class should perhaps inherit from this TE_SCraper so attrubutes such as datespan can be accessed.
-        """ Scrape the latest points to determine the time-series frequency. Will also check if end_date is correct.
-        This will work best if the chart is set to 1Y datespan first before the tooltip scraper object is initialized.
-
-        **Parameters:**
-        - num_points (int): The number of data points to scrape from the 1Y chart.
-
-        **Returns:**
-
-        - data_points (list): A list of dictionaries containing scraped data points.
-        - num_points (int): The number of data points scraped."""
-
-        shortest_span = list(self.date_spans.keys())[0]
-        if self.date_span != shortest_span: # Set the datespan to 1 year to look just at the latest data points
-            self.set_date_span(shortest_span)
-        
-        self.select_line_chart() #Force line chart selection - very important.
-        
-        self.update_chart()
-        if not hasattr(self, "axes_rect"):
-            self.get_chart_dims()
-
-        if not hasattr(self, "viewport_width"):
-            self.viewport_width = self.driver.execute_script("return window.innerWidth;")
-            self.viewport_height = self.driver.execute_script("return window.innerHeight;")
-        
-        data_points = []
-        last_tooltip = ""
-        viewport_y = self.axes_rect['y'] + round(self.axes_rect['height'] / 2)
-
-        actions = ActionChains(self.driver); actions.reset_actions()
-        # Move cursor to chart middle to start at right edge.
-        chart_x = self.axes_rect["x"]
-        actions.move_to_element_with_offset(self.plot_background, round(self.chart_x/2), 0).perform()
-
-        i = 1
-        while len(data_points) < num_points:
-            try: 
-                actions.move_by_offset(-i, 0).perform()
-                time.sleep(0.05)
-                
-                tooltip = self.get_tooltip_text()
-                date, value = self.extract_date_value_tooltip(tooltip)
-                
-                if tooltip == last_tooltip:
-                    #print(f"Date not changed from last point, skipping: {date}")
-                    i += 1
-                    continue
-
-                if tooltip and date and value:
-                    #print("Data point scraped: ", date, value)  
-                    data_points.append({
-                        'viewport_x': self.axes_rect["x"] + i,
-                        'viewport_y': viewport_y,
-                        'tooltip_data': tooltip,
-                        "date": date,
-                        "value": value
-                    })
-                    i += 1
-                else:
-                    print(f"No tooltip found at point")
-            except Exception as e:
-                logger.info(f"Iteration {i}, error scraping data point at {chart_x} + {i}, {viewport_y}: {str(e)}")
-                logger.info("We may have got enough points though already to determine the frequency, returning points.")
-                return data_points
-            last_tooltip = tooltip
-        
-        return data_points
 
     def latest_points_js(self, num_points: int = 10, increment: int = None, wait_time: int = None, 
                         force_shortest_span: bool = True):
@@ -545,8 +476,25 @@ class TooltipScraper(scraper.TE_Scraper):
 
             if isinstance(result, dict):
                 for log in result.get('logs', []):
-                    logger.debug(f"JS Console: {log}")
-                return result.get('dataPoints', [])
+                    logger.info(f"JS Console: {log}")
+                    
+                datapoints = result.get('dataPoints', [])
+                
+                # Process datapoints to handle NaN values
+                for point in datapoints:
+                    if point['value'] == "NaN":
+                        point['value'] = np.nan
+                        #logger.debug(f"Found missing value at date: {point['date']}")
+                    else:
+                        # Normal conversion for valid values
+                        try:
+                            numeric_value = convert_metric_prefix(point['value'])
+                            point['value'] = numeric_value
+                        except Exception as e:
+                            #logger.warning(f"Error converting value '{point['value']}': {str(e)}")
+                            point['value'] = np.nan
+                            
+                return datapoints
             else:
                 logger.debug("Unexpected result format")
                 return []
@@ -559,45 +507,34 @@ class TooltipScraper(scraper.TE_Scraper):
         """Get device pixel ratio to scale movements"""
         return self.driver.execute_script('return window.devicePixelRatio;')
         
-    def extract_date_value_tooltip(self, tooltip_element: str):
+    def extract_date_value_tooltip(self):
         """Extract date and value from a single tooltip HTML"""
+        # Extract date and value using Selenium
 
-        # try:
-        # Parse tooltip HTML
-        soup = BeautifulSoup(tooltip_element, 'html.parser')
-        
-        # Extract date and value
-        date = soup.select_one('.tooltip-date').text.strip()
-        date = ready_datestr(date)
-        
-        value = soup.select_one('.tooltip-value').text.replace(' Points', '')
-        #print("Date: ", date, "Value: ", value)
-        try:
-            value = float(value)
-        except:
-            pass
-        
-        try:
-            date = pd.to_datetime(ready_datestr(date))
-        except:
-            print(f"Error converting date string: {date}")
-            pass
-        
-        # try:
-        splitted = split_numeric(value)
-        if isinstance(splitted, tuple):
-            value = convert_metric_prefix(splitted[0])
+        date_element = self.driver.find_element(By.CSS_SELECTOR, '.tooltip-date').text.strip()
+        print(date_element)
+        if date_element is None:
+            logger.info("Date element not found in tooltip")
+            date = np.nan
         else:
-            value = splitted
+            try:
+                date = pd.to_datetime(ready_datestr(date))
+            except:
+                print(f"Error converting date string: {date}")
+                date = np.nan
 
-            # except Exception as e:
-            #     print(f"Error converting value string: {value}")
-            #     return
-            
-        # except Exception as e:
-        #     print(f"Error parsing tooltip data: {str(e)}")
-        #     return None
-    
+        value_element = self.driver.find_element(By.CSS_SELECTOR, '.tooltip-value').text.replace(' Points', '').strip()
+        print(value_element)
+        if value_element is None:
+            logger.info("Value element not found in tooltip")
+            value = np.nan
+        else:
+            try:
+                value = convert_metric_prefix(value)
+            except:
+                print(f"Error converting date string: {date}")
+                value = np.nan
+        print(date, value)  
         return date, value
 
     def get_tooltip_text(self, tooltip_selector: str = '.highcharts-tooltip'):
@@ -798,6 +735,7 @@ def plot_multi_series(series_list: dict = None,
         print(series["series"].head(), series["add_name"], type(series["series"]))
         try:
             ser = series["series"]
+            logger.info(f"Adding series {ser.name} to plot")
             name = ser.name+" (method: "+series["add_name"]+")" if ser.name else f"Series {i+1}"
             color = colors[i % len(colors)]  # Cycle through colors 
             fig.add_trace(go.Scatter(x=ser.index, y=ser.values,

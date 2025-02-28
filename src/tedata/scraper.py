@@ -558,7 +558,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.tooltip_scraper = utils.TooltipScraper(parent_instance = self) # Create a tooltip scraper child object
         
         self.start_end = self.tooltip_scraper.first_last_dates()
-        #print("Start and end dates scraped from tooltips: ", self.start_end)
+        print("Start and end dates scraped from tooltips: ", self.start_end)
 
     def make_x_index(self, 
                      force_rerun_xlims: bool = False,
@@ -583,6 +583,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             #datapoints = self.tooltip_scraper.get_latest_points(num_points = 5)  # Python version, slow
             datapoints = self.tooltip_scraper.latest_points_js(num_points=10)  # js version, faster
             self.latest_points = datapoints
+            values = [utils.convert_metric_prefix(value["value"]) for value in datapoints]
             latest_dates = [utils.ready_datestr(datapoint["date"]) for datapoint in datapoints]
             print("Latest dates: ", latest_dates)
 
@@ -605,7 +606,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             return None
 
         start_date = self.start_end["start_date"]; end_date = self.start_end["end_date"]
-        dtIndex = self.dtIndex(start_date=start_date, end_date=end_date, ser_name=self.series_name)
+        dtIndex = self.dtIndex(start_date=start_date, end_date=end_date, ser_name = self.metadata["title"])
         if dtIndex is not None:
             logger.info(f"DateTimeIndex created successfully for the time-series.")
             self.x_index = dtIndex
@@ -706,7 +707,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             if i == 0:
                 self.series = series
             else:
-                self.series = pd.concat([self.series, series], axis = 0)
+                self.series = pd.concat([self.series, series], axis = 0).rename(self.metadata["title"])
 
         if hasattr(self, "metadata"):
             self.metadata["start_date"] = self.series.index[0].strftime("%Y-%m-%d")

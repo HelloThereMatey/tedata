@@ -18,7 +18,7 @@ import tedata as ted
 
 # Add parent directory to path to import tedata
 #List of urls to test
-with open(wd+fdel+"test_urls_all.csv", "r") as f:
+with open(wd+fdel+"test_urls.csv", "r") as f:
     TEST_URLS = [line.strip() for line in f.readlines()]
 print("Test URLS for which to download data: ",TEST_URLS)
 
@@ -174,7 +174,7 @@ def test_url(url):
     # Remove logger setup from here since we're using the global one
     logger.info(f"Testing URL: {url}")
     
-    results = {}; succeded = True
+    results = {}; succeded = True; result_summary = pd.DataFrame(columns = ["URL", "Method", "Scraping success"])
     
     for method in ["path", "tooltips", "mixed"]:
         try:
@@ -189,7 +189,10 @@ def test_url(url):
                 continue
             elapsed = timeit.default_timer() - timer
             logger.info(f"scrape_chart method took: {elapsed:.2f} seconds to complete for {url} using method {method} and it succeded: {succeded}.")
-                
+            result_summary = pd.concat([result_summary, pd.DataFrame({
+                    "URL": [url],
+                    "Method": [method],
+                    "Scraping success": [succeded]})], ignore_index=True)
             # Store results
             results[method] = {
                 'series': scraper.series.copy() if hasattr(scraper, 'series') else None,
@@ -236,7 +239,11 @@ def test_url(url):
 
         # Make plot with all 3 traces
         ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=True)
-    
+        # Save the result summary as markdown
+        result_summary_path = os.path.join(output_dir, f"test_results_{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.md")
+        with open(result_summary_path, 'w') as f:
+            f.write(f"# Test Results for {url}\n\n")
+            f.write(result_summary.to_markdown(index=False))
     return results
 
 # Modify your main function

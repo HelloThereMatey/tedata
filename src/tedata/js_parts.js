@@ -77,27 +77,25 @@ async function moveCursor(options, done) {
             });
             plotBackground.dispatchEvent(moveEvent);
             
-            // Get tooltip data - using more specific selector
-            const tooltips = document.querySelectorAll('.highcharts-tooltip');
-            const tooltip = Array.from(tooltips).find(t => 
-                t.querySelector('.tooltip-date') && t.querySelector('.tooltip-value')
-            );
-            
-            if (tooltip) {
-                const dateElement = tooltip.querySelector('.tooltip-date');
-                const valueElement = tooltip.querySelector('.tooltip-value');
+            // Get tooltip data by searching the entire document
+            const dateElement = document.querySelector('.tooltip-date');
+            const valueElement = document.querySelector('.tooltip-value');
+
+            if (dateElement) {
+                const date = dateElement.textContent;
+                const value = valueElement?.textContent;  // Optional value
                 
-                const date = dateElement?.textContent;
-                const value = valueElement?.textContent;
-                
-                if (date && value && date !== lastDate) {
+                // Only proceed if the date is present and unique
+                if (date && date !== lastDate) {
                     dataPoints.push({
                         date: date.trim(),
-                        value: value.trim(),
+                        value: value ? value.trim() : "NaN",
                         x: x,
                         y: y
                     });
                     lastDate = date;
+                    
+                    console.log(`Found data point: ${date.trim()} = ${value ? value.trim() : "NaN"}`);
                     
                     if (dataPoints.length >= target_points && target_points !== Infinity) {
                         console.log(`Collected ${target_points} points, finishing...`);
@@ -110,6 +108,7 @@ async function moveCursor(options, done) {
                     }
                 }
             }
+            
             
             await sleep(wait_time_override || 25);
             x -= increment;
