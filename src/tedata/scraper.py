@@ -102,10 +102,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             button = self.wait.until(
                 EC.element_to_be_clickable((selector_type, selector))
             )
-            # Scroll element into view
-            time.sleep(0.25)  # Brief pause after scroll
             button.click()
-            time.sleep(0.75)
+            time.sleep(0.25)
             return True
         except TimeoutException:
             logger.info(f"Button not found or not clickable: {selector}")
@@ -250,26 +248,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         self.chart_types = {child["title"]: "."+child["class"][0]+" ."+ child.button["class"][0] for child in hart_types.children}
         self.expected_types = {chart_type: self.chart_types[chart_type].split(" ")[0].replace(".", '') for chart_type in self.chart_types.keys()}
         logger.info(f"Chart types dictionary created successfully: {self.chart_types.keys()}")
-
-    def select_line_chart(self, update_chart: bool = False):
-        """Select the line chart type on the Trading Economics chart. This is done by clicking the chart type button and then selecting the line chart type."""
-
-        if update_chart:
-            self.update_chart()
-        if not hasattr(self, "chart_types"):
-            self.create_chart_types_dict()
-
-        if self.click_button("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > button"):
-            if self.click_button(self.chart_types["Line"]):
-                self.chart_type = "lineChart"
-                logger.info("Line chart type selected.")
-                self.update_chart()
-                return True
-        else:
-            print("Error selecting line chart type.")
-            logger.debug("Error selecting line chart type.")
-            return None
-    
+   
     def select_chart_type(self, chart_type: str):
         """Select a chart type on the Trading Economics chart. This is done by clicking the chart type button and then selecting the specified chart type.
         The chart type should be a string that matches one of the chart types in the chart_types dictionary. The method will click the chart type button
@@ -283,10 +262,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.create_chart_types_dict()
 
         self.update_chart()
-
         if chart_type in self.chart_types.keys():
-            print("Attempting to select chart type: ", chart_type, "clicking top button....")
-            if self.click_button("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > button"):
+            if self.click_button(".PREselectedChartType > button:nth-child(1)"):
                 time.sleep(0.5)
                 self.click_button(self.chart_types[chart_type])
                 self.chart_type = self.expected_types[chart_type]
@@ -307,36 +284,6 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
     #     """ Determine the chart type from the Trading Economics chart currently displayed in webdriver.
     #     This is done by checking the class of the selected chart type button in the chart. The chart type is determined by the class of the SVG element
     #     in the chart. This method will return the chart type as a string. 
-
-    #     **Parameters:**
-    #     - update_chart (bool): Whether to update the chart before determining the chart type. Default is False.
-    #     """
-    #     if update_chart:
-    #         self.update_chart()
-    #     if not hasattr(self, "chart_types") or not hasattr(self, "expected_types"):
-    #         self.create_chart_types_dict()
-
-    #     print("Chart types: ", self.chart_types)
-    #     print("determine_chart_type method: Expected chart types: ", self.expected_types)
-    #     res = self.chart_soup.select(".dkLabels-label-btn.selectedChartType")
-        
-    #     self.chart_type_svgs = {
-    #         'Column': 'M4,9.2h2.057143v9.8L4,19v-9.8ZM9.04,5h1.92v14h-1.92v-14Zm5.04,8h1.92v6h-1.92v-6Z',
-    #         'Spline': 'M1 15v-15h-1v16h16v-1h-15z',
-    #         'Areaspline': 'M1 15v-15h-1v16h16v-1h-15z',
-    #         'Stepline': <rect height="0.8" rx="0" ry="0" stroke-width="0" transform="translate(2.2081 12.419091)" width="10.1919"></rect>,
-    #         'Line': 'M3.5 18.49L9.5 12.48L13.5 16.48L22 6.92L20.59 5.51L13.5 13.48L9.5 9.48L2 16.99L3.5 18.49Z',
-    #         'Area': 'M1 15v-15h-1v16h16v-1h-15z'}
-    #     return res
-    #     # print("Selected chart type buttons: ", "\n", res,"\n")
-    #     # for r in res:  # This is a list of the selected chart type buttons.
-    #     #     print("Parent class: ", r.parent, "\n", r, "\n", "Child class: ", r.children)
-    #     #     if any(expected_type in r.parent["class"] for expected_type in self.expected_types.values()):
-    #     #         self.chart_type = r.parent["class"][0]
-    #     #         logger.info(f"Chart type determined: {self.chart_type}")
-    #     #         return self.chart_type
-    #     logger.debug("Error determining chart tyoe: Chart type not found.")
-    #     return None
     
     def get_element(self, selector: str = ".highcharts-series path", selector_type=By.CSS_SELECTOR):
         """Find element by selector. The data trace displayed on a Trading Economics chart is a PATH element in the SVG chart.
@@ -429,6 +376,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         logger.debug(f"Raw data series extracted successfully.")
         self.series_extracted_from = use_chart_type  #Add this attribute so that the apply_x_index method knows which chart_type the series came from.
         self.series = series
+        self.unscaled_series = series.copy()
         return series
     
     def custom_date_span(self, start_date: str = "1900-01-01", end_date: str = datetime.date.today().strftime("%Y-%m-%d")) -> bool:
@@ -489,36 +437,56 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if not right_way_up:
             max_val = self.y_axis.index.max()  # This should be the top pixel of the chart.
             self.series = utils.invert_series(self.series, max_val = max_val)
+        pix0 = self.series.iloc[0]; pix1 = self.series.iloc[-1]
 
         if hasattr(self, "start_end"):
             y0 = self.start_end["start_value"]; y1 = self.start_end["end_value"]
-            pix0 = self.series.iloc[0]; pix1 = self.series.iloc[-1]
             
             self.unit_per_px_alt = abs(y1 - y0) / abs(pix1 - pix0)  # Calculated from the start and end datapoints.
             
             if not hasattr(self, "axis_limits"):
                 self.axis_limits = self.extract_axis_limits()
+            ymin = self.axis_limits['y_min']; ymax = self.axis_limits['y_max']
             ## Turns out that this formulation below is the best way to calculate the scaling factor for the chart.
-            self.axlims_upp = (self.y_axis.iloc[-1] - self.y_axis.iloc[0]) / (self.axis_limits["y_max"] - self.axis_limits["y_min"])
+            unit_range = self.y_axis.iloc[-1] - self.y_axis.iloc[0]
+            pxrange = self.y_axis.index[0] - self.y_axis.index[-1]
+            self.axlims_upp = unit_range/pxrange
+            print(f"Unit per pix forumlation, {self.y_axis.iloc[-1]}, {self.y_axis.iloc[0]}, {unit_range}, {pxrange}, {ymax}, {ymin}, {self.axlims_upp}")
 
             # if the start and end points are at similar values this will be problematic though. 
-            logger.debug("Scale series method: "
-                        f"Start value, end value: {y0}, {y1}, pix0, pix1: {pix0}, {pix1}, "
-                         f"data units per chart pixel from start & end points: {self.unit_per_px_alt}, "
-                         f"unit_per_pix calculated from the y axis ticks: {self.unit_per_pix}, "
-                         f"inverse of that: {1/self.unit_per_pix}, "
-                         f"unit_per_pix from axis limits and self.y_axis (probably best way): {self.axlims_upp}")
+            logger.info("Scale series method: "
+                        f"Start value, end value: {y0}, {y1}, pix0, pix1: {pix0}, {pix1}, \n"
+                         f"data units per chart pixel from start & end points: {self.unit_per_px_alt}, \n"
+                         f"unit_per_pix calculated from the y axis ticks: {self.unit_per_pix}, \n"
+                         f"inverse of that: {1/self.unit_per_pix}, \n"
+                         f"unit_per_pix from axis limits and self.y_axis (probably best way): {self.axlims_upp}\n"
+                         f"yaxis top tick: {self.y_axis.iloc[-1]}, yaxis bot tick: {self.y_axis.iloc[0]}\n"
+                         f"axis_limits: {ymin}, {ymax}")
+            
+            if pd.isna(y0) or pd.isna(y1):
+                logger.info("Start and end values were not found in tooltips, using alternative scaling method.")
+                return
 
-            self.unscaled_series = self.series.copy()
             ##Does the Y axis cross zero? Where is the zero point??
-            x_intercept = utils.find_zero_crossing(self.series)
+            x_intercept = utils.find_zero_crossing(self.y_axis)
+            print(self.y_axis, x_intercept)
 
             if x_intercept:
-                logger.debug(f"Y axis Series does cross zero at:  {x_intercept}")
+                zero_pix = x_intercept
+                min_val = 0
                 pix0 = x_intercept
+                logger.info(f"Y axis Series does cross zero at:  {x_intercept}, min_val: {min_val}, pix0: {pix0}") 
+            else:
+                zero_pix = self.y_axis.index[0]
+                min_val = self.y_axis.iloc[0]
+                logger.info(f"Y axis Series does not cross zero, min_val: {min_val}, zero_pix: {zero_pix}") 
 
+            unscaled = self.unscaled_series.copy()
+            self.series = zero_pix - (unscaled + self.y_axis.index[-1])#)*self.axlims_upp #+ min_val
+            return
             for i in range(len(self.series)):
-                self.series.iloc[i] = (self.series.iloc[i] - pix0)*self.axlims_upp + y0
+                #self.series.iloc[i] = (self.series.iloc[i] - pix0)*self.axlims_upp + y0
+                self.series.iloc[i] = (zero_pix - unscaled.iloc[i])*self.axlims_upp + min_val
     
             self.series = self.series
             if hasattr(self, "metadata"):
@@ -535,7 +503,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         return self.series
     
-    def get_xlims_from_tooltips(self):
+    def get_xlims_from_tooltips(self, set_max_datespan: bool = True):
         """ Use the TooltipScraper class to get the start and end dates and some other points of the time series using the tooltip box displayed on the chart.
         Takes the latest num_points points from the chart and uses them to determine the frequency of the time series. The latest data is used
         in case the earlier data is of lower frequency which can sometimes occurr.
@@ -548,8 +516,9 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         print("get_xlims_from_tooltips method: date_span: ", self.date_span, ", chart_type:", self.chart_type)
 
-        self.set_max_date_span_viaCalendar()  ##Set date_span to MAX for start and end date pull...
-        time.sleep(0.5)
+        if set_max_datespan:
+            self.set_max_date_span_viaCalendar()  ##Set date_span to MAX for start and end date pull...
+            time.sleep(0.5)
         self.update_chart()
         self.select_chart_type("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
         #Chart type must be spline or line for this to work. Sometimes the chart_type chnages automatically when datespan is altered.
@@ -559,6 +528,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         
         self.start_end = self.tooltip_scraper.first_last_dates()
         print("Start and end dates scraped from tooltips: ", self.start_end)
+        if hasattr(self, "metadata"):
+            self.metadata["unit_tooltips"] = self.start_end["unit_str"]
 
     def make_x_index(self, 
                      force_rerun_xlims: bool = False,
@@ -583,8 +554,11 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             #datapoints = self.tooltip_scraper.get_latest_points(num_points = 5)  # Python version, slow
             datapoints = self.tooltip_scraper.latest_points_js(num_points=10)  # js version, faster
             self.latest_points = datapoints
-            values = [utils.convert_metric_prefix(value["value"]) for value in datapoints]
-            latest_dates = [utils.ready_datestr(datapoint["date"]) for datapoint in datapoints]
+            # Convert metric prefixes for the values in each datapoint
+            for point in self.latest_points:
+                point["value"] = utils.extract_and_convert_value(point["value"])
+                point["date"] = utils.ready_datestr(point["date"])
+            latest_dates = [point["date"] for point in datapoints]
             print("Latest dates: ", latest_dates)
 
             ## Get the frequency of the time series
@@ -636,7 +610,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.info("Tooltip scraping of full series has failed, error: ", e)
             return None
         #Powerful one line pandas connversion...
-        self.series = pd.Series([utils.convert_metric_prefix(value["value"]) for value in datapoints][::-1], \
+        self.series = pd.Series([utils.extract_and_convert_value(value["value"]) for value in datapoints][::-1], \
                                 index = pd.DatetimeIndex([utils.ready_datestr(date["date"]) for date in datapoints][::-1]), name = self.metadata["title"]).astype(float)
 
         # Add some more metadata about the series. 
@@ -759,7 +733,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         gridlines = ygrid[1].findAll('path')
         for line in gridlines:
             y_heights.append(float(line.get('d').split(' ')[-1]))
-        y_heights = sorted(y_heights)
+        y_heights = sorted(y_heights, reverse=True)
+        print("y_heights: ", y_heights)
 
         ##Get y-axis labels
         yax = self.chart_soup.select('g.highcharts-axis-labels.highcharts-yaxis-labels')
@@ -773,7 +748,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if any(isinstance(i, str) for i in yaxlabs):
             yaxlabs = [float(''.join(filter(str.isdigit, i.replace(",", "")))) if isinstance(i, str) else i for i in yaxlabs]
         pixheights = [float(height) for height in y_heights]
-        pixheights.sort()
+        print("pixheights: ", pixheights)
 
         ##Get px per unit for y-axis
         pxPerUnit = [abs((yaxlabs[i+1]- yaxlabs[i])/(pixheights[i+1]- pixheights[i])) for i in range(len(pixheights)-1)]
@@ -910,8 +885,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             axis_limits = {
                 'x_min': xlims[0],
                 'x_max': xlims[1],
-                'y_min': ylims[0],
-                'y_max': ylims[1]
+                'y_min': ylims[1],
+                'y_max': ylims[0]
             }
             
             return axis_limits
@@ -925,7 +900,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                     dpi: int = 300, 
                     ann_box_pos: tuple = (0, - 0.2),
                     show_fig: bool = True,
-                    return_fig: bool = False):
+                    return_fig: bool = False,
+                    invert_yaxis: bool = False, **layout_updates):
         """
         Plots the time series data using pandas with plotly as the backend. Plotly is set as the pandas backend in __init__.py for tedata.
         If you want to use matplotlib or other plotting library don't use this method, plot the series attribute data directly. If using jupyter
@@ -974,6 +950,12 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             yanchor="bottom", bgcolor="rgba(255, 255, 255, 0.8)",
             bordercolor="black", borderwidth=1)
 
+           # Add y-axis inversion if requested
+        if invert_yaxis:
+            layout_updates['yaxis'] = dict(
+                autorange='reversed'  # This inverts the y-axis
+            )
+
         # Label x and y axis
         fig.update_layout(
             legend=dict(
@@ -987,6 +969,9 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             yaxis_title=ylabel,
             xaxis_title="",
             title = title)
+        
+            # Update the layout
+        fig.update_layout(**layout_updates)
 
         # Show the figure
         self.plot = fig

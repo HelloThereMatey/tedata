@@ -187,6 +187,157 @@ def convert_metric_prefix(value_str: str) -> float:
         logger.debug(f"Error converting value '{value_str}': {str(e)}")
         return float(value_str) if value_str else 0.0
     
+def extract_and_convert_value(value_str: str) -> tuple[float, str]:
+    """
+    Extract numeric value with metric prefix from a string, convert it to a float,
+    and return both the converted value and remaining non-numeric text.
+    
+    Complex cases handled:
+    - '1 M $' -> (1000000.0, '$')
+    - '246 k Thousand' -> (246000.0, '')
+    - '10 M million' -> (10000000.0, '')
+    - '6 million' -> (6000000.0, '')
+    - '5 billion' -> (5000000000.0, '')
+    - '2.3 k %' -> (2300.0, '%')
+    - '100 000.25 G' -> (100000250000000.0, '')
+    - '0.673 x10^-6' -> (0.000000673, '')
+    - '1.56 hundred Thousand' -> (156000.0, '')
+    
+    Args:
+        value_str (str): String containing number and optional metric prefix
+        
+    Returns:
+        tuple: (converted_numeric_value: float, remaining_text: str)
+    """
+    if value_str is None:
+        return np.nan, ""
+        
+    if value_str == "NaN":
+        return np.nan, ""
+    
+    if not isinstance(value_str, str):
+        try:
+            return float(value_str), ""
+        except:
+            return np.nan, str(value_str)
+    
+    # Dictionary of metric prefixes and their multipliers
+    metric_prefixes = {
+        'K': 1000,
+        'M': 1000000,
+        'B': 1000000000,
+        'G': 1000000000,
+        'T': 1000000000000
+    }
+    
+    # Word forms with their multipliers
+    word_multipliers = {
+        'HUNDRED': 100,
+        'THOUSAND': 1000,
+        'MILLION': 1000000,
+        'BILLION': 1000000000,
+        'TRILLION': 1000000000000,
+        'GIGA': 1000000000,
+        'TERA': 1000000000000
+    }
+    
+    try:
+        # Clean input string
+        value_str = value_str.strip()
+        
+        # Handle scientific notation like "0.673 x10^-6"
+        sci_notation_match = re.search(r'(\d+\.?\d*)\s*x\s*10\^(-?\d+)', value_str, re.IGNORECASE)
+        if sci_notation_match:
+            base = float(sci_notation_match.group(1))
+            exponent = int(sci_notation_match.group(2))
+            numeric_value = base * (10 ** exponent)
+            # Remove the matched part from the string
+            start, end = sci_notation_match.span()
+            remaining = value_str[:start].strip() + " " + value_str[end:].strip()
+            return numeric_value, remaining.strip()
+            
+        # First find any number in the string - this could be with commas or spaces
+        # like "100 000.25" or "1,234.56"
+        number_pattern = r'(-?[\d\s,.]+\d*)'
+        number_match = re.search(number_pattern, value_str)
+        
+        if not number_match:
+            return np.nan, value_str
+            
+        # Extract and clean the number
+        number_str = number_match.group(1)
+        # Remove spaces and replace commas with dots in number
+        number_str = number_str.replace(' ', '').replace(',', '.')
+        # Handle cases with multiple dots
+        if number_str.count('.') > 1:
+            # Keep only the last dot
+            parts = number_str.split('.')
+            number_str = ''.join(parts[:-1]) + '.' + parts[-1]
+            
+        numeric_value = float(number_str)
+        
+        # Split remaining text into words
+        start, end = number_match.span()
+        remaining = value_str[:start].strip() + " " + value_str[end:].strip()
+        remaining = " ".join(remaining.split())  # Normalize spaces
+        
+        # Process with word boundaries respected
+        # This ensures we only match whole words
+        multiplier_applied = False
+        final_remaining = []
+        
+        # Pattern to find standalone metric prefix letters
+        # This ensures the letter has whitespace or boundary on both sides
+        # Using re.findall to get all matches with positions
+        tokens = re.split(r'(\s+)', remaining)
+        filtered_tokens = []
+
+        i = 0
+        while i < len(tokens):
+            token = tokens[i]
+            # Skip whitespace tokens
+            if re.match(r'\s+', token):
+                i += 1
+                continue
+                
+            token_upper = token.upper()
+            
+            # Case 1: Single letter metric prefix
+            if len(token) == 1 and token_upper in metric_prefixes and not multiplier_applied:
+                numeric_value *= metric_prefixes[token_upper]
+                multiplier_applied = True
+                i += 1
+                continue
+                
+            # Case 2: Word multiplier (whole word match)
+            found_word_match = False
+            for word, mult in word_multipliers.items():
+                if token_upper == word and not multiplier_applied:
+                    numeric_value *= mult
+                    multiplier_applied = True
+                    found_word_match = True
+                    break
+            
+            if found_word_match:
+                i += 1
+                continue
+                
+            # Keep this token
+            filtered_tokens.append(token)
+            i += 1
+            
+        # Rejoin the filtered tokens
+        final_remaining = ''.join(filtered_tokens)
+            
+        return numeric_value, final_remaining.strip()
+        
+    except Exception as e:
+        logger.debug(f"Error extracting value from '{value_str}': {str(e)}")
+        try:
+            return float(value_str), ""
+        except:
+            return np.nan, value_str
+    
 def ready_datestr(date_str: str):
     """Replace substrings in datestr using a dictionary to get the string ready
     for parsing to datetime. Using QS frequency convention for quarters."""
@@ -248,8 +399,6 @@ def find_zero_crossing(series):
             # Linear interpolation to find x-intercept
             zero_x = x1 + (0 - y1)*(x2 - x1)/(y2 - y1)
             return zero_x
-            
-    return None
 
 def round_to_month_start(dates: pd.DatetimeIndex):
     """Round dates to nearest month start.
@@ -424,9 +573,10 @@ class TooltipScraper(scraper.TE_Scraper):
             time.sleep(0.1)
             
             # Get tooltip
-            date, value = self.extract_date_value_tooltip()
+            date, value, unit_str = self.extract_date_value_tooltip()
             start_end[date_key] = date
             start_end[value_key] = value
+            start_end["unit_str"] = unit_str
         
         return start_end
 
@@ -484,15 +634,6 @@ class TooltipScraper(scraper.TE_Scraper):
                 for point in datapoints:
                     if point['value'] == "NaN":
                         point['value'] = np.nan
-                        #logger.debug(f"Found missing value at date: {point['date']}")
-                    else:
-                        # Normal conversion for valid values
-                        try:
-                            numeric_value = convert_metric_prefix(point['value'])
-                            point['value'] = numeric_value
-                        except Exception as e:
-                            #logger.warning(f"Error converting value '{point['value']}': {str(e)}")
-                            point['value'] = np.nan
                             
                 return datapoints
             else:
@@ -510,32 +651,31 @@ class TooltipScraper(scraper.TE_Scraper):
     def extract_date_value_tooltip(self):
         """Extract date and value from a single tooltip HTML"""
         # Extract date and value using Selenium
+        valfound = False; datefound = False
+        try: 
+            date_element = self.driver.find_element(By.CSS_SELECTOR, '.tooltip-date').text.strip()
+            datefound = True
+            date = pd.to_datetime(ready_datestr(date_element))
+        except:
+            pass
 
-        date_element = self.driver.find_element(By.CSS_SELECTOR, '.tooltip-date').text.strip()
-        print(date_element)
-        if date_element is None:
-            logger.info("Date element not found in tooltip")
-            date = np.nan
-        else:
-            try:
-                date = pd.to_datetime(ready_datestr(date))
-            except:
-                print(f"Error converting date string: {date}")
-                date = np.nan
+        #Get value from tooltip
+        try: 
+            value_element = self.driver.find_element(By.CSS_SELECTOR, '.tooltip-value').text.replace(' Points', '').strip()
+            valfound = True
+            valtup = extract_and_convert_value(value_element)
+            value = valtup[0]
+        except:
+            pass
 
-        value_element = self.driver.find_element(By.CSS_SELECTOR, '.tooltip-value').text.replace(' Points', '').strip()
-        print(value_element)
-        if value_element is None:
-            logger.info("Value element not found in tooltip")
-            value = np.nan
+        if datefound and valfound:
+            return date, value, valtup[1]
+        elif datefound:
+            return date, np.nan, ""
+        elif valfound:
+            return "", value, valtup[1]
         else:
-            try:
-                value = convert_metric_prefix(value)
-            except:
-                print(f"Error converting date string: {date}")
-                value = np.nan
-        print(date, value)  
-        return date, value
+            return "", np.nan, ""
 
     def get_tooltip_text(self, tooltip_selector: str = '.highcharts-tooltip'):
         """Get tooltip text from the chart element"""
