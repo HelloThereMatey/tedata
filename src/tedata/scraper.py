@@ -313,8 +313,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.debug(f"Error finding element: {str(e)}")
             return None
         
-    def series_from_chart_soup(self, selector: str = ".highcharts-tracker-line", 
-                               invert_the_series: bool = True, 
+    def series_from_chart_soup(self, selector: str = ".highcharts-graph", 
+                               invert_the_series: bool = False, 
                                set_max_datespan: bool = False,
                                local_run: bool = False,
                                use_chart_type: Literal["Line", "Spline"] = "Spline"):  
@@ -375,6 +375,15 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
          # Keep the raw pixel co-ordinate valued series extracted from the svg path element.
         logger.debug(f"Raw data series extracted successfully.")
         self.series_extracted_from = use_chart_type  #Add this attribute so that the apply_x_index method knows which chart_type the series came from.
+        
+        #Add translate to the series to yield the proper y-values
+        transform = self.chart_soup.select_one(".highcharts-graph").parent["transform"].split(" ")
+        translate = transform[0].replace("translate(","").replace(")", "").split(",")
+        translate = [float(x) for x in translate]
+        self.other_transforms = transform[1:]
+        self.transform = translate
+
+        series = series + translate[1]
         self.series = series
         self.unscaled_series = series.copy()
         return series
@@ -482,12 +491,11 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 logger.info(f"Y axis Series does not cross zero, min_val: {min_val}, zero_pix: {zero_pix}") 
 
             unscaled = self.unscaled_series.copy()
-            self.series = zero_pix - (unscaled + self.y_axis.index[-1])#)*self.axlims_upp #+ min_val
-            return
+
             for i in range(len(self.series)):
                 #self.series.iloc[i] = (self.series.iloc[i] - pix0)*self.axlims_upp + y0
                 self.series.iloc[i] = (zero_pix - unscaled.iloc[i])*self.axlims_upp + min_val
-    
+        
             self.series = self.series
             if hasattr(self, "metadata"):
                 self.metadata["start_date"] = self.series.index[0].strftime("%Y-%m-%d")
