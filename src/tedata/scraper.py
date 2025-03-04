@@ -467,37 +467,18 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                         f"Start value, end value: {y0}, {y1}, pix0, pix1: {pix0}, {pix1}, \n"
                          f"data units per chart pixel from start & end points: {self.unit_per_px_alt}, \n"
                          f"unit_per_pix calculated from the y axis ticks: {self.unit_per_pix}, \n"
-                         f"inverse of that: {1/self.unit_per_pix}, \n"
                          f"unit_per_pix from axis limits and self.y_axis (probably best way): {self.axlims_upp}\n"
                          f"yaxis top tick: {self.y_axis.iloc[-1]}, yaxis bot tick: {self.y_axis.iloc[0]}\n"
                          f"axis_limits: {ymin}, {ymax}, y-axis series min & max pixel values: {self.y_axis.index[0]}, {self.y_axis.index[-1]}")
-            
-            # if pd.isna(y0) or pd.isna(y1):
-            #     logger.info("Start and end values were not found in tooltips, using alternative scaling method.")
-            #     return
 
-            # ##Does the Y axis cross zero? Where is the zero point??
-            # x_intercept = utils.find_zero_crossing(self.y_axis)
-            # print(self.y_axis, x_intercept)
-
-            # if x_intercept:
-            #     zero_pix = x_intercept
-            #     min_val = 0
-            #     pix0 = x_intercept
-            #     logger.info(f"Y axis Series does cross zero at:  {x_intercept}, min_val: {min_val}, pix0: {pix0}") 
-            # else:
-            #     zero_pix = self.y_axis.index[0]
-            #     min_val = self.y_axis.iloc[0]
-            #     logger.info(f"Y axis Series does not cross zero, min_val: {min_val}, zero_pix: {zero_pix}") 
+            ##Does the Y axis cross zero? Where is the zero point??
+            self.x_intercept_px = utils.find_zero_crossing(self.y_axis)
+            print("Series crosses zero, x-axis should be at about pixel y-cordinate: ", self.x_intercept_px)
 
             unscaled = self.unscaled_series.copy()
+            # Calculate the series in vector fashion
             self.series = (self.y_axis.index[0] - unscaled)*self.axlims_upp + self.y_axis.iloc[0]
 
-            #for i in range(len(self.series)):
-                #self.series.iloc[i] = (self.series.iloc[i] - pix0)*self.axlims_upp + y0
-                # self.series.iloc[i] = (zero_pix - unscaled.iloc[i])*self.axlims_upp + min_val
-                # self.series.iloc[i] = (self.y_axis.index[-1] - unscaled.iloc[i])*self.axlims_upp + self.y_axis.iloc[0]
-        
             if hasattr(self, "metadata"):
                 self.metadata["start_date"] = self.series.index[0].strftime("%Y-%m-%d")
                 self.metadata["end_date"] = self.series.index[-1].strftime("%Y-%m-%d")
@@ -568,7 +549,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 point["value"] = utils.extract_and_convert_value(point["value"])
                 point["date"] = utils.ready_datestr(point["date"])
             latest_dates = [point["date"] for point in datapoints]
-            print("Latest dates: ", latest_dates)
+            #print("Latest dates: ", latest_dates)
 
             ## Get the frequency of the time series
             self.date_series = pd.Series(latest_dates[::-1]).astype("datetime64[ns]")
@@ -619,7 +600,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.info("Tooltip scraping of full series has failed, error: ", e)
             return None
         #Powerful one line pandas connversion...
-        self.series = pd.Series([utils.extract_and_convert_value(value["value"]) for value in datapoints][::-1], \
+        self.series = pd.Series([utils.extract_and_convert_value(value["value"])[0] for value in datapoints][::-1], \
                                 index = pd.DatetimeIndex([utils.ready_datestr(date["date"]) for date in datapoints][::-1]), name = self.metadata["title"]).astype(float)
 
         # Add some more metadata about the series. 

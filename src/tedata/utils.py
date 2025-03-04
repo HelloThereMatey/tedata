@@ -602,15 +602,13 @@ class TooltipScraper(scraper.TE_Scraper):
         spline_step = timeit.default_timer()
         self.select_chart_type("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
         #Chart type must be spline or line for this to work. Sometimes the chart_type chnages automatically when datespan is altered.
-        print(f"Time taken to select chart type: {timeit.default_timer() - spline_step}")
+        logger.info(f"Time taken to select chart type: {timeit.default_timer() - spline_step}")
 
         try:
-            load_js_step = timeit.default_timer()
             # Load JavaScript code from file
             js_file_path = os.path.join(os.path.dirname(__file__), 'js_parts.js')
             with open(js_file_path, 'r') as file:
                 js_code = file.read()
-            print(f"Time taken to load JS code: {timeit.default_timer() - load_js_step}")
             
             # Build options object, only including provided values
             options = {'num_points': num_points}
@@ -622,11 +620,11 @@ class TooltipScraper(scraper.TE_Scraper):
             # Pass single options object to async script
             js_step = timeit.default_timer()
             result = self.driver.execute_async_script(js_code, options)
-            print(f"Time taken to execute JS code: {timeit.default_timer() - js_step}")
+            logger.info(f"Time taken to execute JS code: {timeit.default_timer() - js_step}")
 
             if isinstance(result, dict):
-                for log in result.get('logs', []):
-                    logger.info(f"JS Console: {log}")
+                # for log in result.get('logs', []):
+                #     logger.debug(f"JS Console: {log}")
                     
                 datapoints = result.get('dataPoints', [])
                 
@@ -641,7 +639,7 @@ class TooltipScraper(scraper.TE_Scraper):
                 return []
                 
         except Exception as e:
-            logger.info(f"Error in test cursor movement: {str(e)}")
+            logger.info(f"Error in execution of the js_script to get : {str(e)}")
             return []
     
     def get_device_pixel_ratio(self):
