@@ -1,7 +1,6 @@
 from typing import Literal
 from collections import OrderedDict
 from bs4 import BeautifulSoup
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
@@ -14,11 +13,12 @@ import os
 fdel = os.path.sep
 
 # tedata related imports
-from . import utils, logger
+from . import utils
 from .base import Generic_Webdriver, SharedWebDriverState
 
-# Create module-specific logger
-logger = logger.getChild('scraper')
+import logging
+# Get the logger from the parent package
+logger = logging.getLogger('tedata.scraper')
 
 ## Standalone functions  ########################################
 def find_element_header_match(soup: BeautifulSoup, selector: str, match_text: str):
@@ -248,7 +248,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         self.chart_types = {child["title"]: "."+child["class"][0]+" ."+ child.button["class"][0] for child in hart_types.children}
         self.expected_types = {chart_type: self.chart_types[chart_type].split(" ")[0].replace(".", '') for chart_type in self.chart_types.keys()}
         logger.info(f"Chart types dictionary created successfully: {self.chart_types.keys()}")
-   
+
     def select_chart_type(self, chart_type: str):
         """Select a chart type on the Trading Economics chart. This is done by clicking the chart type button and then selecting the specified chart type.
         The chart type should be a string that matches one of the chart types in the chart_types dictionary. The method will click the chart type button
@@ -263,8 +263,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         self.update_chart()
         if chart_type in self.chart_types.keys():
-            if self.click_button(".PREselectedChartType > button:nth-child(1)"):
-                time.sleep(0.5)
+            if self.click_button("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > button"):
+                time.sleep(1.5)
                 self.click_button(self.chart_types[chart_type])
                 self.chart_type = self.expected_types[chart_type]
                 logger.info(f"Chart type set to: {chart_type}")
@@ -590,8 +590,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         if set_max_datespan:
             print("Setting max date span using calendar...")
-            self.tooltip_scraper.set_max_date_span_viaCalendar()
-        self.tooltip_scraper.select_chart_type("Spline") # Force spline chart type so that Y position of cursor does not matter for tooltip retrieval.
+            self.set_max_date_span_viaCalendar()
+        self.select_chart_type("Spline") # Force spline chart type so that Y position of cursor does not matter for tooltip retrieval.
 
         ## Javascript based method here.
         try:
@@ -695,7 +695,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             # Drop duplicates keeping the last occurrence (which would be from start_end if dates already exist)
             self.series = self.series[~self.series.index.duplicated(keep='last')]
             # Sort by index to ensure the datetime index is in ascending order
-            self.series = self.series.sort_index()
+            self.series = self.series.sort_index().rename(self.metadata["title"])
         logger.info("Successfully scraped full series from tooltips.")
         return True
         
@@ -1075,168 +1075,3 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
     
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
-
-############################################################################################################
-############ Convenience function to run the full scraper from scraper module ##########################################
-
-def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business-confidence", 
-                 id: str = None,
-                 country: str = "united-states",
-                 start_date: str = None,
-                 end_date: str = None,
-                 method: Literal["path", "tooltips", "mixed"] = "path",
-                 scraper: TE_Scraper = None,
-                 driver: webdriver = None, 
-                 use_existing_driver: bool = True,
-                 headless: bool = True, 
-                 browser: str = 'firefox') -> TE_Scraper:
-    
-    """ This convenience function will scrape a chart from Trading Economics and return a TE_Scraper object with the series data in
-    the 'series' attribute. Metadata is also retreived and stored in the 'series_metadata' & 'metadata' attributes.
-    
-    *There are multiple ways to use this function:*
-
-    - Supply URL of the chart to scrape OR supply country + id of the chart to scrape. country and id are just the latter parts of the 
-    full chart URL. e.g for URL: 'https://tradingeconomics.com/united-states/business-confidence', we could instead use country='united-states' 
-    and id='business-confidence'. You can supply only id and default country is 'united-states'.
-    - You can leave scraper and driver as None and the function will create a new TE_Scraper object for that URL and use it to scrape the data.
-    You can however save time by passing either a scraper object or a driver object to the function. Best to pass a driver object
-    for fastest results.
-    
-    **Parameters**
-
-    - url (str): The URL of the chart to scrape.
-    - id (str): The id of the chart to scrape. This is the latter part of the URL after the country name.
-    - country (str): The country of the chart to scrape. Default is 'united-states'.
-    - start_date (str): The start date of the series to scrape. Use "YYYY-MM-DD" format. Default is None. If using None it will get max available date range.
-    - end_date (str): The end date of the series to scrape. Use "YYYY-MM-DD" format. Default is None. If using None it will get max available date range.
-    Currently start and end dates only apply when using the 'tooltips' method.
-    - method (str): The method to use to scrape the data. Default is 'path'. Other option is 'tooltips'. 'path' is the default method it uses, the path
-    element of the trace on the svg chart and then later scales the series using the y-axis values. 'tooltips' uses the tooltip box on the chart to get the
-    whole series data. The 'path' method is likely to work yet could have inacuraccies in values. The 'tooltips' method is more accurate. Try both and 
-    decide what works best for you.
-    - scraper (TE_Scraper): A TE_Scraper object to use for scraping the data. If this is passed, the function will not create a new one.
-    - driver (webdriver): A Selenium WebDriver object to use for scraping the data. If this is passed, the function will not create a new one. If 
-    scraper and driver are both passed, the webdriver of the scraper object will be used rather than the supplied webdriver.
-    - headless (bool): Whether to run the browser in headless mode (display no window).
-    - browser (str): The browser to use, either 'chrome' or 'firefox'. Default is 'firefox'. Only firefox is supported at the moment (v0.2.4).
-
-    **Returns**
-    - TE_Scraper object with the scraped data or None if an error occurs.
-    """
-
-    if start_date is None: 
-        start_date = "1850-01-01"
-    if end_date is None:
-        end_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    if scraper is not None:       #Initialize TE_Scraper object..
-        sel = scraper
-        if driver is None:
-            driver = scraper.driver
-        else:
-            scraper.driver = driver
-    else:
-        sel = TE_Scraper(driver = driver, browser = browser, headless = headless, use_existing_driver=use_existing_driver)
-
-    if id is not None:   #Use country and id to create the URL if URL not supplied.
-        url = f"https://tradingeconomics.com/{country}/{id}"
-
-    logger.info(f"scrape_chart function: Scraping chart at: {url}, time: {datetime.datetime.now()}, method: {method}")
-    if sel.load_page(url):  # Load the page...
-        sel.scrape_metadata()  ## Scrape the metadata for the data series from the page.
-    else:
-        print("Error loading page at: ", url)
-        logger.debug(f"Error loading page at: {url}")
-        return None
-
-    if method == "tooltips":
-        if start_date is None:
-            start_date = "1850-01-01"
-        if end_date is None:
-            end_date = datetime.datetime.now().strftime("%Y-%m-%d")
-        if not hasattr(sel, "tooltip_scraper"):
-            sel.init_tooltipScraper()  ## Initialize the tooltip scraper.
-        try:
-            sel.custom_date_span(start_date, end_date)  # Set the date span for the chart.
-        except Exception as e:
-            logger.info("Error setting date span: ", str(e))
-        try:
-            sel.full_series_fromTooltips()  #Scrape the full series from the tooltips on the chart.
-            logger.info("Successfully scraped full series from tooltips.")
-        except Exception as e:
-            print("Error scraping full series from tooltips: ", str(e))
-            logger.info(f"Error scraping full series from tooltips: {str(e)}")
-            return None
-        
-    elif method == "path":
-        try: #Create the x_index for the series. This is the most complicated bit.
-            sel.make_x_index(force_rerun_xlims = True, force_rerun_freqdet = True)  
-        except Exception as e:
-            print("Error with the x-axis scraping & frequency deterination using Selenium and tooltips:", str(e))
-            logger.debug(f"Error with the x-axis scraping & frequency deterination using Selenium and tooltips: {str(e)}")
-            return None
-
-        try:  #Scrape the y-axis values from the chart.
-            sel.get_y_axis(set_global_y_axis=True)
-            #print("Successfully scraped y-axis values from the chart:", " \n", yaxis) 
-            logger.debug(f"Successfully scraped y-axis values from the chart.") 
-        except Exception as e:
-            print(f"Error scraping y-axis: {str(e)}")
-            logger.debug(f"Error scraping y-axis: {str(e)}")
-            return None
-        
-        try:
-            sel.series_from_chart_soup(set_max_datespan=True)  #Get the series data from path element on the svg chart.
-            logger.debug("Successfully scraped full series path element.")
-        except Exception as e:
-            print("Error scraping full series: ", str(e))
-            logger.debug(f"Error scraping full series: {str(e)}")
-            return None
-
-        try: 
-            sel.apply_x_index()  ## Apply the x_index to the series, this will resample the data to the frequency of the x_index.
-        except Exception as e:
-            print(f"Error applying x-axis scaling: {str(e)}")
-            logger.debug(f"Error applying x-axis scaling: {str(e)}")
-            return None
-
-        try:  
-            scaled_series = sel.scale_series()   ## This converts the pixel co-ordinates to data values.
-            if scaled_series is not None:
-                logger.info("Successfully scaled series.")
-        except Exception as e:
-            print(f"Error scaling series: {str(e)}")
-            logger.debug(f"Error scaling series: {str(e)}")
-        
-        logger.info(f"Successfully scraped time-series from chart at:  {url}, now getting some metadata...")
-
-        print(f"Got metadata. \n\nSeries tail: {sel.series.tail()} \n\nScraping complete! Happy pirating yo!")
-        logger.debug(f"Scraping complete, data series retrieved successfully from chart at: {url}")
-    
-    ## Most accurate method but slowest. Determine start & end dates for full series and frequency, make x-index. Then scrape the data from tooltips
-    # using multiple runs of the chart with different date spans to capture all the data.
-    elif method == "mixed":
-        try: #Create the x_index for the series. This is the most complicated bit.
-            sel.make_x_index(force_rerun_xlims = True, force_rerun_freqdet = True)  
-        except Exception as e:
-            logger.info(f"Error with the x-axis scraping & frequency deterination using Selenium and tooltips: {str(e)}")
-            return None
-        
-        if not hasattr(sel, "tooltip_scraper"):
-            sel.init_tooltipScraper()  ## Initialize the tooltip scraper.
-        
-        try:  
-            if sel.tooltip_multiScrape():  ## Scrape the full series from the chart using multiple runs of the javascript tooltip scraper.
-                logger.info("Successfully scraped full series using mixed method.")
-            else:
-                raise Exception("Error scraping full series using mixed method.")
-        except Exception as e:
-            logger.info(f"Error scraping full series using mixed method: {str(e)}")
-            return None
-
-    else:
-        print("Invalid method supplied. Use 'path', 'tooltips' or 'mixed'.")
-        logger.debug("Invalid method supplied. Use 'path', 'tooltips' or 'mixed'.")
-        return
-    
-    return sel #Return the TE_Scraper object with the series data in the 'series' attribute.

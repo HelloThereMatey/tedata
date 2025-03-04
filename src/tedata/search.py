@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,12 +12,12 @@ wd = os.path.dirname(__file__)
 fdel= os.path.sep
 
 ## Import the TE_Scraper class from the scraper module ################
-from . import utils, logger
 from .base import Generic_Webdriver
-from .scraper import scrape_chart
+from .scrape_chart import scrape_chart
 
-# Create module-specific logger
-logger = logger.getChild('search')
+import logging
+# Get the logger from the parent package
+logger = logging.getLogger('tedata.search')
 
 ######## Search class to search Trading Economics website and extract search results ##############################
 class search_TE(Generic_Webdriver):

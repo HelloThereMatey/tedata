@@ -13,9 +13,11 @@ __version__ = "0.2.1"
 logger = setup_logger()
 
 # Then import modules
+from .base import *
 from .utils import *
 from .scraper import *
 from .search import *
+from .scrape_chart import *
 
 ## Check browser installation
 firefox, chrome = check_browser_installed()

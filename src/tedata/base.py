@@ -1,4 +1,4 @@
-from typing import Literal, Union
+from typing import Literal
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from bs4 import BeautifulSoup
@@ -6,7 +6,9 @@ import time
 import weakref
 import gc
 
-from . import logger
+import logging
+# Get the logger from the parent package
+logger = logging.getLogger('tedata.base')
 
 # Base standalone functions. ##############################################################
 def find_active_drivers(quit_all: bool = False) -> list:

@@ -192,7 +192,7 @@ def test_url(url):
             result_summary = pd.concat([result_summary, pd.DataFrame({
                     "URL": [url],
                     "Method": [method],
-                    "Scraping success": [succeded]})], ignore_index=True)
+                    "Scraping success": [succeded]})], axis = 1)
             # Store results
             results[method] = {
                 'series': scraper.series.copy() if hasattr(scraper, 'series') else None,
@@ -240,11 +240,8 @@ def test_url(url):
         # Make plot with all 3 traces
         ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=True)
         # Save the result summary as markdown
-        result_summary_path = os.path.join(output_dir, f"test_results_{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.md")
-        with open(result_summary_path, 'w') as f:
-            f.write(f"# Test Results for {url}\n\n")
-            f.write(result_summary.to_markdown(index=False))
-    return results
+    return result_summary 
+
 
 # Modify your main function
 def main():
@@ -256,13 +253,16 @@ def main():
     
     logger.info("\nStarting scraping method comparison tests")
     
-    all_results = {}
+    all_results = pd.DataFrame(columns = ["URL", "Method", "Scraping success"])
     for url in TEST_URLS:
-        all_results[url] = test_url(url)
+        all_results = pd.concat([all_results, test_url(url)], axis = 1)
         base.find_active_drivers(quit_all=True)
         
     logger.info("Tests completed")
     return all_results
 
 if __name__ == "__main__":
-    main()
+    tests = main()
+    tests.to_markdown(output_dir+fdel+"test_results.md", index=False)
+    tests.to_csv(output_dir+fdel+"test_results.csv", index=False)
+    logger.info("=== Test Run Completed ===")

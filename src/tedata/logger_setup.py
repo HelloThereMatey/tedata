@@ -2,8 +2,12 @@ import logging
 import os
 
 def setup_logger():
+    # Check if logger already exists and has handlers to avoid duplicates
     logger = logging.getLogger('tedata')
-    logger.setLevel(logging.DEBUG)  # Logger captures everything
+    if logger.handlers:
+        return logger
+        
+    logger.setLevel(logging.DEBUG)
     
     log_dir = os.path.join(os.path.dirname(__file__), 'logs')
     os.makedirs(log_dir, exist_ok=True)

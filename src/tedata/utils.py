@@ -1,5 +1,4 @@
 from typing import Union
-from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -18,8 +17,9 @@ import plotly.graph_objects as go
 
 from . import logger, scraper
 
-# Create module-specific logger
-logger = logger.getChild('utils')
+import logging
+# Get the logger from the parent package
+logger = logging.getLogger('tedata.utils')
 
 ##### Get the directory where this file is housed ########################
 wd = os.path.dirname(__file__)
