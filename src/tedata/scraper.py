@@ -385,7 +385,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         series = series + translate[1]
         self.series = series
-        self.unscaled_series = series.copy()
+        self.raw_path_series = series.copy()
         return series
     
     def custom_date_span(self, start_date: str = "1900-01-01", end_date: str = datetime.date.today().strftime("%Y-%m-%d")) -> bool:
@@ -470,33 +470,34 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                          f"inverse of that: {1/self.unit_per_pix}, \n"
                          f"unit_per_pix from axis limits and self.y_axis (probably best way): {self.axlims_upp}\n"
                          f"yaxis top tick: {self.y_axis.iloc[-1]}, yaxis bot tick: {self.y_axis.iloc[0]}\n"
-                         f"axis_limits: {ymin}, {ymax}")
+                         f"axis_limits: {ymin}, {ymax}, y-axis series min & max pixel values: {self.y_axis.index[0]}, {self.y_axis.index[-1]}")
             
-            if pd.isna(y0) or pd.isna(y1):
-                logger.info("Start and end values were not found in tooltips, using alternative scaling method.")
-                return
+            # if pd.isna(y0) or pd.isna(y1):
+            #     logger.info("Start and end values were not found in tooltips, using alternative scaling method.")
+            #     return
 
-            ##Does the Y axis cross zero? Where is the zero point??
-            x_intercept = utils.find_zero_crossing(self.y_axis)
-            print(self.y_axis, x_intercept)
+            # ##Does the Y axis cross zero? Where is the zero point??
+            # x_intercept = utils.find_zero_crossing(self.y_axis)
+            # print(self.y_axis, x_intercept)
 
-            if x_intercept:
-                zero_pix = x_intercept
-                min_val = 0
-                pix0 = x_intercept
-                logger.info(f"Y axis Series does cross zero at:  {x_intercept}, min_val: {min_val}, pix0: {pix0}") 
-            else:
-                zero_pix = self.y_axis.index[0]
-                min_val = self.y_axis.iloc[0]
-                logger.info(f"Y axis Series does not cross zero, min_val: {min_val}, zero_pix: {zero_pix}") 
+            # if x_intercept:
+            #     zero_pix = x_intercept
+            #     min_val = 0
+            #     pix0 = x_intercept
+            #     logger.info(f"Y axis Series does cross zero at:  {x_intercept}, min_val: {min_val}, pix0: {pix0}") 
+            # else:
+            #     zero_pix = self.y_axis.index[0]
+            #     min_val = self.y_axis.iloc[0]
+            #     logger.info(f"Y axis Series does not cross zero, min_val: {min_val}, zero_pix: {zero_pix}") 
 
             unscaled = self.unscaled_series.copy()
+            self.series = (self.y_axis.index[0] - unscaled)*self.axlims_upp + self.y_axis.iloc[0]
 
-            for i in range(len(self.series)):
+            #for i in range(len(self.series)):
                 #self.series.iloc[i] = (self.series.iloc[i] - pix0)*self.axlims_upp + y0
-                self.series.iloc[i] = (zero_pix - unscaled.iloc[i])*self.axlims_upp + min_val
+                # self.series.iloc[i] = (zero_pix - unscaled.iloc[i])*self.axlims_upp + min_val
+                # self.series.iloc[i] = (self.y_axis.index[-1] - unscaled.iloc[i])*self.axlims_upp + self.y_axis.iloc[0]
         
-            self.series = self.series
             if hasattr(self, "metadata"):
                 self.metadata["start_date"] = self.series.index[0].strftime("%Y-%m-%d")
                 self.metadata["end_date"] = self.series.index[-1].strftime("%Y-%m-%d")
@@ -867,6 +868,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 return None
             
             self.series = new_ser  # Update the series attribute with the new series.
+            self.unscaled_series = new_ser.copy()
             if hasattr(self, "metadata"):
                 self.metadata["frequency"] = self.frequency  # Update the frequency in the metadata.
             logger.info(f"DateTimeIndex applied to series, series attribute updated.")
