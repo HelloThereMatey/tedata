@@ -9,6 +9,7 @@ import time
 import datetime
 import pandas as pd
 import os 
+import plotly.graph_objects as go
 
 fdel = os.path.sep
 
@@ -99,8 +100,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         try:
             # Wait for element to be clickable
             button = self.wait.until(
-                EC.element_to_be_clickable((selector_type, selector))
-            )
+                EC.element_to_be_clickable((selector_type, selector)))
+            
             button.click()
             time.sleep(0.25)
             return True
@@ -245,6 +246,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         hart_types = self.chart_soup.select_one(".chartTypesWrapper")
         self.chart_types = {child["title"]: "."+child["class"][0]+" ."+ child.button["class"][0] for child in hart_types.children}
+        for key, value in self.chart_types.items():
+            self.chart_types[key] = value.split(" ")[0] + " > button:nth-child(1)"
         self.expected_types = {chart_type: self.chart_types[chart_type].split(" ")[0].replace(".", '') for chart_type in self.chart_types.keys()}
         logger.info(f"Chart types dictionary created successfully: {self.chart_types.keys()}")
 
@@ -545,7 +548,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.latest_points = datapoints
             # Convert metric prefixes for the values in each datapoint
             for point in self.latest_points:
-                point["value"] = utils.convert_metric_prefix(point["value"])
+                point["value"] = utils.extract_and_convert_value(point["value"])[0]
                 point["date"] = utils.ready_datestr(point["date"])
             latest_dates = [point["date"] for point in datapoints]
             #print("Latest dates: ", latest_dates)
@@ -578,6 +581,28 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.info(f"Error creating DateTimeIndex for the time-series.")
             return None
     
+    def get_earliest_points(self, num_points: str = "all", num_years: int = 10):
+        """Get the earliest data points from the chart using the cursor, use this to check for series that have differing frequency
+        at start and end."""
+
+        if not hasattr(self, "start_end"):
+            self.get_xlims_from_tooltips()
+        if not hasattr(self, "tooltip_scraper"):
+            self.tooltip_scraper = utils.TooltipScraper(parent_instance = self)
+        
+        yearslater = utils.n_years_later(date = self.start_end["start_date"].strftime("%Y-%m-%d"), n_years = num_years)
+        self.custom_date_span(start_date=self.start_end["start_date"].strftime("%Y-%m-%d"), end_date = yearslater)
+
+        try:
+            datapoints = self.tooltip_scraper.latest_points_js(num_points=num_points, force_shortest_span=False, wait_time=5)
+            self.early_series = pd.Series([utils.extract_and_convert_value(value["value"])[0] for value in datapoints][::-1], \
+                                    index = pd.DatetimeIndex([utils.ready_datestr(date["date"]) for date in datapoints][::-1]), name = self.metadata["title"]).astype(float)
+        except Exception as e:
+            logger.info("Error getting earliest points: ", e)
+            return None
+
+        return self.early_series
+
     def full_series_fromTooltips(self, set_max_datespan: bool = False):
         """Scrape the full series from the dates and values displayed on the tooltips as the cursor is dragged across the chart. Uses javscript to handle the cursor 
         movement and tooltip retrieval and parsing. This is way faster than using a python loop. I suspect this may end up missing some points for series that 
@@ -598,7 +623,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.info("Tooltip scraping of full series has failed, error: ", e)
             return None
         #Powerful one line pandas connversion...
-        self.series = pd.Series([utils.convert_metric_prefix(value["value"])[0] for value in datapoints][::-1], \
+        self.series = pd.Series([utils.extract_and_convert_value(value["value"])[0] for value in datapoints][::-1], \
                                 index = pd.DatetimeIndex([utils.ready_datestr(date["date"]) for date in datapoints][::-1]), name = self.metadata["title"]).astype(float)
 
         # Add some more metadata about the series. 
@@ -660,7 +685,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             try:
                 datapoints = self.tooltip_scraper.latest_points_js(num_points="all", force_shortest_span=False, wait_time=5)
                 #Powerful one line pandas connversion...
-                series = pd.Series([utils.convert_metric_prefix(value["value"]) for value in datapoints][::-1], \
+                series = pd.Series([utils.extract_and_convert_value(value["value"])[0] for value in datapoints][::-1], \
                                     index = pd.DatetimeIndex([utils.ready_datestr(date["date"]) for date in datapoints][::-1]), name = self.metadata["title"]).astype(float)
             except Exception as e:
                 logger.info("Tooltip scraping of full series has failed, error: ", e)
@@ -729,7 +754,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         textels = yax[1].find_all('text')
 
         # Replace metrc prefixes:
-        yaxlabs = [utils.convert_metric_prefix(text.get_text()) if text.get_text().replace(',','').replace('.','').replace('-','').replace(' ','').isalnum() else text.get_text() for text in textels]
+        yaxlabs = [utils.extract_and_convert_value(text.get_text())[0] if text.get_text().replace(',','').replace('.','').replace('-','').replace(' ','').isalnum() else text.get_text() for text in textels]
         logger.debug(f"y-axis labels: {yaxlabs}")
 
         # convert to float...
@@ -969,7 +994,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if return_fig:
             return fig
 
-    def save_plot(self, filename: str = "plot", save_path: str = os.getcwd(), dpi: int = 300, format: str = "png"):
+    def save_plot(self, plot: go.Figure = None, filename: str = "plot", save_path: str = os.getcwd(), dpi: int = 300, format: str = "png"):
         """Save the plot to a file. The plot must be created using the plot_series method. This method will save the plot as a PNG image file.
 
         **Parameters**
@@ -982,12 +1007,14 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         :Returns: None
         """
 
-        if hasattr(self, "plot"):
+        if hasattr(self, "plot") and plot is None:
+            plot = self.plot
+
             if format == "html":
-                self.plot.write_html(f"{save_path}{fdel}{filename}.html")
+                plot.write_html(f"{save_path}{fdel}{filename}.html")
                 logger.info(f"Plot saved as {save_path}{fdel}{filename}.html")
             else:
-                self.plot.write_image(f"{save_path}{fdel}{filename}.{format}", format=format, scale=dpi/100, width = 1400, height = 500)
+                plot.write_image(f"{save_path}{fdel}{filename}.{format}", format=format, scale=dpi/100, width = 1400, height = 500)
                 logger.info(f"Plot saved as {filename}")
         else:
             print("Error: Plot not found. Run plot_series() method to create a plot.")

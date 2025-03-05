@@ -18,7 +18,7 @@ import tedata as ted
 
 # Add parent directory to path to import tedata
 #List of urls to test
-with open(wd+fdel+"test_urls.csv", "r") as f:
+with open(wd+fdel+"test_urls_all.csv", "r") as f:
     TEST_URLS = [line.strip() for line in f.readlines()]
 print("Test URLS for which to download data: ",TEST_URLS)
 
@@ -176,7 +176,7 @@ def test_url(url):
     
     results = {}; succeded = True; result_summary = pd.DataFrame(columns = ["URL", "Method", "Scraping success"])
     
-    for method in ["path", "tooltips", "mixed"]:
+    for i, method in enumerate(["path", "tooltips", "mixed"]):
         try:
             logger.info(f"Testing {method} method for {url}")
             
@@ -201,9 +201,16 @@ def test_url(url):
             
             # Export data and plot
             base_name = f"{url.split('/')[-1]}_{method}"
-            scraper.export_data(savePath=output_dir, filename=base_name)
-            scraper.plot_series(show_fig=False)
-            scraper.save_plot(filename=base_name, save_path=output_dir, format="html")
+            #scraper.export_data(savePath=output_dir, filename=base_name)
+            # scraper.plot_series(show_fig=False)
+            #scraper.save_plot(filename=base_name, save_path=output_dir, format="html")
+            if i == 0:
+                output_df = scraper.series
+                output_meta_df = scraper.series_metadata
+            else:
+                output_df = pd.concat([output_df, scraper.series], axis=1)
+                output_meta_df = pd.concat([output_meta_df, scraper.series_metadata], axis=1)
+
             
         except Exception as e:
             logger.error(f"Error testing {method} method: {str(e)}")
@@ -225,8 +232,7 @@ def test_url(url):
         metadata_match = compare_metadata(
             results["path"]["metadata"],
             results["mixed"]["metadata"],
-            name=url
-        )
+            name=url)
         
         logger.info(f"Results for {url}:")
         logger.info(f"Series match: {series_match1}")
@@ -238,7 +244,13 @@ def test_url(url):
                        {"series": results["mixed"]["series"], "add_name": "mixed"}] 
 
         # Make plot with all 3 traces
-        ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=True)
+        triplefig = ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=True)
+        scraper.save_plot(plot = triplefig, filename=f"{url.split('/')[-2]}_{url.split('/')[-1]}", save_path=output_dir, format="html")
+        output_df = output_df.rename(columns = {0: "path", 1: "tooltips", 2: "mixed"})
+        output_meta_df = output_meta_df.rename(columns = {0: "path", 1: "tooltips", 2: "mixed"})
+        with pd.ExcelWriter(output_dir+fdel+f"{url.split('/')[-2]}_{url.split('/')[-1]}.xlsx") as writer:
+            output_df.to_excel(writer, sheet_name="Data")
+            output_meta_df.to_excel(writer, sheet_name="Metadata")
         # Save the result summary as markdown
     return result_summary 
 

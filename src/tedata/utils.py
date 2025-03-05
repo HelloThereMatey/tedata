@@ -25,6 +25,10 @@ logger = logging.getLogger('tedata.utils')
 wd = os.path.dirname(__file__)
 fdel= os.path.sep
 
+def n_years_later(date: str = "1950-01-01", n_years: int = 5):
+    """Get date string n years later"""
+    return (pd.to_datetime(date) + pd.DateOffset(years=n_years)).strftime("%Y-%m-%d")
+
 def check_browser_installed():
     """Check if browsers are installed using Selenium's service checks"""
     firefox_available = False
@@ -193,8 +197,6 @@ def extract_and_convert_value(value_str: str) -> tuple[float, str]:
     - '1 M $' -> (1000000.0, '$')
     - '246 k Thousand' -> (246000.0, '')
     - '10 M million' -> (10000000.0, '')
-    - '6 million' -> (6000000.0, '')
-    - '5 billion' -> (5000000000.0, '')
     - '2.3 k %' -> (2300.0, '%')
     - '100 000.25 G' -> (100000250000000.0, '')
     - '0.673 x10^-6' -> (0.000000673, '')
@@ -227,14 +229,14 @@ def extract_and_convert_value(value_str: str) -> tuple[float, str]:
         'T': 1000000000000
     }
     
-    # Word forms with their multipliers
-    word_multipliers = {
-        'HUNDRED': 100,
-        'THOUSAND': 1000,
-        'MILLION': 1000000,
-        'BILLION': 1000000000,
-        'TRILLION': 1000000000000
-    }
+    # # Word forms with their multipliers
+    # word_multipliers = {
+    #     'HUNDRED': 100,
+    #     'THOUSAND': 1000,
+    #     'MILLION': 1000000,
+    #     'BILLION': 1000000000,
+    #     'TRILLION': 1000000000000
+    # }
     
     try:
         # Clean input string
@@ -304,18 +306,17 @@ def extract_and_convert_value(value_str: str) -> tuple[float, str]:
                 i += 1
                 continue
                 
-            # Case 2: Word multiplier (whole word match)
-            found_word_match = False
-            for word, mult in word_multipliers.items():
-                if token_upper == word and not multiplier_applied:
-                    numeric_value *= mult
-                    multiplier_applied = True
-                    found_word_match = True
-                    break
-            
-            if found_word_match:
-                i += 1
-                continue
+            # # Case 2: Word multiplier (whole word match)
+            # found_word_match = False
+            # for word, mult in word_multipliers.items():
+            #     if token_upper == word and not multiplier_applied:
+            #         numeric_value *= mult
+            #         multiplier_applied = True
+            #         found_word_match = True
+            #         break
+            # if found_word_match:
+            #     i += 1
+            #     continue
 
             # Keep this token
             filtered_tokens.append(token)
@@ -636,7 +637,7 @@ class TooltipScraper(scraper.TE_Scraper):
         except Exception as e:
             logger.info(f"Error in execution of the js_script to get : {str(e)}")
             return []
-    
+        
     def get_device_pixel_ratio(self):
         """Get device pixel ratio to scale movements"""
         return self.driver.execute_script('return window.devicePixelRatio;')
@@ -656,7 +657,7 @@ class TooltipScraper(scraper.TE_Scraper):
         try: 
             value_element = self.driver.find_element(By.CSS_SELECTOR, '.tooltip-value').text.replace(' Points', '').strip()
             valfound = True
-            valtup = convert_metric_prefix(value_element)
+            valtup = extract_and_convert_value(value_element)
             value = valtup[0]
         except:
             pass
