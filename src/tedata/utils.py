@@ -123,23 +123,24 @@ def check_element_exists_bs4(soup, selector):
     except:
         return None
     
-def convert_metric_prefix(value_str: str) -> float:
-    """Convert string with metric prefix to float, handling various formats.
+def convert_metric_prefix(value_str: str) -> tuple[float, str]:
+    """Convert string with metric prefix to float, and return the remaining text.
     
     Examples:
-        '2.27K Thousand units' -> 2270.0
-        '10 K units' -> 10000.0
-        '1.3M' -> 1300000.0
-        '5B Points' -> 5000000000.0
+        '2.27K Thousand units' -> (2270.0, 'Thousand units')
+        '10 K units' -> (10000.0, 'units')
+        '1.3M' -> (1300000.0, '')
+        '5B Points' -> (5000000000.0, 'Points')
     
     Args:
         value_str (str): String containing number and optional metric prefix
         
     Returns:
-        float: Converted numeric value
+        tuple: (converted_numeric_value: float, remaining_text: str)
     """
     if value_str == "NaN":
-        return np.nan
+        return np.nan, ""
+        
     # Dictionary of metric prefixes and their multipliers
     metric_prefixes = {
         'K': 1000,
@@ -149,48 +150,44 @@ def convert_metric_prefix(value_str: str) -> float:
         'T': 1000000000000
     }
     
-    # Additional word forms of prefixes
-    word_prefixes = {
-        'THOUSAND': 'K',
-        'MILLION': 'M',
-        'BILLION': 'B',
-        'GIGA': 'G',
-        'TERA': 'T'
-    }
-    
     try:
         # Clean and standardize input
-        value_str = value_str.strip().upper()
+        value_str = value_str.strip()
+        orig_value_str = value_str  # Save original string for determining remainder
+        value_str_upper = value_str.upper()
         
         # First try to match pattern like "2.27K" or "10K"
-        match = re.match(r'^(-?\d*\.?\d+)\s*([KMGBT])?', value_str)
+        match = re.match(r'^(-?\d*\.?\d+)\s*([KMGBT])?', value_str_upper)
         if not match:
-            return float(value_str)  # No prefix case
+            return float(value_str), ""  # No prefix case
             
+        # Extract the numeric part and prefix
         number = float(match.group(1))
         prefix = match.group(2)
         
-        # If no direct prefix found, look for word form
-        if not prefix:
-            for word, letter in word_prefixes.items():
-                if word in value_str:
-                    prefix = letter
-                    break
+        # Calculate the length of the matched part including prefix
+        matched_length = match.end()
         
         # Apply multiplier if prefix found
         if prefix and prefix in metric_prefixes:
             number *= metric_prefixes[prefix]
+        
+        # Extract remaining text (excluding the matched part)
+        remaining = orig_value_str[matched_length:].strip()
             
-        return number
+        return number, remaining
         
     except Exception as e:
         logger.debug(f"Error converting value '{value_str}': {str(e)}")
-        return float(value_str) if value_str else 0.0
+        try:
+            return float(value_str), ""
+        except:
+            return np.nan, value_str
     
 def extract_and_convert_value(value_str: str) -> tuple[float, str]:
     """
     Extract numeric value with metric prefix from a string, convert it to a float,
-    and return both the converted value and remaining non-numeric text.
+    and return both the converted value and remaining non-numeric text. This is the complex version that will 
     
     Complex cases handled:
     - '1 M $' -> (1000000.0, '$')
@@ -236,9 +233,7 @@ def extract_and_convert_value(value_str: str) -> tuple[float, str]:
         'THOUSAND': 1000,
         'MILLION': 1000000,
         'BILLION': 1000000000,
-        'TRILLION': 1000000000000,
-        'GIGA': 1000000000,
-        'TERA': 1000000000000
+        'TRILLION': 1000000000000
     }
     
     try:
@@ -321,7 +316,7 @@ def extract_and_convert_value(value_str: str) -> tuple[float, str]:
             if found_word_match:
                 i += 1
                 continue
-                
+
             # Keep this token
             filtered_tokens.append(token)
             i += 1
@@ -661,7 +656,7 @@ class TooltipScraper(scraper.TE_Scraper):
         try: 
             value_element = self.driver.find_element(By.CSS_SELECTOR, '.tooltip-value').text.replace(' Points', '').strip()
             valfound = True
-            valtup = extract_and_convert_value(value_element)
+            valtup = convert_metric_prefix(value_element)
             value = valtup[0]
         except:
             pass

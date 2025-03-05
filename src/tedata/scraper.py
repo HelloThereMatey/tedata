@@ -92,7 +92,6 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         
     def click_button(self, selector, selector_type=By.CSS_SELECTOR):
         """Click button using webdriver and wait for response.
-        
         **Parameters:**
         - selector (str): The CSS selector for the button to click.
         - selector_type (By): The type of selector to use, By.CSS_SELECTOR by default."""
@@ -546,7 +545,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.latest_points = datapoints
             # Convert metric prefixes for the values in each datapoint
             for point in self.latest_points:
-                point["value"] = utils.extract_and_convert_value(point["value"])
+                point["value"] = utils.convert_metric_prefix(point["value"])
                 point["date"] = utils.ready_datestr(point["date"])
             latest_dates = [point["date"] for point in datapoints]
             #print("Latest dates: ", latest_dates)
@@ -585,14 +584,13 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         have many datapoints. However, it has worked for all series tested thus far. Assigns the resultant series to the series attribute.
         """
 
-        if not hasattr(self, "tooltip_scraper"):
-            self.init_tooltipScraper()  ## Initialize the tooltip scraper.
-
         if set_max_datespan:
             print("Setting max date span using calendar...")
             self.set_max_date_span_viaCalendar()
         self.select_chart_type("Spline") # Force spline chart type so that Y position of cursor does not matter for tooltip retrieval.
 
+        if not hasattr(self, "tooltip_scraper"):
+            self.init_tooltipScraper()  ## Initialize the tooltip scraper.
         ## Javascript based method here.
         try:
             datapoints = self.tooltip_scraper.latest_points_js(num_points="all", force_shortest_span=False, wait_time=5)
@@ -600,7 +598,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.info("Tooltip scraping of full series has failed, error: ", e)
             return None
         #Powerful one line pandas connversion...
-        self.series = pd.Series([utils.extract_and_convert_value(value["value"])[0] for value in datapoints][::-1], \
+        self.series = pd.Series([utils.convert_metric_prefix(value["value"])[0] for value in datapoints][::-1], \
                                 index = pd.DatetimeIndex([utils.ready_datestr(date["date"]) for date in datapoints][::-1]), name = self.metadata["title"]).astype(float)
 
         # Add some more metadata about the series. 

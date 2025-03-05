@@ -192,7 +192,7 @@ def test_url(url):
             result_summary = pd.concat([result_summary, pd.DataFrame({
                     "URL": [url],
                     "Method": [method],
-                    "Scraping success": [succeded]})], axis = 1)
+                    "Scraping success": [succeded]})], ignore_index=True)
             # Store results
             results[method] = {
                 'series': scraper.series.copy() if hasattr(scraper, 'series') else None,
@@ -255,7 +255,7 @@ def main():
     
     all_results = pd.DataFrame(columns = ["URL", "Method", "Scraping success"])
     for url in TEST_URLS:
-        all_results = pd.concat([all_results, test_url(url)], axis = 1)
+        all_results = pd.concat([all_results, test_url(url)], ignore_index=True)    
         base.find_active_drivers(quit_all=True)
         
     logger.info("Tests completed")
