@@ -174,84 +174,75 @@ def test_url(url):
     # Remove logger setup from here since we're using the global one
     logger.info(f"Testing URL: {url}")
     
-    results = {}; succeded = True; result_summary = pd.DataFrame(columns = ["URL", "Method", "Scraping success"])
+    results = {}; succeded = True; result_summary = pd.DataFrame(columns = ["URL", "Method", "Returned scraper", "Time taken", "Error", "% deviation from mixed method"])
+    blank_metadata = pd.Series(np.nan, 
+    index = ['units', 'original_source', 'title', 'indicator', 'country', 'source', 'id', 'description', 'frequency', 'unit_tooltips', 'start_date', 'end_date', 'min_value', 'max_value', 'length'],
+    name=base_name)
     
-    for i, method in enumerate(["path", "tooltips", "mixed"]):
+    for i, method in enumerate(["mixed", "path", "tooltips"]):
         try:
+            error = "No error"
             logger.info(f"Testing {method} method for {url}")
             
             # Scrape data
             timer = timeit.default_timer()
-            scraper =ted.scrape_chart(url, method=method, use_existing_driver=False, headless=True)
+            scraper = ted.scrape_chart(url, method=method, use_existing_driver=False, headless=True)
             if scraper is None:
                 logger.error(f"{method} method failed to return scraper")
+                error = "No scraper returned"
                 succeded = False
-                continue
             elapsed = timeit.default_timer() - timer
             logger.info(f"scrape_chart method took: {elapsed:.2f} seconds to complete for {url} using method {method} and it succeded: {succeded}.")
-            result_summary = pd.concat([result_summary, pd.DataFrame({
-                    "URL": [url],
-                    "Method": [method],
-                    "Scraping success": [succeded]})], ignore_index=True)
-            # Store results
-            results[method] = {
-                'series': scraper.series.copy() if hasattr(scraper, 'series') else None,
-                'metadata': scraper.metadata.copy() if hasattr(scraper, 'metadata') else None
-            }
-            
-            # Export data and plot
-            base_name = f"{url.split('/')[-1]}_{method}"
-            #scraper.export_data(savePath=output_dir, filename=base_name)
-            # scraper.plot_series(show_fig=False)
-            #scraper.save_plot(filename=base_name, save_path=output_dir, format="html")
-            if i == 0:
-                output_df = scraper.series
-                output_meta_df = scraper.series_metadata
-            else:
-                output_df = pd.concat([output_df, scraper.series], axis=1)
-                output_meta_df = pd.concat([output_meta_df, scraper.series_metadata], axis=1)
+            base_name = url.split('/')[-2]+"_"+url.split('/')[-1]+"_"+method
 
-            
+            series = scraper.series.rename(base_name).copy() if scraper is not None and hasattr(scraper, 'series') else pd.Series(np.nan, name=base_name)
+            metadata = scraper.series_metadata.rename(base_name).copy() if scraper is not None and hasattr(scraper, 'series') and hasattr(scraper, 'metadata') else blank_metadata
+       
         except Exception as e:
-            logger.error(f"Error testing {method} method: {str(e)}")
-            continue
-            
-    # Compare results
-    if len(results) == 3:
-        series_match1 = compare_series(
-            results["path"]["series"], 
-            results["tooltips"]["series"],
-            name=url)
-        series_match2 = compare_series(results["path"]["series"], 
-            results["mixed"]["series"],
-            name=url)
-        series_match3 = compare_series(results["tooltips"]["series"], 
-            results["mixed"]["series"],
-            name=url)
-        
-        metadata_match = compare_metadata(
-            results["path"]["metadata"],
-            results["mixed"]["metadata"],
-            name=url)
-        
-        logger.info(f"Results for {url}:")
-        logger.info(f"Series match: {series_match1}")
-        logger.info(f"Series match: {series_match2}")
-        logger.info(f"Series match: {series_match3}")
-        logger.info(f"Metadata match: {metadata_match}")
-        series_list = [{"series": results["path"]["series"], "add_name": "path"},
-                       {"series": results["tooltips"]["series"], "add_name": "tooltips"},
-                       {"series": results["mixed"]["series"], "add_name": "mixed"}] 
+            logger.error(f"Error downloading data for {url} using method: {method}, error: {str(e)}")
+            succeded = False
+            error = str(e)
+            series = pd.Series(np.nan, name=base_name)
+            metadata = blank_metadata
 
-        # Make plot with all 3 traces
-        triplefig = ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=True)
-        scraper.save_plot(plot = triplefig, filename=f"{url.split('/')[-2]}_{url.split('/')[-1]}", save_path=output_dir, format="html")
-        output_df = output_df.rename(columns = {0: "path", 1: "tooltips", 2: "mixed"})
-        output_meta_df = output_meta_df.rename(columns = {0: "path", 1: "tooltips", 2: "mixed"})
-        with pd.ExcelWriter(output_dir+fdel+f"{url.split('/')[-2]}_{url.split('/')[-1]}.xlsx") as writer:
-            output_df.to_excel(writer, sheet_name="Data")
-            output_meta_df.to_excel(writer, sheet_name="Metadata")
-        # Save the result summary as markdown
+        # Store results
+        results[method] = {'series': series, 'metadata': metadata}
+        result_summary = pd.concat([result_summary, pd.DataFrame({
+                "URL": url,
+                "Method": method,
+                "Returned scraper": succeded,
+                "Time taken": f"{elapsed:.2f}",
+                "Error": error,
+                "% deviation from mixed method": ""})], ignore_index=True)
+            
+        if i == 0:
+            output_df = series
+            output_meta_df = metadata
+        else:
+            output_df = pd.concat([output_df, series], axis=1)
+            output_meta_df = pd.concat([output_meta_df, metadata], axis=1)
+    
+    # Outside for loop here..
+    metadata_match = compare_metadata(results["path"]["metadata"], results["mixed"]["metadata"], name=url)
+    
+    # Make plot with all 3 traces
+    logger.info(f"Results for {url}:")
+    logger.info(f"Metadata match: {metadata_match}")
+
+    with pd.ExcelWriter(output_dir+fdel+f"{url.split('/')[-2]}_{url.split('/')[-1]}.xlsx") as writer:
+        output_df.to_excel(writer, sheet_name="Data")
+        output_meta_df.to_excel(writer, sheet_name="Metadata")
+    
+    for method in ["mixed", "path", "tooltips"]:
+        pctdev = (((results[method]["series"]/results["mixed"]["series"])-1)*100).dropna().mean()
+        result_summary.loc[result_summary["Method"]==method, "% deviation from mixed method"] = pctdev
+
+    series_list = [{"series": results["path"]["series"], "add_name": "path"},
+                    {"series": results["tooltips"]["series"], "add_name": "tooltips"},
+                    {"series": results["mixed"]["series"], "add_name": "mixed"}] 
+    triplefig = ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=True)
+    scraper.save_plot(plot = triplefig, filename=f"{url.split('/')[-2]}_{url.split('/')[-1]}", save_path=output_dir, format="html")
+
     return result_summary 
 
 
@@ -261,11 +252,11 @@ def main():
     logger.info("=== Starting Test Run ===")
     
     # Test internet speed first
-    speed_results = test_internet_speed()
+    test_internet_speed()
     
     logger.info("\nStarting scraping method comparison tests")
     
-    all_results = pd.DataFrame(columns = ["URL", "Method", "Scraping success"])
+    all_results = pd.DataFrame(columns = ["URL", "Method", "Returned scraper", "Time taken", "Error", "% deviation from mixed method"])
     for url in TEST_URLS:
         all_results = pd.concat([all_results, test_url(url)], ignore_index=True)    
         base.find_active_drivers(quit_all=True)
