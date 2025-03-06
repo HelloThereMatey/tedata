@@ -177,7 +177,7 @@ def test_url(url):
     results = {}; succeded = True; result_summary = pd.DataFrame(columns = ["URL", "Method", "Returned scraper", "Time taken", "Error", "% deviation from mixed method"])
     blank_metadata = pd.Series(np.nan, 
     index = ['units', 'original_source', 'title', 'indicator', 'country', 'source', 'id', 'description', 'frequency', 'unit_tooltips', 'start_date', 'end_date', 'min_value', 'max_value', 'length'],
-    name=base_name)
+    name="blank")
     
     for i, method in enumerate(["mixed", "path", "tooltips"]):
         try:
@@ -196,14 +196,14 @@ def test_url(url):
             base_name = url.split('/')[-2]+"_"+url.split('/')[-1]+"_"+method
 
             series = scraper.series.rename(base_name).copy() if scraper is not None and hasattr(scraper, 'series') else pd.Series(np.nan, name=base_name)
-            metadata = scraper.series_metadata.rename(base_name).copy() if scraper is not None and hasattr(scraper, 'series') and hasattr(scraper, 'metadata') else blank_metadata
+            metadata = scraper.series_metadata.rename(base_name).copy() if scraper is not None and hasattr(scraper, 'series') and hasattr(scraper, 'metadata') else blank_metadata.rename(base_name).copy()
        
         except Exception as e:
             logger.error(f"Error downloading data for {url} using method: {method}, error: {str(e)}")
             succeded = False
             error = str(e)
             series = pd.Series(np.nan, name=base_name)
-            metadata = blank_metadata
+            metadata = blank_metadata.rename(base_name).copy()
 
         # Store results
         results[method] = {'series': series, 'metadata': metadata}
