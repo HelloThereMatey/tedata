@@ -174,7 +174,8 @@ def test_url(url):
     # Remove logger setup from here since we're using the global one
     logger.info(f"Testing URL: {url}")
     
-    results = {}; result_summary = pd.DataFrame(columns = ["URL", "Method", "Returned scraper", "Time taken", "Error", "% deviation from mixed method"])
+    results = {}
+    result_summary = pd.DataFrame(columns = ["URL", "Method", "Returned scraper", "Time taken", "Error", "% deviation from mixed method", "Series length", "Length metadata"])
     blank_metadata = pd.Series(np.nan, 
     index = ['units', 'original_source', 'title', 'indicator', 'country', 'source', 'id', 'description', 'frequency', 'unit_tooltips', 'start_date', 'end_date', 'min_value', 'max_value', 'length'],
     name="blank")
