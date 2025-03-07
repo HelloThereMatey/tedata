@@ -994,7 +994,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if return_fig:
             return fig
 
-    def save_plot(self, plot: go.Figure = None, filename: str = "plot", save_path: str = os.getcwd(), dpi: int = 300, format: str = "png"):
+    def save_plot(self, filename: str = "plot", save_path: str = os.getcwd(), dpi: int = 300, format: str = "png"):
         """Save the plot to a file. The plot must be created using the plot_series method. This method will save the plot as a PNG image file.
 
         **Parameters**
@@ -1006,19 +1006,18 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         :Returns: None
         """
+        if not hasattr(self, "plot"):
+            logger.info("Error: Plot not found. Run plot_series() method to create a plot.")
+            return False
 
-        if hasattr(self, "plot") and plot is None:
-            plot = self.plot
-
-            if format == "html":
-                plot.write_html(f"{save_path}{fdel}{filename}.html")
-                logger.info(f"Plot saved as {save_path}{fdel}{filename}.html")
-            else:
-                plot.write_image(f"{save_path}{fdel}{filename}.{format}", format=format, scale=dpi/100, width = 1400, height = 500)
-                logger.info(f"Plot saved as {filename}")
+        if format == "html":
+            self.plot.write_html(f"{save_path}{fdel}{filename}.html")
+            logger.info(f"Plot saved as {save_path}{fdel}{filename}.html")
         else:
-            print("Error: Plot not found. Run plot_series() method to create a plot.")
-            logger.debug("Error: Plot not found. Run plot_series() method to create a plot.")
+            self.plot.write_image(f"{save_path}{fdel}{filename}.{format}", format=format, scale=dpi/100, width = 1400, height = 500)
+            logger.info(f"Plot saved as {filename}")
+        return True
+
 
     def scrape_metadata(self):
         """Scrape metadata from the page. This method scrapes metadata from the page and stores it in the 'metadata' attribute. The metadata

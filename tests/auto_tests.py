@@ -18,7 +18,7 @@ import tedata as ted
 
 # Add parent directory to path to import tedata
 #List of urls to test
-with open(wd+fdel+"test_urls_all.csv", "r") as f:
+with open(wd+fdel+"test_urls.csv", "r") as f:
     TEST_URLS = [line.strip() for line in f.readlines()]
 print("Test URLS for which to download data: ",TEST_URLS)
 
@@ -174,12 +174,14 @@ def test_url(url):
     # Remove logger setup from here since we're using the global one
     logger.info(f"Testing URL: {url}")
     
-    results = {}; succeded = True; result_summary = pd.DataFrame(columns = ["URL", "Method", "Returned scraper", "Time taken", "Error", "% deviation from mixed method"])
+    results = {}; result_summary = pd.DataFrame(columns = ["URL", "Method", "Returned scraper", "Time taken", "Error", "% deviation from mixed method"])
     blank_metadata = pd.Series(np.nan, 
     index = ['units', 'original_source', 'title', 'indicator', 'country', 'source', 'id', 'description', 'frequency', 'unit_tooltips', 'start_date', 'end_date', 'min_value', 'max_value', 'length'],
     name="blank")
     
     for i, method in enumerate(["mixed", "path", "tooltips"]):
+        succeded = True
+        base_name = url.split('/')[-2]+"_"+url.split('/')[-1]+"_"+method
         try:
             error = "No error"
             logger.info(f"Testing {method} method for {url}")
@@ -191,29 +193,34 @@ def test_url(url):
                 logger.error(f"{method} method failed to return scraper")
                 error = "No scraper returned"
                 succeded = False
+            if scraper.series.empty or scraper.series.isna().all():
+                logger.error(f"{method} method returned empty series")
+                error = "Empty series"
+                succeded = False
             elapsed = timeit.default_timer() - timer
             logger.info(f"scrape_chart method took: {elapsed:.2f} seconds to complete for {url} using method {method} and it succeded: {succeded}.")
-            base_name = url.split('/')[-2]+"_"+url.split('/')[-1]+"_"+method
 
-            series = scraper.series.rename(base_name).copy() if scraper is not None and hasattr(scraper, 'series') else pd.Series(np.nan, name=base_name)
+            series = scraper.series.rename(base_name).copy() if scraper is not None and hasattr(scraper, 'series') else pd.Series(np.nan, name=base_name, index = [0, 1, 2, 3])
             metadata = scraper.series_metadata.rename(base_name).copy() if scraper is not None and hasattr(scraper, 'series') and hasattr(scraper, 'metadata') else blank_metadata.rename(base_name).copy()
        
         except Exception as e:
             logger.error(f"Error downloading data for {url} using method: {method}, error: {str(e)}")
             succeded = False
             error = str(e)
-            series = pd.Series(np.nan, name=base_name)
+            series = pd.Series(np.nan, name=base_name, index = [0, 1, 2, 3])
             metadata = blank_metadata.rename(base_name).copy()
 
         # Store results
         results[method] = {'series': series, 'metadata': metadata}
         result_summary = pd.concat([result_summary, pd.DataFrame({
-                "URL": url,
-                "Method": method,
-                "Returned scraper": succeded,
-                "Time taken": f"{elapsed:.2f}",
-                "Error": error,
-                "% deviation from mixed method": ""})], ignore_index=True)
+                "URL": [url],
+                "Method": [method],
+                "Returned scraper": [succeded],
+                "Time taken": [f"{elapsed:.2f}"],
+                "Error": [error],
+                "% deviation from mixed method": [""],
+                "Series length": [len(series)],
+                "Length metadata": [len(metadata)]})], ignore_index=True)
             
         if i == 0:
             output_df = series
@@ -240,11 +247,101 @@ def test_url(url):
     series_list = [{"series": results["path"]["series"], "add_name": "path"},
                     {"series": results["tooltips"]["series"], "add_name": "tooltips"},
                     {"series": results["mixed"]["series"], "add_name": "mixed"}] 
-    triplefig = ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=True)
-    scraper.save_plot(plot = triplefig, filename=f"{url.split('/')[-2]}_{url.split('/')[-1]}", save_path=output_dir, format="html")
+    triplefig = ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=True, return_fig=True)
+    triplefig.write_html(f"{output_dir}{fdel}{url.split('/')[-2]}_{url.split('/')[-1]}.html")
+    logger.info(f"Plot saved as {output_dir}{fdel}{url.split('/')[-2]}_{url.split('/')[-1]}.html")
 
     return result_summary 
 
+def generate_html_report(test_results_df, output_dir):
+    """
+    Generate a comprehensive HTML report with test results and all interactive plots.
+    
+    Args:
+        test_results_df: DataFrame with test results
+        output_dir: Directory with plot files
+    """
+    # Create HTML string
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Trading Economics Scraper Test Results</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1, h2 { color: #2c3e50; }
+            table { border-collapse: collapse; width: 100%; margin-bottom: 30px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            tr:nth-child(even) { background-color: #f9f9f9; }
+            .figure-container { margin-bottom: 40px; border: 1px solid #ddd; padding: 15px; }
+            .methods-comparison { display: flex; justify-content: space-between; margin-bottom: 10px; }
+            .method-stats { flex: 1; margin: 0 10px; padding: 10px; background-color: #f9f9f9; }
+            .plotly-iframe { width: 100%; height: 600px; border: none; }
+        </style>
+    </head>
+    <body>
+        <h1>Trading Economics Scraper Test Results</h1>
+        <h2>Overall Summary</h2>
+    """
+    
+    # Add test results table
+    html += "<h3>Method Comparison Results</h3>"
+    html += test_results_df.to_html(index=False)
+    
+    # Add each plot with its metadata
+    html += "<h2>Individual Chart Results</h2>"
+    
+    # Group results by URL
+    urls = test_results_df['URL'].unique()
+    
+    for url in urls:
+        url_name = url.split('/')[-2] + '_' + url.split('/')[-1]
+        html += f"<div class='figure-container'>"
+        html += f"<h3>Results for: {url}</h3>"
+        
+        # Add URL-specific stats
+        url_results = test_results_df[test_results_df['URL'] == url]
+        html += "<div class='methods-comparison'>"
+        
+        for _, row in url_results.iterrows():
+            html += f"""
+            <div class='method-stats'>
+                <h4>{row['Method']} Method</h4>
+                <p>Time: {row['Time taken']} seconds</p>
+                <p>Status: {"✓ Success" if row['Returned scraper'] else "✗ Failed"}</p>
+                <p>Error: {row['Error']}</p>
+                <p>Deviation: {row['% deviation from mixed method']}</p>
+            </div>
+            """
+        html += "</div>"
+        
+        # Find the matching plot file
+        plot_file = url_name + '.html'
+        plot_path = os.path.join(output_dir, plot_file)
+        
+        if os.path.exists(plot_path):
+            # Simply embed the entire figure as an iframe
+            relative_path = os.path.relpath(plot_path, output_dir)
+            html += f'<iframe src="{relative_path}" class="plotly-iframe"></iframe>'
+        else:
+            html += f"<p>Plot file not found: {plot_file}</p>"
+        
+        html += "</div>"  # Close figure-container
+    
+    # Close HTML document
+    html += """
+    </body>
+    </html>
+    """
+    
+    # Write to file
+    report_path = os.path.join(output_dir, "complete_report.html")
+    with open(report_path, 'w') as f:
+        f.write(html)
+    
+    print(f"Complete HTML report saved to {report_path}")
+    return report_path
 
 # Modify your main function
 def main():
@@ -269,3 +366,9 @@ if __name__ == "__main__":
     tests.to_markdown(output_dir+fdel+"test_results.md", index=False)
     tests.to_csv(output_dir+fdel+"test_results.csv", index=False)
     logger.info("=== Test Run Completed ===")
+
+    ## Generate HTML report of the test results
+    output_dir = wd+fdel+"test_runs"
+    test_results_df = pd.read_csv(output_dir+fdel+"test_results.csv")
+    print(test_results_df)
+    generate_html_report(test_results_df, output_dir)
