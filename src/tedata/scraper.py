@@ -267,11 +267,14 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if chart_type in self.chart_types.keys():
             if self.click_button("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > button"):
                 time.sleep(1.5)
-                self.click_button(self.chart_types[chart_type])
-                self.chart_type = self.expected_types[chart_type]
-                logger.info(f"Chart type set to: {chart_type}")
-                self.update_chart()
-                return True
+                if self.click_button(self.chart_types[chart_type]):
+                    self.chart_type = self.expected_types[chart_type]
+                    logger.info(f"Chart type set to: {chart_type}")
+                    self.update_chart()
+                    return True
+                else:
+                    logger.info(f"Error selecting chart type: {chart_type}")
+                    return False
             else:
                 logger.debug(f"Error selecting chart type: {chart_type}")
                 return False
@@ -657,7 +660,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if not hasattr(self, "x_index"):
             self.make_x_index(force_rerun_freqdet=True, force_rerun_xlims=True)
 
-        max_chunk_size = 450  # Maximum number of points to scrape in one go. This is deterined by the density of datapoints on the chart. 
+        max_chunk_size = 500  # Maximum number of points to scrape in one go. This is deterined by the density of datapoints on the chart. 
         total_len = len(self.x_index) # Total number of points in the x_index attribute.
         numscrapes = (total_len + max_chunk_size - 1) // max_chunk_size  # Ceiling division
         sub_indexes = []  #The index will be brken up into this list of subIndexes.

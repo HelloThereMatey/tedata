@@ -199,7 +199,6 @@ def test_url(url):
                 error = "Empty series"
                 succeded = False
             elapsed = timeit.default_timer() - timer
-            logger.info(f"scrape_chart method took: {elapsed:.2f} seconds to complete for {url} using method {method} and it succeded: {succeded}.")
 
             series = scraper.series.rename(base_name).copy() if scraper is not None and hasattr(scraper, 'series') else pd.Series(np.nan, name=base_name, index = [0, 1, 2, 3])
             metadata = scraper.series_metadata.rename(base_name).copy() if scraper is not None and hasattr(scraper, 'series') and hasattr(scraper, 'metadata') else blank_metadata.rename(base_name).copy()
@@ -210,7 +209,9 @@ def test_url(url):
             error = str(e)
             series = pd.Series(np.nan, name=base_name, index = [0, 1, 2, 3])
             metadata = blank_metadata.rename(base_name).copy()
+            elapsed = timeit.default_timer() - timer
 
+        logger.info(f"scrape_chart method took: {elapsed:.2f} seconds to complete for {url} using method {method} and it succeded: {succeded}.")
         # Store results
         results[method] = {'series': series, 'metadata': metadata}
         result_summary = pd.concat([result_summary, pd.DataFrame({
