@@ -18,7 +18,7 @@ import tedata as ted
 
 # Add parent directory to path to import tedata
 #List of urls to test
-with open(wd+fdel+"test_urls.csv", "r") as f:
+with open(wd+fdel+"test_urls_all.csv", "r") as f:
     TEST_URLS = [line.strip() for line in f.readlines()]
 print("Test URLS for which to download data: ",TEST_URLS)
 
