@@ -531,6 +531,35 @@ class TooltipScraper(scraper.TE_Scraper):
             else:
                 return False
     
+    def first_last_dates_js(self):
+        """Get first and last data points using JavaScript execution instead of ActionChains.
+        More reliable across different browser implementations and environments."""
+
+        # Load JavaScript code from file
+        js_file_path = os.path.join(os.path.dirname(__file__), 'firstLastDates.js')
+        with open(js_file_path, 'r') as file:
+            js_code = file.read()
+        
+        try:
+            # Execute the JavaScript function and wait for the Promise to resolve
+            result = self.driver.execute_async_script(js_code)
+            
+            if "error" in result:
+                logger.error(f"JavaScript error: {result['error']}")
+                return None
+                
+            # Process dates from ISO strings back to pandas timestamps
+            if result.get('start_date'):
+                result['start_date'] = pd.to_datetime(result['start_date'])
+            if result.get('end_date'):
+                result['end_date'] = pd.to_datetime(result['end_date'])
+                
+            return result
+        
+        except Exception as e:
+            logger.error(f"Error executing JavaScript for first/last dates: {str(e)}")
+            return None
+    
     def first_last_dates(self):
         """Scrape first and last data points for the data series on the chart at TE using viewport coordinates.
 

@@ -249,7 +249,7 @@ def test_url(url):
     series_list = [{"series": results["path"]["series"], "add_name": "path"},
                     {"series": results["tooltips"]["series"], "add_name": "tooltips"},
                     {"series": results["mixed"]["series"], "add_name": "mixed"}] 
-    triplefig = ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=True, return_fig=True)
+    triplefig = ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=False, return_fig=True)
     triplefig.write_html(f"{output_dir}{fdel}{url.split('/')[-2]}_{url.split('/')[-1]}.html")
     logger.info(f"Plot saved as {output_dir}{fdel}{url.split('/')[-2]}_{url.split('/')[-1]}.html")
 

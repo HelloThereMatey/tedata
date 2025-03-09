@@ -68,15 +68,21 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.driver.get(url)
             
             # Now explicitly wait for your critical elements
-            self.wait.until(
+            chart_element = self.wait.until(
                 EC.presence_of_element_located((By.ID, "chart")),
                 message="Chart element not found after page load")
-            # For dynamic charts, also wait for the actual chart content
+            
+            # Scroll chart into view to ensure it's visible for interactions
+            self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", chart_element)
+            time.sleep(0.5)  # Small delay to let scrolling complete
+            
+            # Wait for the chart content to be loaded
             self.wait.until(
                 EC.presence_of_element_located((By.CLASS_NAME, "highcharts-series-group")),
                 message="Chart series not loaded")
             
             time.sleep(extra_wait_time)  # Extra wait time after page load just to be sure...
+            
             # Now it's safe to get the page source
             self.full_page = self.get_page_source()
             self.page_soup = BeautifulSoup(self.full_page, 'html.parser')
@@ -247,8 +253,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         hart_types = self.chart_soup.select_one(".chartTypesWrapper")
         self.chart_types = {child["title"]: "."+child["class"][0]+" ."+ child.button["class"][0] for child in hart_types.children}
         for key, value in self.chart_types.items():
-            self.chart_types[key] = value.split(" ")[0] + " > button:nth-child(1)"
-        self.expected_types = {chart_type: self.chart_types[chart_type].split(" ")[0].replace(".", '') for chart_type in self.chart_types.keys()}
+            self.chart_types[key] = value.split(" ")[0]
         logger.info(f"Chart types dictionary created successfully: {self.chart_types.keys()}")
 
     def select_chart_type(self, chart_type: str):
@@ -262,13 +267,15 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         """
         if not hasattr(self, "chart_types"):
             self.create_chart_types_dict()
-
-        self.update_chart()
+        
+        selector = f"#chart.chart_module.chart1.undertaker-section div.chart_preview.undertaker_chart.logic-new-charts-no div.hawk-totalWrapper div.hawk-header\
+          div.topnav-flex-container div.pickChartTypes div.PREselectedChartType div.chartTypesWrapper.dropDownStyle div{self.chart_types[chart_type]} button.dkLabels-label-btn"
+        
         if chart_type in self.chart_types.keys():
             if self.click_button("#chart > div > div > div.hawk-header > div > div.pickChartTypes > div > button"):
                 time.sleep(1.5)
-                if self.click_button(self.chart_types[chart_type]):
-                    self.chart_type = self.expected_types[chart_type]
+                if self.click_button(selector):
+                    self.chart_type = self.chart_types[chart_type]
                     logger.info(f"Chart type set to: {chart_type}")
                     self.update_chart()
                     return True
@@ -289,6 +296,42 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
     #     """ Determine the chart type from the Trading Economics chart currently displayed in webdriver.
     #     This is done by checking the class of the selected chart type button in the chart. The chart type is determined by the class of the SVG element
     #     in the chart. This method will return the chart type as a string. 
+
+    def set_chartType_js(self, chart_type: Literal['Column', 'Spline', 'Areaspline', 'Stepline', 'Line', 'Area']):
+        """Set the chart type using javascript. This is a more robust method of setting the chart type than using the click_button method.
+        The click_button method can sometimes fail to click the chart type button. This method will set the chart type using javascript and will
+        update the chart_type attribute of the class to reflect the new chart type.
+
+        **Parameters:**
+        - chart_type (str): The chart type to set. This should be one of the keys of the chart_types dictionary attribute of the class.
+        """
+
+        if not hasattr(self, "chart_types"):
+            self.create_chart_types_dict()
+        
+        success = self.driver.execute_script(f"""
+                var chartType = "{chart_type}";
+                var buttons = document.querySelectorAll('.chartTypesWrapper button');
+                for (var i = 0; i < buttons.length; i++) {{
+                    if (buttons[i].textContent.trim() === chartType || 
+                        buttons[i].getAttribute('title') === chartType ||
+                        buttons[i].parentElement.getAttribute('title') === chartType) {{
+                        buttons[i].click();
+                        return true;
+                    }}
+                }}
+                return false;
+            """)
+            
+        if success:
+            self.chart_type = self.chart_types[chart_type]
+            logger.info(f"Chart type set to: {chart_type} (using JavaScript)")
+            time.sleep(0.5)
+            self.update_chart()
+            return True
+        else:
+            logger.info(f"Error setting chart type: {chart_type} (using JavaScript)")
+            return False   
     
     def get_element(self, selector: str = ".highcharts-series path", selector_type=By.CSS_SELECTOR):
         """Find element by selector. The data trace displayed on a Trading Economics chart is a PATH element in the SVG chart.
@@ -343,7 +386,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         self.update_chart() # Update chart..
 
-        if self.chart_type != self.expected_types[use_chart_type]:
+        if self.chart_type != self.chart_types[use_chart_type]:
             self.select_chart_type(use_chart_type) ## Use a certain chart type for the extraction of the series data. May fail with certain types of charts.
 
         if set_max_datespan and self.date_span != "MAX":
