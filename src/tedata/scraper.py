@@ -582,7 +582,10 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if not hasattr(self, "tooltip_scraper"):
             self.tooltip_scraper = utils.TooltipScraper(parent_instance = self) # Create a tooltip scraper child object
         
+        time.sleep(1)
         self.start_end = self.tooltip_scraper.first_last_dates()
+        if self.start_end is None or pd.isna(self.start_end["start_date"]) or pd.isna(self.start_end["end_date"]):
+            self.start_end = self.tooltip_scraper.first_last_dates()
         print("Start and end dates scraped from tooltips: ", self.start_end)
         if hasattr(self, "metadata"):
             self.metadata["unit_tooltips"] = self.start_end["unit_str"]

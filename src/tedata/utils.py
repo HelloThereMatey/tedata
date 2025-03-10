@@ -555,9 +555,6 @@ class TooltipScraper(scraper.TE_Scraper):
         y_pos =  self.axes_rect['height'] # Middle of chart
         # NOTE: USING THE MIDDLE OF THE CHART (in Y) WILL REQUIRE LINE CHART_TYPE.
         
-        # Initialize ActionChains
-        actions = ActionChains(self.driver)
-        actions.reset_actions()
         start_end = {}
         
         # For each extreme (left and right)
@@ -568,14 +565,16 @@ class TooltipScraper(scraper.TE_Scraper):
 
         for (date_key, value_key), x_pos in positions.items():
             # Reset cursor by moving to plot background first
-            self.move_cursor_on_chart(x_pos, y_pos)
-            time.sleep(0.5)
+            self.move_cursor_on_chart(x_pos, y_pos, printout=True)
+            time.sleep(1.5)
             
             # Get tooltip
             date, value, unit_str = self.extract_date_value_tooltip()
             start_end[date_key] = date
             start_end[value_key] = value
             start_end["unit_str"] = unit_str
+        
+        print("Determined start and end dates and values: ", start_end)
         
         return start_end
 
