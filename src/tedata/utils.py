@@ -568,8 +568,7 @@ class TooltipScraper(scraper.TE_Scraper):
 
         """
 
-        if self.get_chart_dims():
-            print("Got chart dimensions and plot background element.")
+        self.get_chart_dims()
 
         # Calculate exact positions of left and right extremes
         left_x =  self.axes_rect['x'] # Left edge x-coordinate
