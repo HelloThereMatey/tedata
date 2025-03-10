@@ -618,7 +618,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 point["value"] = utils.extract_and_convert_value(point["value"])[0]
                 point["date"] = utils.ready_datestr(point["date"])
             latest_dates = [point["date"] for point in datapoints]
-            #print("Latest dates: ", latest_dates)
+            print("Latest dates: ", latest_dates)
 
             ## Get the frequency of the time series
             self.date_series = pd.Series(latest_dates[::-1]).astype("datetime64[ns]")
@@ -627,8 +627,17 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 self.metadata["frequency"] = self.frequency
         print("Frequency of time-series: ", self.frequency)
 
+        time.sleep(0.5)
+
         if force_rerun_xlims or not hasattr(self, "start_end"):
-            self.get_xlims_from_tooltips()
+            self.set_max_date_span_viaCalendar()  ##Set date_span to MAX for start and end date pull...
+            time.sleep(0.25)
+            self.set_chartType_js("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
+            time.sleep(0.5)
+            self.start_end = self.tooltip_scraper.first_last_dates_js()
+            time.sleep(0.5)
+            self.start_end = self.tooltip_scraper.first_last_dates_js()
+            #For some reason running it twice seems to work better...
         # Get the first and last datapoints from the chart at MAX datespan
 
         if self.start_end is not None:

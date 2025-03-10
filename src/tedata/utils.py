@@ -516,27 +516,64 @@ class TooltipScraper(scraper.TE_Scraper):
 
         # Load JavaScript code from file
         js_file_path = os.path.join(os.path.dirname(__file__), 'firstLastDates.js')
-        with open(js_file_path, 'r') as file:
-            js_code = file.read()
-        
         try:
+            with open(js_file_path, 'r') as file:
+                js_code = file.read()
+            
             # Execute the JavaScript function and wait for the Promise to resolve
             result = self.driver.execute_async_script(js_code)
+            print("Raw result from JavaScript:", result)
             
-            if "error" in result:
-                logger.error(f"JavaScript error: {result['error']}")
+            if result is None:
+                logger.info("JavaScript execution returned None")
                 return None
                 
-            # Process dates from ISO strings back to pandas timestamps
+            if isinstance(result, dict) and "error" in result:
+                if "logs" in result and result["logs"]:
+                    logger.info(f"JavaScript error: {result['error']}")
+                    for log in result.get('logs', []):
+                        logger.info(f"JS Log: {log}")
+                else:
+                    logger.info(f"JavaScript error: {result['error']}")
+                return None
+
+            # Add debug logging
+            if isinstance(result, dict) and "debug" in result and "logs" in result["debug"]:
+                for log in result["debug"]["logs"]:
+                    logger.info(f"JS Log: {log}")
+                
+            # Process dates from raw strings to pandas timestamps
             if result.get('start_date'):
-                result['start_date'] = pd.to_datetime(result['start_date'])
+                try:
+                    # Convert using ready_datestr to handle Q1, Q2, etc.
+                    result['start_date'] = pd.to_datetime(ready_datestr(result['start_date']))
+                    print(f"Converted start_date: {result['start_date']}")
+                except Exception as e:
+                    logger.error(f"Error parsing start date '{result['start_date']}': {str(e)}")
+                    # Keep the string value if parsing fails
+            
             if result.get('end_date'):
-                result['end_date'] = pd.to_datetime(result['end_date'])
+                try:
+                    # Convert using ready_datestr to handle Q1, Q2, etc.
+                    result['end_date'] = pd.to_datetime(ready_datestr(result['end_date']))
+                    print(f"Converted end_date: {result['end_date']}")
+                except Exception as e:
+                    logger.info(f"Error parsing end date '{result['end_date']}': {str(e)}")
+                    # Keep the string value if parsing fails
+                
+            # Log successful result for debugging
+            logger.info(f"Successfully retrieved first/last dates: {result}")
+            
+            # Remove debug field to keep the result clean
+            if isinstance(result, dict) and "debug" in result:
+                del result["debug"]
                 
             return result
         
         except Exception as e:
-            logger.error(f"Error executing JavaScript for first/last dates: {str(e)}")
+            logger.error(f"Error executing JavaScript for first/last dates: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return None
     
     def first_last_dates(self):
@@ -556,6 +593,9 @@ class TooltipScraper(scraper.TE_Scraper):
         # NOTE: USING THE MIDDLE OF THE CHART (in Y) WILL REQUIRE LINE CHART_TYPE.
         
         start_end = {}
+        actions = ActionChains(self.driver)
+        actions.move_to_element(self.plot_background)
+        actions.reset_actions()
         
         # For each extreme (left and right)
         positions = {
@@ -565,7 +605,8 @@ class TooltipScraper(scraper.TE_Scraper):
 
         for (date_key, value_key), x_pos in positions.items():
             # Reset cursor by moving to plot background first
-            self.move_cursor_on_chart(x_pos, y_pos, printout=True)
+
+            actions.move_by_offset(x_pos, y_pos).perform()
             time.sleep(1.5)
             
             # Get tooltip
@@ -573,6 +614,7 @@ class TooltipScraper(scraper.TE_Scraper):
             start_end[date_key] = date
             start_end[value_key] = value
             start_end["unit_str"] = unit_str
+            actions.reset_actions()
         
         print("Determined start and end dates and values: ", start_end)
         
@@ -598,7 +640,7 @@ class TooltipScraper(scraper.TE_Scraper):
             if self.date_span != shortest_span: # Set the datespan to 1 year to look just at the latest data points
                 self.set_date_span(shortest_span)
         spline_step = timeit.default_timer()
-        self.select_chart_type("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
+        self.set_chartType_js("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
         #Chart type must be spline or line for this to work. Sometimes the chart_type chnages automatically when datespan is altered.
         logger.info(f"Time taken to select chart type: {timeit.default_timer() - spline_step}")
 
@@ -731,7 +773,7 @@ class TooltipScraper(scraper.TE_Scraper):
 
     def move_cursor_on_chart(self, x: int = 0, y: int = 0, printout: bool = False):
         """Move cursor to chart origin (0,0) point"""
-        
+
         if not hasattr(self, 'axes_rect'):
             self.get_chart_dims()
         x_pos = self.axes_rect['x'] + x
