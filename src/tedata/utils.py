@@ -483,27 +483,6 @@ class TooltipScraper(scraper.TE_Scraper):
             self.observers.append(self)
         else:
             super().__init__(**kwargs)
-
-    def get_chart_dims(self):
-        """Get dimensions of chart and plotting area"""
-        try:
-            # Ensure full_chart is WebElement
-            self.chart_element = self.driver.find_element(By.CSS_SELECTOR, "#chart")
-                
-            # Get overall chart dimensions
-            self.chart_rect = {k: round(float(v), 1) for k, v in self.chart_element.rect.items()}
-            
-            # Get plot area dimensions
-            self.plot_background = self.driver.find_element(By.CSS_SELECTOR, '.highcharts-plot-background')
-            self.axes_rect = {k: round(float(v), 1) for k, v in self.plot_background.rect.items()}
-            self.chart_x = self.axes_rect["width"]
-            self.chart_y = self.axes_rect["height"]
-            return True
-        
-        except Exception as e:
-            print(f"Failed to get chart dimensions: {e}")
-            logger.error(f"Failed to get chart dimensions: {e}")
-            return False
     
     def move_cursor(self, x: int = 0, y: int = 0):
         self.actions.move_to_element_with_offset(self.full_chart, x, y).perform()
@@ -567,17 +546,18 @@ class TooltipScraper(scraper.TE_Scraper):
         - start_end: dict containing the start and end dates and values of the data series.
 
         """
-
+        self.update_chart()
         self.get_chart_dims()
 
         # Calculate exact positions of left and right extremes
-        left_x =  self.axes_rect['x'] # Left edge x-coordinate
-        right_x = self.axes_rect['x'] + self.axes_rect['width'] # Right edge x-coordinate
-        y_pos = self.axes_rect["y"] + round(self.axes_rect["height"]/2)  # Middle of chart
+        left_x =  0 # Left edge x-coordinate relative to self.axes_rect["x"]
+        right_x = self.axes_rect['width'] # Right edge x-coordinate
+        y_pos =  self.axes_rect['height'] # Middle of chart
         # NOTE: USING THE MIDDLE OF THE CHART (in Y) WILL REQUIRE LINE CHART_TYPE.
         
         # Initialize ActionChains
         actions = ActionChains(self.driver)
+        actions.reset_actions()
         start_end = {}
         
         # For each extreme (left and right)
@@ -588,13 +568,8 @@ class TooltipScraper(scraper.TE_Scraper):
 
         for (date_key, value_key), x_pos in positions.items():
             # Reset cursor by moving to plot background first
-            actions.move_to_element(self.plot_background).perform()
-            actions.reset_actions()
-            
-            # Move to exact position
-            actions.move_by_offset(x_pos, y_pos).perform()
-            #print(f"Moved cursor to ({x_pos}, {y_pos})")
-            time.sleep(0.1)
+            self.move_cursor_on_chart(x_pos, y_pos)
+            time.sleep(0.5)
             
             # Get tooltip
             date, value, unit_str = self.extract_date_value_tooltip()
@@ -755,20 +730,22 @@ class TooltipScraper(scraper.TE_Scraper):
             return coords
         return None
 
-    def move_cursor_on_chart(self, x: int = 0, y: int = 0):
+    def move_cursor_on_chart(self, x: int = 0, y: int = 0, printout: bool = False):
         """Move cursor to chart origin (0,0) point"""
         
-        print(f"Chart rect: {self.axes_rect}")
-        # Calculate origin coordinates in viewport
-        x_pos = self.full_chart.rect["x"] + float(self.axes_rect['x'])  + x
-        y_pos = self.full_chart.rect["y"] + float(self.axes_rect['y']) + float(self.axes_rect["height"]) - y  
+        if not hasattr(self, 'axes_rect'):
+            self.get_chart_dims()
+        x_pos = self.axes_rect['x'] + x
+        y_pos = self.axes_rect['y'] - y
         
         # Move to origin
         actions = ActionChains(self.driver)
         actions.move_by_offset(x_pos, y_pos).perform()
         actions.reset_actions()
         self.show_position_marker(x_pos, y_pos)
-        print(f"Moved cursor to chart pposition ({x_pos}, {y_pos})")
+        if printout:
+            print(f"Moved cursor to chart position ({x_pos}, {y_pos})")
+            print(f"Moved cursor to chart position ({x_pos}, {y_pos})")
     
     def bail_out(self):
         self.driver.quit()

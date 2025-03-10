@@ -303,11 +303,9 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         update the chart_type attribute of the class to reflect the new chart type.
 
         **Parameters:**
-        - chart_type (str): The chart type to set. This should be one of the keys of the chart_types dictionary attribute of the class.
+        - chart_type (Literal): The chart type to set. This should be one of the keys of the chart_types dictionary attribute of the class. The 
+        options are 'Column', 'Spline', 'Areaspline', 'Stepline', 'Line', 'Area'.
         """
-
-        if not hasattr(self, "chart_types"):
-            self.create_chart_types_dict()
         
         success = self.driver.execute_script(f"""
                 var chartType = "{chart_type}";
@@ -540,6 +538,26 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             return
 
         return self.series
+    
+    def get_chart_dims(self):
+        """Get dimensions of chart and plotting area"""
+        try:
+            # Ensure full_chart is WebElement
+            self.chart_element = self.driver.find_element(By.CSS_SELECTOR, "#chart")
+            # Get overall chart dimensions
+            self.chart_rect = {k: round(float(v), 1) for k, v in self.chart_element.rect.items()}
+            
+            # Get plot area dimensions
+            self.plot_background = self.driver.find_element(By.CSS_SELECTOR, '.highcharts-plot-background')
+            self.axes_rect = {k: round(float(v), 1) for k, v in self.plot_background.rect.items()}
+            self.chart_x = self.axes_rect["width"]
+            self.chart_y = self.axes_rect["height"]
+            return True
+        
+        except Exception as e:
+            print(f"Failed to get chart dimensions: {e}")
+            logger.error(f"Failed to get chart dimensions: {e}")
+            return False
     
     def get_xlims_from_tooltips(self, set_max_datespan: bool = True):
         """ Use the TooltipScraper class to get the start and end dates and some other points of the time series using the tooltip box displayed on the chart.
