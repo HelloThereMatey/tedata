@@ -559,7 +559,23 @@ class TooltipScraper(scraper.TE_Scraper):
                     print(f"Converted end_date: {result['end_date']}")
                 except Exception as e:
                     logger.info(f"Error parsing end date '{result['end_date']}': {str(e)}")
-                    # Keep the string value if parsing fails
+
+            if result.get('start_value'):
+                try:
+                    # Convert using ready_datestr to handle Q1, Q2, etc.
+                    valtup = extract_and_convert_value(result['start_value'])
+                    result['start_value'] = valtup[0]
+                    result['unit_str'] = valtup[1]
+                except Exception as e:
+                    logger.info(f"Error parsing end date '{result['end_date']}': {str(e)}")
+            
+            if result.get('end_value'):
+                try:
+                    valtup = extract_and_convert_value(result['end_value'])
+                    result['end_value'] = valtup[0]
+                    result['unit_str'] = valtup[1]
+                except Exception as e:
+                    logger.info(f"Error parsing end date '{result['end_value']}': {str(e)}")
                 
             # Log successful result for debugging
             logger.info(f"Successfully retrieved first/last dates.")#: {result}")

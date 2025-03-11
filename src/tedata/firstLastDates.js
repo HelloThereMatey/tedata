@@ -1,6 +1,6 @@
 /**
  * Gets first and last data points from chart tooltips
- * using a direct and simple approach
+ * and returns the raw tooltip data for Python parsing
  */
 function getFirstLastDates(done) {
     const logs = [];
@@ -23,9 +23,8 @@ function getFirstLastDates(done) {
         const result = {
             start_date: null,
             start_value: null,
-            end_date: null,
+            end_date: null, 
             end_value: null,
-            unit_str: null,
             debug: { logs }
         };
         
@@ -54,54 +53,31 @@ function getFirstLastDates(done) {
             });
         }
         
-        // Function to process and store tooltip data
-        function processTooltip(tooltipData, position) {
+        // Function to store tooltip data without parsing
+        function storeTooltip(tooltipData, position) {
             if (!tooltipData) return;
             
             log(`Found tooltip at ${position}: ${JSON.stringify(tooltipData)}`);
             
-            // Parse numeric value
-            const valueText = tooltipData.value;
-            const match = valueText.match(/(-?[\d,.\s]+)([KMBT])?/);
-            
-            if (match) {
-                let value = match[1].replace(/,/g, '').replace(/\s/g, '').trim();
-                value = parseFloat(value);
-                
-                if (match[2]) {
-                    const multipliers = { 
-                        'K': 1000, 
-                        'M': 1000000, 
-                        'B': 1000000000, 
-                        'T': 1000000000000 
-                    };
-                    value *= multipliers[match[2]] || 1;
-                }
-                
-                if (position === 'left') {
-                    result.start_date = tooltipData.date;
-                    result.start_value = value;
-                } else {
-                    result.end_date = tooltipData.date;
-                    result.end_value = value;
-                }
-                
-                // Extract unit string
-                const remainingText = valueText.substring(valueText.indexOf(match[0]) + match[0].length).trim();
-                result.unit_str = remainingText || result.unit_str;
+            // Just store the raw data without parsing
+            if (position === 'left') {
+                result.start_date = tooltipData.date;
+                result.start_value = tooltipData.value;
+            } else {
+                result.end_date = tooltipData.date;
+                result.end_value = tooltipData.value;
             }
         }
         
         async function executeSearch() {
             // Calculate precise positions
             const centerY = plotRect.top + (plotRect.height / 2);
-            const leftX = plotRect.left; // Start at left and right exxtremes of plot background.
-            const rightX = plotRect.right; // 
+            const leftX = plotRect.left ; // Add small offset to ensure we're inside the chart
+            const rightX = plotRect.right; // Subtract small offset
             
             // Get first point (left edge)
             log(`Checking left point at x=${leftX}, y=${centerY}`);
             
-            // Create a MouseEvent that uses pageX/Y instead of clientX/Y to handle scrolling
             const leftEvent = new MouseEvent('mousemove', {
                 bubbles: true,
                 cancelable: true,
@@ -110,12 +86,11 @@ function getFirstLastDates(done) {
                 clientY: centerY
             });
             
-            // Dispatch event on plot background element
             plotBackground.dispatchEvent(leftEvent);
             
             // Wait and get tooltip data
             const leftData = await getTooltipData();
-            processTooltip(leftData, 'left');
+            storeTooltip(leftData, 'left');
             
             // Clear by moving away
             const clearEvent = new MouseEvent('mouseout', {
@@ -143,7 +118,7 @@ function getFirstLastDates(done) {
             
             // Wait and get tooltip data
             const rightData = await getTooltipData();
-            processTooltip(rightData, 'right');
+            storeTooltip(rightData, 'right');
             
             // Done
             log('Extraction complete');

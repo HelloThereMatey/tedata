@@ -635,6 +635,9 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.set_chartType_js("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
             time.sleep(0.25)
             self.start_end = self.tooltip_scraper.first_last_dates_js()
+            if self.start_end is None or pd.isna(self.start_end["start_date"]) or pd.isna(self.start_end["end_date"]):
+                self.start_end = self.tooltip_scraper.first_last_dates_js()
+            print("Start and end dates scraped from tooltips: ", self.start_end)
             #For some reason running it twice seems to work better...
         # Get the first and last datapoints from the chart at MAX datespan
 
