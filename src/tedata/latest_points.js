@@ -54,21 +54,33 @@ async function moveCursor(options, done) {
             throw new Error('Plot background not found');
         }
 
+        // Get the correct coordinates accounting for scroll position
         const rect = plotBackground.getBoundingClientRect();
-        console.log('Chart dimensions:', rect);
+        const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
 
-        let x = rect.x + rect.width;
-        const y = rect.y + rect.height / 2;
+        console.log('Chart dimensions:', rect);
+        console.log('Scroll position:', { scrollX, scrollY });
+
+        // Use absolute positions (accounting for scroll)
+        const startX = rect.x;
+        const endX = rect.x + rect.width;
+        const centerY = rect.y + (rect.height / 2);
+
+        let x = endX;
+        const y = centerY;
         let lastDate = null;
         const dataPoints = [];
-        
-        cursor.style.left = x + 'px';
-        cursor.style.top = y + 'px';
-        
-        while (x > rect.x && dataPoints.length < target_points) {
-            cursor.style.left = x + 'px';
+
+        cursor.style.left = (x + scrollX) + 'px';
+        cursor.style.top = (y + scrollY) + 'px';
+
+        while (x > startX && dataPoints.length < target_points) {
+            // Update cursor position with scroll offsets
+            cursor.style.left = (x + scrollX) + 'px';
+            cursor.style.top = (y + scrollY) + 'px';
             
-            // Create and dispatch events
+            // Create and dispatch events (clientX/Y are viewport coordinates)
             const moveEvent = new MouseEvent('mousemove', {
                 bubbles: true,
                 clientX: x,
