@@ -469,6 +469,42 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         else:
             logger.info("Failed to open date range inputs")
             return False
+        
+    def custom_date_span_js(self, start_date: str = "1900-01-01", end_date: str = datetime.date.today().strftime("%Y-%m-%d")) -> bool:
+        """Set the date range on the active chart in the webdriver window using JavaScript.
+        This is more reliable than using Selenium's send_keys and can avoid issues with focus.
+        
+        Args:
+            start_date (str): Start date in format YYYY-MM-DD
+            end_date (str): End date in format YYYY-MM-DD
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            # Load JavaScript code from file
+            js_file_path = os.path.join(os.path.dirname(__file__), 'custom_datespan.js')
+            with open(js_file_path, 'r') as file:
+                js_code = file.read()
+            
+            # Execute the JavaScript with parameters
+            result = self.driver.execute_async_script(js_code, start_date, end_date)
+            
+            if isinstance(result, dict) and result.get('success'):
+                # Set date span in our object
+                self.date_span = {"Custom": {"start_date": start_date, "end_date": end_date}}
+                self.update_chart()
+                
+                logger.info(f"Date span set to custom range: {start_date} to {end_date} (using JavaScript)")
+                return True
+            else:
+                error_msg = result.get('error', 'Unknown error') if isinstance(result, dict) else 'Unknown error'
+                logger.info(f"Failed to set date span using JavaScript: {error_msg}")
+                return False
+            
+        except Exception as e:
+            logger.info(f"Error executing custom_date_span_js: {e}")
+            return False
     
     def get_datamax_min(self):
         """Get the max and min data values for the series using y-axis values... This is deprecated and not used in the current version of the code."""
@@ -492,46 +528,38 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if not right_way_up:
             max_val = self.y_axis.index.max()  # This should be the top pixel of the chart.
             self.series = utils.invert_series(self.series, max_val = max_val)
-        pix0 = self.series.iloc[0]; pix1 = self.series.iloc[-1]
-
-        if hasattr(self, "start_end"):
-            y0 = self.start_end["start_value"]; y1 = self.start_end["end_value"]
             
-            self.unit_per_px_alt = abs(y1 - y0) / abs(pix1 - pix0)  # Calculated from the start and end datapoints.
-            
-            if not hasattr(self, "axis_limits"):
-                self.axis_limits = self.extract_axis_limits()
-            ymin = self.axis_limits['y_min']; ymax = self.axis_limits['y_max']
-            ## Turns out that this formulation below is the best way to calculate the scaling factor for the chart.
-            unit_range = self.y_axis.iloc[-1] - self.y_axis.iloc[0]
-            pxrange = self.y_axis.index[0] - self.y_axis.index[-1]
-            self.axlims_upp = unit_range/pxrange
-            print(f"Unit per pix forumlation, {self.y_axis.iloc[-1]}, {self.y_axis.iloc[0]}, {unit_range}, {pxrange}, {ymax}, {ymin}, {self.axlims_upp}")
+        if not hasattr(self, "axis_limits"):
+            self.axis_limits = self.extract_axis_limits()
+        ymin = self.axis_limits['y_min']; ymax = self.axis_limits['y_max']
+        ## Turns out that this formulation below is the best way to calculate the scaling factor for the chart.
+        unit_range = self.y_axis.iloc[-1] - self.y_axis.iloc[0]
+        pxrange = self.y_axis.index[0] - self.y_axis.index[-1]
+        self.axlims_upp = unit_range/pxrange
+        print(f"Unit per pix forumlation, {self.y_axis.iloc[-1]}, {self.y_axis.iloc[0]}, {unit_range}, {pxrange}, {ymax}, {ymin}, {self.axlims_upp}")
 
-            # if the start and end points are at similar values this will be problematic though. 
-            logger.info("Scale series method: "
-                        f"Start value, end value: {y0}, {y1}, pix0, pix1: {pix0}, {pix1}, \n"
-                         f"data units per chart pixel from start & end points: {self.unit_per_px_alt}, \n"
-                         f"unit_per_pix calculated from the y axis ticks: {self.unit_per_pix}, \n"
-                         f"unit_per_pix from axis limits and self.y_axis (probably best way): {self.axlims_upp}\n"
-                         f"yaxis top tick: {self.y_axis.iloc[-1]}, yaxis bot tick: {self.y_axis.iloc[0]}\n"
-                         f"axis_limits: {ymin}, {ymax}, y-axis series min & max pixel values: {self.y_axis.index[0]}, {self.y_axis.index[-1]}")
+        # if the start and end points are at similar values this will be problematic though. 
+        logger.info("Scale series method:  \n"
+                        f"unit_per_pix calculated from the y axis ticks: {self.unit_per_pix}, \n"
+                        f"unit_per_pix from axis limits and self.y_axis (probably best way): {self.axlims_upp}\n"
+                        f"yaxis top tick: {self.y_axis.iloc[-1]}, yaxis bot tick: {self.y_axis.iloc[0]}\n"
+                        f"axis_limits: {ymin}, {ymax}, y-axis series min & max pixel values: {self.y_axis.index[0]}, {self.y_axis.index[-1]}")
 
-            ##Does the Y axis cross zero? Where is the zero point??
-            self.x_intercept_px = utils.find_zero_crossing(self.y_axis)
-            print("Series crosses zero, x-axis should be at about pixel y-cordinate: ", self.x_intercept_px)
+        ##Does the Y axis cross zero? Where is the zero point??
+        self.x_intercept_px = utils.find_zero_crossing(self.y_axis)
+        print("Series crosses zero, x-axis should be at about pixel y-cordinate: ", self.x_intercept_px)
 
-            unscaled = self.unscaled_series.copy()
-            # Calculate the series in vector fashion
-            self.series = (self.y_axis.index[0] - unscaled)*self.axlims_upp + self.y_axis.iloc[0]
+        unscaled = self.unscaled_series.copy()
+        # Calculate the series in vector fashion
+        self.series = (self.y_axis.index[0] - unscaled)*self.axlims_upp + self.y_axis.iloc[0]
 
-            if hasattr(self, "metadata"):
-                self.metadata["start_date"] = self.series.index[0].strftime("%Y-%m-%d")
-                self.metadata["end_date"] = self.series.index[-1].strftime("%Y-%m-%d")
-                self.metadata["min_value"] = float(self.series.min())
-                self.metadata["max_value"] = float(self.series.max())
-                self.metadata["length"] = len(self.series)
-                self.series_metadata = pd.Series(self.metadata)
+        if hasattr(self, "metadata"):
+            self.metadata["start_date"] = self.series.index[0].strftime("%Y-%m-%d")
+            self.metadata["end_date"] = self.series.index[-1].strftime("%Y-%m-%d")
+            self.metadata["min_value"] = float(self.series.min())
+            self.metadata["max_value"] = float(self.series.max())
+            self.metadata["length"] = len(self.series)
+            self.series_metadata = pd.Series(self.metadata)
         else:
             print("start_end not found, run get_datamax_min() first.")
             logger.debug("start_end not found, run get_datamax_min() first.")
@@ -634,9 +662,20 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             time.sleep(0.25)
             self.set_chartType_js("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
             time.sleep(0.25)
-            self.start_end = self.tooltip_scraper.first_last_dates_js()
-            if self.start_end is None or pd.isna(self.start_end["start_date"]) or pd.isna(self.start_end["end_date"]):
+            retries = 3
+            for i in range(retries):
                 self.start_end = self.tooltip_scraper.first_last_dates_js()
+                # Check if start_end is None or if any of the four essential keys have None/NaN values
+                if (self.start_end is None or 
+                    not all(key in self.start_end for key in ["start_date", "end_date"]) or
+                    any(pd.isna(self.start_end[key]) for key in ["start_date", "end_date"]))\
+                    or any(self.start_end[key] is None for key in ["start_date", "end_date"]):
+                    print("Retrying start_end extraction...")
+                    time.sleep(0.25)
+                    pass
+                else:
+                    break
+
             print("Start and end dates scraped from tooltips: ", self.start_end)
             #For some reason running it twice seems to work better...
         # Get the first and last datapoints from the chart at MAX datespan
@@ -757,10 +796,10 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 end_date = datetime.date.today().strftime("%Y-%m-%d")
             else:
                 end_date = idx[-1].strftime("%Y-%m-%d")
-            self.custom_date_span(start_date=idx[0].strftime("%Y-%m-%d"), end_date = end_date)
+            self.custom_date_span_js(start_date=idx[0].strftime("%Y-%m-%d"), end_date = end_date)
 
             try:
-                datapoints = self.tooltip_scraper.latest_points_js(num_points="all", force_shortest_span=False, wait_time=5)
+                datapoints = self.tooltip_scraper.latest_points_js(num_points="all", force_shortest_span=False, wait_time=1)
                 #Powerful one line pandas connversion...
                 series = pd.Series([utils.extract_and_convert_value(value["value"])[0] for value in datapoints][::-1], \
                                     index = pd.DatetimeIndex([utils.ready_datestr(date["date"]) for date in datapoints][::-1]), name = self.metadata["title"]).astype(float)

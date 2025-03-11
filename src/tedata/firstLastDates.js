@@ -28,29 +28,34 @@ function getFirstLastDates(done) {
             debug: { logs }
         };
         
-        // Function to extract tooltip data with retry
+        // Function to extract tooltip data with retry - handles partial tooltips
         function getTooltipData(retries = 5, delay = 100) {
-            return new Promise(resolve => {
-                let attempts = 0;
-                
-                function check() {
-                    const dateEl = document.querySelector('.tooltip-date');
-                    const valueEl = document.querySelector('.tooltip-value');
-                    
-                    if (dateEl && valueEl) {
-                        resolve({
-                            date: dateEl.textContent.trim(),
-                            value: valueEl.textContent.trim()
-                        });
-                    } else if (++attempts < retries) {
-                        setTimeout(check, delay);
-                    } else {
-                        resolve(null);
-                    }
-                }
-                
-                check();
-            });
+          return new Promise(resolve => {
+              let attempts = 0;
+              
+              function check() {
+                  const dateEl = document.querySelector('.tooltip-date');
+                  const valueEl = document.querySelector('.tooltip-value');
+                  
+                  // If we have either date or value element, consider it a success
+                  if (dateEl || valueEl) {
+                      resolve({
+                          date: dateEl ? dateEl.textContent.trim() : null,
+                          value: valueEl ? valueEl.textContent.trim() : null
+                      });
+                  } else if (++attempts < retries) {
+                      setTimeout(check, delay);
+                  } else {
+                      // If we've tried enough times and found nothing, return null values
+                      resolve({
+                          date: null,
+                          value: null
+                      });
+                  }
+              }
+              
+              check();
+          });
         }
         
         // Function to store tooltip data without parsing

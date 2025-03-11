@@ -72,9 +72,28 @@ def setup_test_logger(output_dir):
     
     return logger
 
+# Create a unique output directory based on incrementing numbers
+def create_unique_output_dir(base_dir):
+    """Create a unique output directory with timestamp and incrementing number if needed"""
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    base_name = f"test_run_{timestamp}"
+    
+    # Try without counter first
+    output_dir = os.path.join(base_dir, base_name)
+    counter = 1
+    
+    while os.path.exists(output_dir):
+        # If directory already exists (unlikely with timestamp), add counter
+        output_dir = os.path.join(base_dir, f"{base_name}_{counter}")
+        counter += 1
+    
+    os.makedirs(output_dir, exist_ok=True)
+    return output_dir
+
 # Create output directory at module level
-output_dir = os.path.join(os.path.dirname(__file__), "test_runs")
-os.makedirs(output_dir, exist_ok=True)
+base_output_dir = os.path.join(os.path.dirname(__file__), "test_runs")
+os.makedirs(base_output_dir, exist_ok=True)
+output_dir = create_unique_output_dir(base_output_dir)
 # Create single logger instance
 logger = setup_test_logger(output_dir)
 
@@ -189,7 +208,7 @@ def test_url(url):
             
             # Scrape data
             timer = timeit.default_timer()
-            scraper = ted.scrape_chart(url, method=method, use_existing_driver=False, headless=True)
+            scraper = ted.scrape_chart(url, method=method, use_existing_driver=False, headless=False)
             if scraper is None:
                 logger.error(f"{method} method failed to return scraper")
                 error = "No scraper returned"
@@ -263,15 +282,19 @@ def generate_html_report(test_results_df, output_dir):
         test_results_df: DataFrame with test results
         output_dir: Directory with plot files
     """
+    # Get current date and time for the report
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
     # Create HTML string
     html = """
     <!DOCTYPE html>
     <html>
     <head>
+        <meta charset="utf-8">
         <title>Trading Economics Scraper Test Results</title>
         <style>
             body { font-family: Arial, sans-serif; margin: 20px; }
-            h1, h2 { color: #2c3e50; }
+            h1, h2, h3 { color: #2c3e50; }
             table { border-collapse: collapse; width: 100%; margin-bottom: 30px; }
             th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
             th { background-color: #f2f2f2; }
@@ -280,10 +303,14 @@ def generate_html_report(test_results_df, output_dir):
             .methods-comparison { display: flex; justify-content: space-between; margin-bottom: 10px; }
             .method-stats { flex: 1; margin: 0 10px; padding: 10px; background-color: #f9f9f9; }
             .plotly-iframe { width: 100%; height: 600px; border: none; }
+            .success { color: green; }
+            .failure { color: red; }
+            .timestamp { font-style: italic; color: #666; margin-bottom: 20px; }
         </style>
     </head>
     <body>
         <h1>Trading Economics Scraper Test Results</h1>
+        <div class="timestamp">Test completed on: """ + current_time + """</div>
         <h2>Overall Summary</h2>
     """
     
@@ -307,11 +334,14 @@ def generate_html_report(test_results_df, output_dir):
         html += "<div class='methods-comparison'>"
         
         for _, row in url_results.iterrows():
+            # Use HTML for success/failure indicators instead of Unicode symbols
+            status_html = "<span class='success'>&#10004; Success</span>" if row['Returned scraper'] else "<span class='failure'>&#10008; Failed</span>"
+            
             html += f"""
             <div class='method-stats'>
                 <h4>{row['Method']} Method</h4>
                 <p>Time: {row['Time taken']} seconds</p>
-                <p>Status: {"✓ Success" if row['Returned scraper'] else "✗ Failed"}</p>
+                <p>Status: {status_html}</p>
                 <p>Error: {row['Error']}</p>
                 <p>Deviation: {row['% deviation from mixed method']}</p>
             </div>
@@ -337,9 +367,9 @@ def generate_html_report(test_results_df, output_dir):
     </html>
     """
     
-    # Write to file
+    # Write to file with explicit UTF-8 encoding
     report_path = os.path.join(output_dir, "complete_report.html")
-    with open(report_path, 'w') as f:
+    with open(report_path, 'w', encoding='utf-8') as f:
         f.write(html)
     
     print(f"Complete HTML report saved to {report_path}")
@@ -349,6 +379,7 @@ def generate_html_report(test_results_df, output_dir):
 def main():
     """Run tests for all URLs"""
     logger.info("=== Starting Test Run ===")
+    logger.info(f"Results will be saved to: {output_dir}")
     
     # Test internet speed first
     test_internet_speed()
@@ -365,12 +396,11 @@ def main():
 
 if __name__ == "__main__":
     tests = main()
-    tests.to_markdown(output_dir+fdel+"test_results.md", index=False)
-    tests.to_csv(output_dir+fdel+"test_results.csv", index=False)
+    tests.to_markdown(os.path.join(output_dir, "test_results.md"), index=False)
+    tests.to_csv(os.path.join(output_dir, "test_results.csv"), index=False)
     logger.info("=== Test Run Completed ===")
 
     ## Generate HTML report of the test results
-    output_dir = wd+fdel+"test_runs"
-    test_results_df = pd.read_csv(output_dir+fdel+"test_results.csv")
+    test_results_df = pd.read_csv(os.path.join(output_dir, "test_results.csv"))
     print(test_results_df)
     generate_html_report(test_results_df, output_dir)
