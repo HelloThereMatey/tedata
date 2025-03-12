@@ -94,7 +94,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
         if not hasattr(sel, "tooltip_scraper"):
             sel.init_tooltipScraper()  ## Initialize the tooltip scraper.
         try:
-            sel.custom_date_span(start_date, end_date)  # Set the date span for the chart.
+            sel.custom_date_span_js(start_date, end_date)  # Set the date span for the chart.
         except Exception as e:
             logger.info("Error setting date span: ", str(e))
         try:

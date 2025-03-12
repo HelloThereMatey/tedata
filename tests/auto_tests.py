@@ -18,7 +18,7 @@ import tedata as ted
 
 # Add parent directory to path to import tedata
 #List of urls to test
-with open(wd+fdel+"test_urls.csv", "r") as f:
+with open(wd+fdel+"aus_urls.csv", "r") as f:
     TEST_URLS = [line.strip() for line in f.readlines()]
 print("Test URLS for which to download data: ",TEST_URLS)
 
@@ -208,7 +208,7 @@ def test_url(url):
             
             # Scrape data
             timer = timeit.default_timer()
-            scraper = ted.scrape_chart(url, method=method, use_existing_driver=False, headless=False)
+            scraper = ted.scrape_chart(url, method=method, scraper = scraper, use_existing_driver=True, headless=False)
             if scraper is None:
                 logger.error(f"{method} method failed to return scraper")
                 error = "No scraper returned"
@@ -251,11 +251,16 @@ def test_url(url):
             output_meta_df = pd.concat([output_meta_df, metadata], axis=1)
 
         ### Let's close the scraper and webdriver
+        time.sleep(1)
         try:
             scraper.close()
-            del scraper
         except Exception as e:
-            logger.error(f"Error closing scraper: {str(e)}")
+            logger.error(f"Error closing driver: {str(e)}")
+        time.sleep(1)
+        # try:
+        #     del scraper
+        # except Exception as e:
+        #     logger.error(f"Error deleting scraper: {str(e)}")
     
     # Outside for loop here..
     metadata_match = compare_metadata(results["path"]["metadata"], results["mixed"]["metadata"], name=url)
@@ -395,8 +400,10 @@ def main():
     
     all_results = pd.DataFrame(columns = ["URL", "Method", "Returned scraper", "Time taken", "Error", "% deviation from mixed method"])
     for url in TEST_URLS:
-        all_results = pd.concat([all_results, test_url(url)], ignore_index=True)    
-        base.find_active_drivers(quit_all=True)
+        all_results = pd.concat([all_results, test_url(url)], ignore_index=True) 
+        all_results.to_csv(os.path.join(output_dir, "test_results.csv"), index=False) # Write to CSV after each URL and keep overwriting
+        all_results.to_markdown(os.path.join(output_dir, "test_results.md"), index=False)   
+        #base.find_active_drivers(quit_all=True)
         
     logger.info("Tests completed")
     return all_results

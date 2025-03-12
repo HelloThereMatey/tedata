@@ -228,7 +228,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         by using the calendar widget on the chart. This method will click the calendar button and then enter an arbitrary date far in the past as start date and the 
         current date as the end date."""
 
-        self.custom_date_span(start_date="1850-01-01", end_date=datetime.date.today().strftime("%Y-%m-%d"))
+        self.custom_date_span_js(start_date="1850-01-01", end_date=datetime.date.today().strftime("%Y-%m-%d"))
         self.date_span = "MAX"
 
     def update_date_span(self, update_chart: bool = False):
@@ -385,7 +385,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         self.update_chart() # Update chart..
 
         if self.chart_type != self.chart_types[use_chart_type]:
-            self.select_chart_type(use_chart_type) ## Use a certain chart type for the extraction of the series data. May fail with certain types of charts.
+            self.set_chartType_js(use_chart_type) ## Use a certain chart type for the extraction of the series data. May fail with certain types of charts.
 
         if set_max_datespan and self.date_span != "MAX":
             self.set_date_span("MAX")
@@ -604,7 +604,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.set_max_date_span_viaCalendar()  ##Set date_span to MAX for start and end date pull...
             time.sleep(0.5)
         self.update_chart()
-        self.select_chart_type("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
+        self.set_chartType_js("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
         #Chart type must be spline or line for this to work. Sometimes the chart_type chnages automatically when datespan is altered.
 
         if not hasattr(self, "tooltip_scraper"):
@@ -707,7 +707,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.tooltip_scraper = utils.TooltipScraper(parent_instance = self)
         
         yearslater = utils.n_years_later(date = self.start_end["start_date"].strftime("%Y-%m-%d"), n_years = num_years)
-        self.custom_date_span(start_date=self.start_end["start_date"].strftime("%Y-%m-%d"), end_date = yearslater)
+        self.custom_date_span_js(start_date=self.start_end["start_date"].strftime("%Y-%m-%d"), end_date = yearslater)
 
         try:
             datapoints = self.tooltip_scraper.latest_points_js(num_points=num_points, force_shortest_span=False, wait_time=5)
@@ -728,7 +728,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if set_max_datespan:
             print("Setting max date span using calendar...")
             self.set_max_date_span_viaCalendar()
-        self.select_chart_type("Spline") # Force spline chart type so that Y position of cursor does not matter for tooltip retrieval.
+        self.set_chartType_js("Spline") # Force spline chart type so that Y position of cursor does not matter for tooltip retrieval.
 
         if not hasattr(self, "tooltip_scraper"):
             self.init_tooltipScraper()  ## Initialize the tooltip scraper.
@@ -1206,9 +1206,49 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         return self.driver.page_source
     
     def close(self):
-        """Clean up resources"""
-        if self.driver:
-            self.driver.quit()
+        """Clean up resources completely by closing the WebDriver and removing references"""
+        try:
+            # First try graceful close with quitting the driver
+            if hasattr(self, "driver") and self.driver:
+                try:
+                    # Close all windows/tabs first
+                    self.driver.close()
+                except Exception:
+                    pass
+                
+                # Then quit the driver completely
+                try:
+                    self.driver.quit()
+                except Exception:
+                    pass
+                
+                # Clear the reference
+                self.driver = None
+            
+            # Also close any tooltip_scraper drivers if they exist
+            if hasattr(self, "tooltip_scraper") and self.tooltip_scraper:
+                if hasattr(self.tooltip_scraper, "driver") and self.tooltip_scraper.driver:
+                    try:
+                        self.tooltip_scraper.driver.quit()
+                    except Exception:
+                        pass
+                    self.tooltip_scraper.driver = None
+            
+            # Clear any large data attributes to help garbage collection
+            large_attributes = ["series", "trace_path_series", "full_page", "page_soup", 
+                            "chart_soup", "full_chart", "plot"]
+            
+            for attr in large_attributes:
+                if hasattr(self, attr):
+                    setattr(self, attr, None)
+                    
+            # Force garbage collection (optional)
+            import gc
+            gc.collect()
+            
+            logger.info("Scraper resources successfully released")
+        except Exception as e:
+            logger.error(f"Error during cleanup: {str(e)}")
     
     def __enter__(self):
         return self
