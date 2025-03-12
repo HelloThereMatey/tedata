@@ -1213,21 +1213,28 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 try:
                     # Close all windows/tabs first
                     self.driver.close()
-                except Exception:
+                except Exception as e:
+                    logger.debug(f"Error closing window: {str(e)}")
                     pass
                 
-                # Then quit the driver completely
+                # Then quit the driver completely with error handling for connection issues
                 try:
-                    self.driver.quit()
-                except Exception:
-                    pass
-                
-                # Clear the reference
-                self.driver = None
+                    from selenium.common.exceptions import WebDriverException
+                    from urllib3.exceptions import MaxRetryError, NewConnectionError
+                    
+                    try:
+                        self.driver.quit()
+                    except (WebDriverException, MaxRetryError, NewConnectionError, ConnectionRefusedError) as e:
+                        logger.debug(f"Connection error when quitting driver (this is normal if browser crashed): {str(e)}")
+                    except Exception as e:
+                        logger.debug(f"Error quitting driver: {str(e)}")
+                finally:
+                    # Clear the reference regardless of success
+                    self.driver = None
             
             # Also close any tooltip_scraper drivers if they exist
             if hasattr(self, "tooltip_scraper") and self.tooltip_scraper:
-                if hasattr(self.tooltip_scraper, "driver") and self.tooltip_scraper.driver:
+                if hasattr(self.tooltip_scraper, "driver") and self.tooltip_scraper.driver and self.tooltip_scraper.driver != self.driver:
                     try:
                         self.tooltip_scraper.driver.quit()
                     except Exception:
@@ -1242,7 +1249,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                 if hasattr(self, attr):
                     setattr(self, attr, None)
                     
-            # Force garbage collection (optional)
+            # Force garbage collection
             import gc
             gc.collect()
             
