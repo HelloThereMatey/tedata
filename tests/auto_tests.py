@@ -18,7 +18,7 @@ import tedata as ted
 
 # Add parent directory to path to import tedata
 #List of urls to test
-with open(wd+fdel+"test_urls_all.csv", "r") as f:
+with open(wd+fdel+"test_urls.csv", "r") as f:
     TEST_URLS = [line.strip() for line in f.readlines()]
 print("Test URLS for which to download data: ",TEST_URLS)
 
@@ -249,6 +249,13 @@ def test_url(url):
         else:
             output_df = pd.concat([output_df, series], axis=1)
             output_meta_df = pd.concat([output_meta_df, metadata], axis=1)
+
+        ### Let's close the scraper and webdriver
+        try:
+            scraper.close()
+            del scraper
+        except Exception as e:
+            logger.error(f"Error closing scraper: {str(e)}")
     
     # Outside for loop here..
     metadata_match = compare_metadata(results["path"]["metadata"], results["mixed"]["metadata"], name=url)
@@ -268,7 +275,7 @@ def test_url(url):
     series_list = [{"series": results["path"]["series"], "add_name": "path"},
                     {"series": results["tooltips"]["series"], "add_name": "tooltips"},
                     {"series": results["mixed"]["series"], "add_name": "mixed"}] 
-    triplefig = ted.plot_multi_series(series_list=series_list, metadata = scraper.metadata, show_fig=False, return_fig=True)
+    triplefig = ted.plot_multi_series(series_list=series_list, metadata = metadata, show_fig=False, return_fig=True)
     triplefig.write_html(f"{output_dir}{fdel}{url.split('/')[-2]}_{url.split('/')[-1]}.html")
     logger.info(f"Plot saved as {output_dir}{fdel}{url.split('/')[-2]}_{url.split('/')[-1]}.html")
 
