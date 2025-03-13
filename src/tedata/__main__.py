@@ -5,7 +5,7 @@ wd = os.path.dirname(__file__)
 fdel= os.path.sep
 
 import argparse
-from . import scraper
+from . import scrape_chart
 import pandas as pd
 
 def main():
@@ -26,7 +26,14 @@ def main():
         '--head',
         '-he',
         action='store_false',
-        help='Run browser with head i.e show the broswer window. Default is headless/hidden window.'
+        help='Run browser with head i.e show the browser window. Default is headless/hidden window.'
+    )
+
+    parser.add_argument(
+        '--method',
+        '-m',
+        choices=["path", "tooltips", "mixed"],
+        help='Scraping method to use: "path", "tooltips" or "mixed". If not specified, default method "path" will be used.'
     )
 
     # Parse arguments
@@ -34,7 +41,7 @@ def main():
     
     try:
         # Run scraper
-        result = scraper.scrape_chart(url=args.url, headless=args.head)
+        result = scrape_chart(url=args.url, use_existing_driver = False, headless=args.head, method=args.method)
         
         if result is not None:
             # Create output filename from URL

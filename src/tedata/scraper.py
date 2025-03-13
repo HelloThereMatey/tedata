@@ -797,6 +797,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             else:
                 end_date = idx[-1].strftime("%Y-%m-%d")
             self.custom_date_span_js(start_date=idx[0].strftime("%Y-%m-%d"), end_date = end_date)
+            self.set_chartType_js("Spline") #Force spline chart selection - needed for tootip capture
 
             try:
                 datapoints = self.tooltip_scraper.latest_points_js(num_points="all", force_shortest_span=False, wait_time=1)

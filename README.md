@@ -46,7 +46,7 @@ Ensure that you also have firefox browser installed.
 
 ### USAGE
 
-**NOTE:** "prod_tests.ipynb" in the "tests" directory has detailed usage instructions & examples in a jupyter notebook. Refer to that for the best guide.
+**NOTE:** "tedata_walkthrough.ipynb" in the "tests" directory has detailed usage instructions & examples in a jupyter notebook. Refer to that for the best available usage guide.
 
 #### Import tedata
 
