@@ -903,11 +903,14 @@ def plot_multi_series(series_list: dict = None,
     """
     Plots multiple series on a single chart using Plotly. Each series is a pandas Series object.
     The metadata dictionary should contain information about the series, such as country, title, source, etc. The series 
-    should be of similar values and indexes. Great for comparison of the results of different scraping methods for same series.
+    should be of similar values and indexes. Great for comparison of the results of different scraping methods for same series. The series
+    are all plotted on the same Y-axis. You could return the fig and then add a second Y-axis to plot series with different units on the same chart
+    if you want. For this, use: show_fig=False and return_fig=True. Then you can add a second Y-axis to the returned fig object before displaying it.
 
     **Parameters**
     - series_list (list of dicts containing pd.Series and optional strings to add to name on legend): The series to plot. Must be a list of dict like:
-    [{"series": series1, "add_name": "string"}, {"series": series2, "add_name": "string2"}] format.
+    [{"series": series1, "add_name": "string"}, {"series": series2, "add_name": "string2"}] format, if you want to add a string to the series name.
+    Alternatively, you can just pass a list of series.
     - annotation_text (str): Text to display in the annotation box at the bottom of the chart. Default is None. If None, the default annotation text
     will be created from the metadata.
     - colors (list): List strings of color names to cycle through for traces. Default is None. If None, a default list of colors will be used.
@@ -926,12 +929,20 @@ def plot_multi_series(series_list: dict = None,
         colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray']
     # Add each series as a trace
 
+    not_dicts = False
     for i, series in enumerate(series_list):
+        if isinstance(series, pd.Series):
+            not_dicts = True
+            series = {"series": series, "add_name": ""}
+            
         print(series["series"].head(), series["add_name"], type(series["series"]))
         try:
             ser = series["series"]
             logger.info(f"Adding series {ser.name} to plot")
-            name = ser.name+" (method: "+series["add_name"]+")" if ser.name else f"Series {i+1}"
+            if not_dicts:
+                name = ser.name
+            else:
+                name = ser.name+" (method: "+series["add_name"]+")" if ser.name else f"Series {i+1}"
             color = colors[i % len(colors)]  # Cycle through colors 
             fig.add_trace(go.Scatter(x=ser.index, y=ser.values,
                     name=name, line=dict(color=color), mode='lines'))

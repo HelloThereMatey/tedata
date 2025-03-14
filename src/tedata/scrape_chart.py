@@ -16,11 +16,12 @@ logger = logging.getLogger('tedata.scrape_chart')
 ############################################################################################################
 ############ Convenience function to run the full scraper from scraper module ##########################################
 
-def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business-confidence", 
-                 id: str = None,
+def scrape_chart(url: str = None, 
+                 id: str = "united-states/business-confidence",
                  country: str = "united-states",
-                 start_date: str = None, 
-                 end_date: str = None,
+                 indicator: str = None,
+                 start_date: str = None,   #Use "YYYY-MM-DD" format. Only for "mixed" method.
+                 end_date: str = None,   #Use "YYYY-MM-DD" format. Only for "mixed" method.
                  method: Literal["path", "tooltips", "mixed"] = "path",
                  scraper: TE_Scraper = None,
                  driver: webdriver = None, 
@@ -33,20 +34,24 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
     
     *There are multiple ways to use this function:*
 
-    - Supply URL of the chart to scrape OR supply country + id of the chart to scrape. country and id are just the latter parts of the 
+    - Supply URL of the chart to scrape OR supply country + indicator, or just id of the chart to scrape. country and indicator are the latter parts of the 
     full chart URL. e.g for URL: 'https://tradingeconomics.com/united-states/business-confidence', we could instead use country='united-states' 
-    and id='business-confidence'. You can supply only id and default country is 'united-states'.
+    and indicator ='business-confidence'. Or use id = "united-states/business-confidence". For US, you can supply just the indicator as the default country is 
+    'united-states'.
     - You can leave scraper and driver as None and the function will create a new TE_Scraper object for that URL and use it to scrape the data.
-    You can however save time by passing either a scraper object or a driver object to the function. Best to pass a driver object
-    for fastest results.
+    You can however save time by passing either a scraper object or a driver object to the function. This is still somewhat experimental though 
+    and may not work.
     
     **Parameters**
 
     - url (str): The URL of the chart to scrape.
-    - id (str): The id of the chart to scrape. This is the latter part of the URL after the country name.
+    - id (str): The id of the chart to scrape. This is the latter part of the URL after the base URL. e.g 'united-states/business-confidence'.
     - country (str): The country of the chart to scrape. Default is 'united-states'.
-    - start_date (str): The start date of the series to scrape. Use "YYYY-MM-DD" format. Default is None. If using None it will get max available date range.
-    - end_date (str): The end date of the series to scrape. Use "YYYY-MM-DD" format. Default is None. If using None it will get max available date range.
+    - indicator (str): The indicator of the chart to scrape. Default is 'business-confidence'.
+    - start_date (str): The start date of the series to scrape. Use "YYYY-MM-DD" format. Only applies to the "mixed" method.
+    Default is None. If using None it will get max available date range.
+    - end_date (str): The end date of the series to scrape. Use "YYYY-MM-DD" format. Only applies to the "mixed" method. Default is None. 
+    If using None it will get max available date range.
     Currently start and end dates only apply when using the 'tooltips' method.
     - method (str): The method to use to scrape the data. Default is 'path'. Other option is 'tooltips'. 'path' is the default method it uses, the path
     element of the trace on the svg chart and then later scales the series using the y-axis values. 'tooltips' uses the tooltip box on the chart to get the
@@ -75,8 +80,17 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
     else:
         sel = TE_Scraper(driver = driver, browser = browser, headless = headless, use_existing_driver=use_existing_driver)
 
-    if id is not None:   #Use country and id to create the URL if URL not supplied.
-        url = f"https://tradingeconomics.com/{country}/{id}"
+    if url is None:
+        if indicator is not None:   #Use country and id to create the URL if URL not supplied.
+            url = f"https://tradingeconomics.com/{country}/{indicator}"
+        elif indicator is None and id is not None:
+            url = f"https://tradingeconomics.com/{id}"
+        else:
+            print("No URL, id or indicator supplied.")
+            logger.debug("No URL, id or indicator supplied.")
+            return None
+    else:
+        pass
 
     logger.info(f"scrape_chart function: Scraping chart at: {url}, time: {datetime.datetime.now()}, method: {method}")
     if sel.load_page(url):  # Load the page...

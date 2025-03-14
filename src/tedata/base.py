@@ -11,7 +11,7 @@ import logging
 logger = logging.getLogger('tedata.base')
 
 # Base standalone functions. ##############################################################
-def find_active_drivers(close_all_drivers: bool = False, close__all_scrapers: bool = False) -> list:
+def find_active_drivers(close_all_drivers: bool = False, close__all_scrapers: bool = False) -> dict:
     """Find all active selenium webdriver instances in memory sorted by age.
     
     Args:
@@ -109,7 +109,7 @@ class Generic_Webdriver:
         self.headless = headless
 
         active = find_active_drivers() 
-        if len(active) <= 1:
+        if len(active["Active webdrivers"]) <= 1:
             use_existing_driver = False
 
         if driver is None and not use_existing_driver:
@@ -127,7 +127,7 @@ class Generic_Webdriver:
                 raise ValueError("Unsupported browser! Use 'chrome' or 'firefox'.")
             logger.info(f"New {browser} webdriver created.")
         elif use_existing_driver:   ## May want to change this later to make sure a scraper doesn't steal the driver from a search object.
-            self.driver = active[-1][0]
+            self.driver = active["Active webdrivers"][-1][0]
             logger.debug(f"Using existing {browser} driver.")
         else:
             self.driver = driver
