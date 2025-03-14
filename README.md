@@ -231,7 +231,7 @@ scrape_chart(scraper = scr, id = "gdp", country = "united-states")
 ### Additional Notes
 
 - If not using a headless webdriver instance, i.e a browser window is shown, DO NOT CHANGE ANY SETTINGS ON THE CHART MANUALLY.
-- Specifically, changing the chart_type (e.g line chart to bar) cannot be detected as the code stands now (v0.3.0). This could then lead to scraping failures.
+- Specifically, changing the chart_type (e.g line chart to bar) cannot be detected as the code stands now (v0.3.x). This could then lead to scraping failures.
 - Best to run in headless mode or if running with head, only use the browser window for viewing the actions as they are taken by the webdriver.
 
 ### Reporting issues and debugging
