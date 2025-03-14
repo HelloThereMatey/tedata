@@ -403,7 +403,7 @@ def main():
         all_results = pd.concat([all_results, test_url(url)], ignore_index=True) 
         all_results.to_csv(os.path.join(output_dir, "test_results.csv"), index=False) # Write to CSV after each URL and keep overwriting
         all_results.to_markdown(os.path.join(output_dir, "test_results.md"), index=False)   
-        #base.find_active_drivers(quit_all=True)
+        #base.find_active_drivers(close_all_drivers=True, close_all_scrapers=True)
         
     logger.info("Tests completed")
     return all_results

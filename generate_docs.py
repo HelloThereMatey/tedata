@@ -1,6 +1,12 @@
 import os
 import subprocess
 
+## This script generates the documentation for the tedata package using pdoc
+## The generated documentation is placed in the docs directory
+## The script should be run from the root directory of the project
+# Requires pdoc to be installed: pip install pdoc
+# pdoc is not included in the requirements.txt file so you'll need to install it manually
+
 def generate_docs():
     # Get the directory where this script is located
     root_dir = os.path.dirname(os.path.abspath(__file__))

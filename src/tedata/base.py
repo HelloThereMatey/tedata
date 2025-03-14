@@ -11,46 +11,68 @@ import logging
 logger = logging.getLogger('tedata.base')
 
 # Base standalone functions. ##############################################################
-def find_active_drivers(quit_all: bool = False) -> list:
+def find_active_drivers(close_all_drivers: bool = False, close__all_scrapers: bool = False) -> list:
     """Find all active selenium webdriver instances in memory sorted by age.
     
     Args:
         quit_all (bool): If True, quit all found drivers and clear references
+        close_scrapers (bool): If True, also find and close any TE_Scraper objects
         
     Returns:
         list: List of tuples (driver, age_in_seconds) sorted by age, excluding weakproxies
     """
     active_drivers = []
+    active_scrapers = []
     current_time = time.time()
     
-    # Find all webdriver instances
+    # Find all webdriver instances and TE_Scraper objects
     for obj in gc.get_objects():
         try:
+            # Check for driver instances
             if isinstance(obj, (TimestampedFirefox, TimestampedChrome)) and not isinstance(obj, weakref.ProxyType):
                 creation_time = getattr(obj, 'created_at', current_time)
                 age = current_time - creation_time
                 active_drivers.append((obj, age))
+                
+            # Check for TE_Scraper objects if requested
+            elif obj.__class__.__name__ == 'TE_Scraper':
+                active_scrapers.append(obj)
+                
         except ReferenceError:
             continue
     
     # Sort by age (second element of tuple)
     active_drivers.sort(key=lambda x: x[1])
     
-    if quit_all and active_drivers:
+    # Close TE_Scraper instances if requested
+    if close__all_scrapers and active_scrapers:
+        logger.info(f"Closing {len(active_scrapers)} active TE_Scraper instances...")
+        for scraper in active_scrapers:
+            try:
+                logger.info(f"Closing TE_Scraper instance")
+                scraper.close()
+                # Note: We don't delete the reference here to avoid potential issues
+                # with the garbage collector while iterating
+            except Exception as e:
+                logger.isEnabledFor(f"Error closing TE_Scraper: {str(e)}")
+        active_scrapers = []
+    
+    # Quit webdriver instances if requested
+    if close_all_drivers and active_drivers:
         logger.info(f"Quitting {len(active_drivers)} active webdriver instances...")
         for driver, age in active_drivers:
             try:
-                logger.debug(f"Quitting driver (age: {age:.1f}s)")
+                logger.info(f"Quitting driver (age: {age:.1f}s)")
                 driver.quit()  # Close the browser
                 del driver    # Remove the reference
             except Exception as e:
-                logger.error(f"Error quitting driver: {str(e)}")
+                logger.info(f"Error quitting driver: {str(e)}")
         
         # Force garbage collection
         gc.collect()
         active_drivers = []  # Clear the list since all drivers are quit
                 
-    return active_drivers
+    return {"Active webdrivers": active_drivers, "Active TE_Scrapers": active_scrapers}
 
 
 ##### Base Webdriver classes ##############################################################

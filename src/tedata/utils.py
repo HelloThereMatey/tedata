@@ -540,7 +540,7 @@ class TooltipScraper(scraper.TE_Scraper):
             #Add debug logging
             if isinstance(result, dict) and "debug" in result and "logs" in result["debug"]:
                 for log in result["debug"]["logs"]:
-                    logger.info(f"JS Log: {log}")
+                    logger.debug(f"JS Log: {log}")
                 
             # Process dates from raw strings to pandas timestamps
             if result.get('start_date'):

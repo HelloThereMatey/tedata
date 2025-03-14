@@ -51,7 +51,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
     """
 
     # Define browser type with allowed values
-    BrowserType = Literal["chrome", "firefox"]  #Chrome still not working as of v0.2.4..
+    BrowserType = Literal["chrome", "firefox"]  #Chrome still not working as of v0.3.0..
     def __init__(self, **kwargs):
         Generic_Webdriver.__init__(self, **kwargs)
         SharedWebDriverState.__init__(self)
@@ -619,8 +619,8 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.metadata["unit_tooltips"] = self.start_end["unit_str"]
 
     def make_x_index(self, 
-                     force_rerun_xlims: bool = False,
-                     force_rerun_freqdet: bool = False):
+                     force_rerun_xlims: bool = True,
+                     force_rerun_freqdet: bool = True):
         """Make the DateTime Index for the series using the start and end dates scraped from the tooltips. 
         This uses Selenium and also scrapes the some of the latest datapoints from the tooltips on the chart in order to determine
         the frequency of the time series. It will take a bit of time to run.

@@ -56,7 +56,7 @@ def scrape_chart(url: str = "https://tradingeconomics.com/united-states/business
     - driver (webdriver): A Selenium WebDriver object to use for scraping the data. If this is passed, the function will not create a new one. If 
     scraper and driver are both passed, the webdriver of the scraper object will be used rather than the supplied webdriver.
     - headless (bool): Whether to run the browser in headless mode (display no window).
-    - browser (str): The browser to use, either 'chrome' or 'firefox'. Default is 'firefox'. Only firefox is supported at the moment (v0.2.4).
+    - browser (str): The browser to use, either 'chrome' or 'firefox'. Default is 'firefox'. Only firefox is supported at the moment (v0.3.0).
 
     **Returns**
     - TE_Scraper object with the scraped data or None if an error occurs.

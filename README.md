@@ -1,14 +1,14 @@
 ## tedata
 
-Download data from Trading Economics without an account or API key. Trading Economics API costs upwards of $100 USD per month for data access. Using this you will be able to download a large part of the data available on the site for free. Trading Economics has one of the greatest repositories of macroeconomic data on Earth. Download data series into a Jupyter notebook environment or save series directly to an excel file (.xlsx) using command line. This utilizes Selenium and BeautifulSoup4 to scrape data from charts displayed on the site. Should run on linux, mac OS or windows.
+Download data from Trading Economics without an account or API key. Trading Economics API costs upwards of $100 USD per month for data access. Using this you will be able to download a large part of the data available on the site for free. Trading Economics has one of the greatest repositories of macroeconomic data on Earth. Download data series into a Jupyter notebook environment or save series directly to an excel file (.xlsx) using command line. This utilizes Selenium and BeautifulSoup4 to scrape data from charts. Runs fine on linux, mac OS or windows.
 
-Note that the current version (v0.2.x) only supports scraping of data from the economic data type of chart shown on trading economics (example below). The more interactive type chart (second example chart image below) that displays higher frequency data for stocks, commodities etc is not yet working for data download.
+Note that the current version (v0.3.x) only supports scraping of data from the economic data type of chart (example below). The more interactive type chart (second example chart image below) that displays higher frequency data for stocks, commodities etc is not yet working for data download.
 
-![Static plot](docs/ISM_Manufacturing.png)
+![Static plot](docs/te_chart.PNG)
 
 **Above:** You can download the data from charts that look like this. The highest frequency data I've seen on these is weekly. I suspect weekly is the highest data frequency accessible via tedata at the moment.
 
-![Static plot](docs/te_chart.PNG)
+![Static plot](docs/te_chart2.PNG)
 
 **Above:** You cannot yet download the high frequency data from these types of chart. I'm sure we'll figure out how to do it soon though...
 
@@ -21,7 +21,7 @@ This package requires a browser that can be automated via selenium. **ONLY FIREF
 
 You can download firefox from: [firefox](https://www.mozilla.org/firefox/new/)
 
-#### Python package requirements:
+#### Python requirements:
 
 - plotly
 - beautifulsoup4
@@ -31,13 +31,13 @@ You can download firefox from: [firefox](https://www.mozilla.org/firefox/new/)
 - openpyxl (optional, for export of pandas datastructures to excel).
 - nbformat (optional, for interactive plotly charts in jupyter notebooks).
 
-These will be autosmaticaly installed if you use pip to install tedata from pypi.
+These will be automaticaly installed if you use pip to install tedata.
 
 ### Installation
 
 #### Install from pypi
 
-Currently the package is still in the early testing phase. It has been pubished to test pypi but not yet pypi. You can install from testpypi. You need to specifiy both index urls in order to install the dependencies from pypi. Use the command below:
+Currently the package is in the testing phase. It has been pubished to test pypi but not yet pypi. You can install from testpypi. You need to specifiy both index urls in order to install the dependencies from pypi. Use the command below:
 ```bash
 pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple tedata
 ```
@@ -63,11 +63,28 @@ There are several different ways to use tedata to get data from trading economic
 
 ##### Using command line
 
-**4.** Use a shell such as bash CLI to download data directly to an .xlsx file using a URL to a Trading Economics chart. Example below will get the data for "ism-manufacturing-new-orders" series for country = "united-states". The flag --head will set the webdriver to not run in headless mode (headless is default). Omit --head to run as headless. Having the head will bring up a browser (firefox) window and you can watch as the scraper does it's thing. It'll take 20 - 40s so this could be more entertaining than waiting. There will be many messages printed to terminal during the scraping action. Once the scraping is complete, the data series and metadata will be saved to an excel file in the current wd. A new window will then open in your default browser to display the interactive plotly chart showing the data.
+**4.** Use a shell such as bash CLI to download data directly, saving it to an .xlsx file in the current wd. Use --help or -h to bring up information:
 
-```bash
-python -m tedata "https://tradingeconomics.com/united-states/ism-manufacturing-new-orders" --head
+```python
+python -m tedata -h
+
+usage: __main__.py [-h] [--head] [--method {path,tooltips,mixed}] url
+
+positional arguments:
+  url                   URL of Trading Economics chart to scrape
+options:
+  -h, --help            show this help message and exit
+  --head, -he           Run browser with head i.e show the browser window. Default is headless/hidden window.
+  --method, -m          Scraping method to use either: "path", "tooltips" or "mixed". 
+                        If not specified, default method "path" will be used.
 ```
+
+Specify a URL to a Trading Economics chart as the command argument. Example below will get data for "ism-manufacturing-new-orders" series for country = "united-states". The flag --head will set the webdriver to not run in headless mode (headless is the default). Omit --head to run headless.
+```bash
+python -m tedata --head --method mixed "https://tradingeconomics.com/united-states/ism-manufacturing-new-orders"
+```
+
+Having a head will bring up browser (firefox) window. Watch as the scraper does it's thing. It'll take between 15 - 50 s. So head may be more entertaining than waiting without head. Once complete, a window will open in your browser to display the interactive plotly chart with your data. Data is saved to .xlsx at the same time.
 
 ### Using Jupyter Notebook or Similar
 
@@ -91,7 +108,7 @@ print(search.result_table.head(3))
 | 1 | united states | ism manufacturing new orders | [https://tradingeconomics.com/united-states/ism-manufacturing-new-orders](https://tradingeconomics.com/united-states/ism-manufacturing-new-orders) |
 | 2 | united states | ism manufacturing employment | [https://tradingeconomics.com/](https://tradingeconomics.com/) |
 
-Scrape data for the second search result using the ```get_data``` method of the search_TE class. This extracts the time-series from the svg chart displayed on the page at the URL. The data is stored in the "scraped_data" attribute of the search_TE object as a "TE_Scraper" object. Data download should take ~30s or so for a reasonable internet connection speed (> 50 Mbps).
+Scrape data for the second search result using the ```get_data``` method of the search_TE class. This extracts the time-series from the svg chart displayed on the page at the URL. The data is stored in the "scraped_data" attribute of the search_TE object as a "TE_Scraper" object. Data download should take 15 - 30s for a reasonable internet connection speed (> 8 Mbps), using "path" method.
 
 ```python
 search.get_data(1)
@@ -127,35 +144,60 @@ print(scraped.metadata)
  'end_date': '2024-12-01',
  'min_value': 24.200000000000998,
  'max_value': 82.6000000000004,
- 'description': "The Manufacturing ISM Report On Business is based... ...is generally declining."}
+ 'description': "The Manufacturing ISM Report On Business is based..."}
  ```
 
-#### #2: Single line data download
+#### #2: Download data in a Single line using ```scrape_chart()```
 
-There is a convenience function "scrape_chart"in the scraper module that will run the series of steps needed to download the data for an indicator from Trading Economics. This can be performed with a single line in a jupyter notebook or similar.
+There is a convenience function "scrape_chart" that will run the series of steps needed to download the data for an indicator from Trading Economics. This can be performed with a single line in a jupyter notebook or similar.
 
 ```python
-#This returns a TE_scraper object with teh data stored in the "series" attribute.
+#This returns a TE_scraper object with the data stored in the "series" attribute.
 scraped = ted.scrape_chart(URL = "https://tradingeconomics.com/united-states/ism-manufacturing-new-orders")
 
 # Metadata is stored in the "metadata" attribute and the series is easily plotted 
 # using the "plot_series" method. 
 ```
 
-You can then plot your data and export the plot using the "plot_series" and "save_plot" methods as shown above. Export your data using pandas or native python e.g:
+You can then plot your data and export the plot using the "plot_series" and "save_plot" methods as shown above. You can then export your data and save to excel (.xlsx) using the ```export_data``` method. Data and Metadata will be saved to sheets in the file with those names. The file_name will be like:
+ ```f"{country}_{indicator}.xlsx"```
+```python
+scraped.export_data(filename = "my_data") #Will save to current wd as "my_data.xlsx"
+```
+
+Alternatively, export to .csv or .hd5 (my favourite) using pandas e.g:
 
 ```python
-# Create Excel writer
-with pd.ExcelWriter(filepath) as writer:
-    # Save series data
-    scraped.series.to_excel(writer, sheet_name='Data')
-    # Save metadata
-    scraped.series_metadata.to_excel(writer, sheet_name='Metadata')
+
+scraped.series.to_csv("my_data_series.csv", sheet_name='Data')
+# Save metadata
+scraped.series_metadata.to_csv("my_series_metadata.csv", sheet_name='Metadata')
+
+# Store to .hd5 which is a dict like object great for pandas data with optimized save speed & file size.
+with pd.HDFStore(f"{country}_{indicator}.hd5") as store:
+    store.put('Data', scraped.series)
+    store.put('Metadata', scraped.series_metadata)
+# Load the data later using
+series = pd.read_hdf(f"{country}_{indicator}.hd5", key = "Data")
+metadata = pd.read_hdf(f"{country}_{indicator}.hd5", key = "Metadata")
 ```
+
+##### DIFFERENT SCRAPING METHODS
+
+```scrape_chart()```has the keyword argument 'method' with the possible values of "path", "tooltips"or "mixed".
+
+- The "path" method takes the path element for the data series trace from the svg chart. It then scales the pixel co-ordinates using the Y-axis values
+- "tooltips" takes the data values frm the tooltips which show up as the cursor is dragged across the chart. This method may end up with holes in your data if there are many datapoints in the series.
+- "mixed" uses a combination of the two approaches and scrapes all of the data-points from the tooltips in multiple runs. This method should yield the highest accuracy.
+
+The best approach will depend on your requirements. "path" is the fastest yet is not as accurate as the other methods. "tooltips" is quite fast yet can have holes while "mixed"is the highest accuracy yet slowest method. However, some data series on Trading Economics display only a date but no value in each tooltip. For these, only path will work.
+
+![Static plot](docs/aus_biz_conf.PNG)
+**Above:** Chart with data from the 3 scraping methods displayed. You can see how the path method yields slightly different data, while mixed & tooltips have yielded an identical series for this example. The tooltips trace cannot be seen as it is under the mixed trace.
 
 #### #3: Run through the steps individually
 
-Running steps individually can have an advantage in terms of download speed as you can avoid initializing new webdrivers and other objects with every new dataset download. Below we will download data for US corporate profits.
+Running steps individually can have an advantage in terms of download speed as you may be able to avoid initializing new webdrivers with every new dataset download. Below we will download data for US corporate profits.
 
 ```python
 scr = ted.TE_Scraper(use_existing_driver=True)  ## Initialize a new TE_scraper object.
@@ -169,7 +211,7 @@ scr.make_x_index(force_rerun_xlims = True, force_rerun_freqdet = True)
 It uses selenium to get data from the tooltips for the first date & last 5 or so dates for the series. From this, frequency can be detrmined & datetime index generated.
 
 ```python
-scr.get_y_axis(set_global_y_axis=True) ## Get the y-axis tick positions (pixel co-ordinates) and values. 
+scr.get_y_axis(set_global_y_axis=True) ## Get the y-axis tick positions (pixel co-ordinates) and values.
 scr.series_from_chart_soup(set_max_datespan=True)  #Get the series data from path element that is the series trace on the svg chart.
 scr.apply_x_index()  ## Apply the x_index to the series, this will resample the data to the frequency of the x_index.
 scr.scale_series()  ## Scale the series to the y-axis values to convert the pixel co-ordinates to actual data values.
@@ -180,7 +222,7 @@ scr.scrape_metadata() ## Scrape the metadata for the data series from the page.
 scr.plot_series() ## Plot the series.
 ```
 
-You can then use the same TE_Scraper object to download other datasets, overwriting the previous data series and metadata. You'd probably want to export the previous data first. Overwriting will be faster than creating a new ```TE_Scraper```. Use the `scrape_chart` function and provide your scraper object as a keyword argument. This will get data for US GDP:
+You can then use the same TE_Scraper object to download other datasets, overwriting the previous data series and metadata. You'd probably want to export the previous data first. Overwriting will be faster than creating a new ```TE_Scraper```. Note that this does not always work. Use the `scrape_chart` function and provide your scraper object as a keyword argument. This will get data for US GDP:
 
 ```python
 scrape_chart(scraper = scr, id = "gdp", country = "united-states")
@@ -189,7 +231,7 @@ scrape_chart(scraper = scr, id = "gdp", country = "united-states")
 ### Additional Notes
 
 - If not using a headless webdriver instance, i.e a browser window is shown, DO NOT CHANGE ANY SETTINGS ON THE CHART MANUALLY.
-- Specifically, changing the chart_type (e.g line chart to bar) cannot be detected as the code stands now (v0.2.4). This could then lead to scraping failures.
+- Specifically, changing the chart_type (e.g line chart to bar) cannot be detected as the code stands now (v0.3.0). This could then lead to scraping failures.
 - Best to run in headless mode or if running with head, only use the browser window for viewing the actions as they are taken by the webdriver.
 
 ### Reporting issues and debugging
