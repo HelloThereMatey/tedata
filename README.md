@@ -190,7 +190,7 @@ metadata = pd.read_hdf(f"{country}_{indicator}.hd5", key = "Metadata")
 - "tooltips" takes the data values frm the tooltips which show up as the cursor is dragged across the chart. This method may end up with holes in your data if there are many datapoints in the series.
 - "mixed" uses a combination of the two approaches and scrapes all of the data-points from the tooltips in multiple runs. This method should yield the highest accuracy.
 
-The best approach will depend on your requirements. "path" is the fastest yet is not as accurate as the other methods. "tooltips" is quite fast yet can have holes while "mixed"is the highest accuracy yet slowest method. However, some data series on Trading Economics display only a date but no value in each tooltip. For these, only path will work.
+The best approach will depend on your requirements. "path" is fastest yet is not as accurate as the other methods. "tooltips" is quite fast yet can have holes (NaNs) in the series, while "mixed" is the highest accuracy yet slowest method. However, some data series on Trading Economics display only a date but no value in the tooltips. For these, only path will work.
 
 ![Static plot](docs/aus_biz_conf.PNG)
 **Above:** Chart with data from the 3 scraping methods displayed. You can see how the path method yields slightly different data, while mixed & tooltips have yielded an identical series for this example. The tooltips trace cannot be seen as it is under the mixed trace.
@@ -236,9 +236,13 @@ scrape_chart(scraper = scr, id = "gdp", country = "united-states")
 
 ### Reporting issues and debugging
 
-The package has extensive logging which should help me identify where things went wrong if you encounter a problem. Please log an issue or pull request and send me your logfile if you run into a problem. logfiles are stored in `/src/tedata/logs`.
+The package has extensive logging which should help me identify where things went wrong if you encounter a problem. Please not that there are fleeting errors that can occur with webscraping based approaches and you should have multiple attempts at running an operation before concluding there is an issue with the package. Please log an issue or pull request and send me your logfile if you run into a problem. logfiles are stored in `/src/tedata/logs`.
 
 ### Troubleshooting
+
+Webscraping-based approaches to data acquisition can have errors resulting from the complexities of HTTP and browser interactions, which will not occur with consistent reproducibility. Due to the dynamic nature of web pages, network conditions, and browser states, errors that appear during one scraping attempt may not occur in subsequent attempts.
+
+*It is recommended to make at least 3 attempts at an operation before concluding that an error is a legitimate issue with the package.*
 
 There are a number of webdriver based errors that you may run into when attempting to download data. Generally, this is a result of stale webdriver objects being re-used. Create a new webdriver object and attempt the data download again. We create a new webdriver object by setting ```use_existing_driver = False``` on initilization of any of the webdriver containing objects such as ```TE_Scaper``` or ```search_TE```. If you encounter an error like this when using ```scrape_chart``` function, be sure to provide no webdriver or scraper object as a keyword argument and set ```use_existing_driver = False```. This will create a fresh webdriver when run. Sometimes it does work when re-using the same scraper object though, so can be worth trying.
 
