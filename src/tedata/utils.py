@@ -578,7 +578,7 @@ class TooltipScraper(scraper.TE_Scraper):
                     logger.info(f"Error parsing end date '{result['end_value']}': {str(e)}")
                 
             # Log successful result for debugging
-            logger.info(f"Successfully retrieved first/last dates.")#: {result}")
+            logger.debug(f"Successfully retrieved first/last dates: \n{result}")
             # Remove debug field to keep the result clean
             if isinstance(result, dict) and "debug" in result:
                 del result["debug"]
@@ -893,96 +893,164 @@ def show_position_marker(scraper_object: Union[scraper.TE_Scraper, TooltipScrape
     """
     scraper_object.driver.execute_script(js_code, x, y, duration_ms)
 
-def plot_multi_series(series_list: dict = None, 
+def plot_multi_series(series_list: list = None,
+                    right_series_list: list = None,
                     metadata: dict = None,
+                    right_metadata: dict = None,
                     annotation_text: str = None, 
                     ann_box_pos: tuple = (0, - 0.2),
                     colors: list = None,
+                    right_colors: list = None,
                     show_fig: bool = True,
                     return_fig: bool = False):
     """
-    Plots multiple series on a single chart using Plotly. Each series is a pandas Series object.
-    The metadata dictionary should contain information about the series, such as country, title, source, etc. The series 
-    should be of similar values and indexes. Great for comparison of the results of different scraping methods for same series. The series
-    are all plotted on the same Y-axis. You could return the fig and then add a second Y-axis to plot series with different units on the same chart
-    if you want. For this, use: show_fig=False and return_fig=True. Then you can add a second Y-axis to the returned fig object before displaying it.
-
+    Plots multiple series on a single chart using Plotly, with support for dual Y-axes.
+    
     **Parameters**
-    - series_list (list of dicts containing pd.Series and optional strings to add to name on legend): The series to plot. Must be a list of dict like:
-    [{"series": series1, "add_name": "string"}, {"series": series2, "add_name": "string2"}] format, if you want to add a string to the series name.
-    Alternatively, you can just pass a list of series.
-    - annotation_text (str): Text to display in the annotation box at the bottom of the chart. Default is None. If None, the default annotation text
-    will be created from the metadata.
-    - colors (list): List strings of color names to cycle through for traces. Default is None. If None, a default list of colors will be used.
-    - ann_box_pos (tuple): The position of the annotation box on the chart. Default is (0, -0.23) which is bottom left.
-    - metadata (dict): A dictionary containing metadata about the series. Must contain the keys such as "country" & "title" as obtained 
-      using TE_Scraper class. Default is None. If None, the title will be "Time Series Plot".
-    - return_fig (bool): If True, the plotly figure object will be returned instead of displayed. Default is False.
+    - series_list (list): List of series to plot on left Y-axis. Can be a list of pandas Series objects
+      or a list of dicts with format [{"series": series1, "add_name": "string"}, ...].
+    - right_series_list (list): List of series to plot on right Y-axis, same format as series_list.
+    - metadata (dict): Dictionary with metadata for left axis series (keys like "country", "title", "units").
+    - right_metadata (dict): Dictionary with metadata for right axis series, similar to metadata.
+    - annotation_text (str): Text to display in annotation box at the bottom of chart.
+    - colors (list): List of color names for left axis traces. Default cycles through standard colors.
+    - right_colors (list): List of color names for right axis traces. Default uses a different palette.
+    - ann_box_pos (tuple): Position of annotation box. Default is (0, -0.2) which is bottom left.
+    - show_fig (bool): Whether to display the figure immediately.
+    - return_fig (bool): Whether to return the plotly figure object.
 
     **Returns** 
     - fig: Plotly figure object (if return_fig=True)
     """
     # Create a new figure
-    fig = go.Figure() # Plot the series using pandas, plotly needs to be set as the pandas plotting backend.
-    # Default colors if none provided
+    fig = go.Figure()
+    
+    # Default colors for left and right axes if none provided
     if colors is None:
         colors = ['blue', 'red', 'green', 'purple', 'orange', 'brown', 'pink', 'gray']
-    # Add each series as a trace
-
-    not_dicts = False
-    for i, series in enumerate(series_list):
-        if isinstance(series, pd.Series):
-            not_dicts = True
-            series = {"series": series, "add_name": ""}
-            
-        print(series["series"].head(), series["add_name"], type(series["series"]))
-        try:
-            ser = series["series"]
-            logger.info(f"Adding series {ser.name} to plot")
-            if not_dicts:
-                name = ser.name
-            else:
-                name = ser.name+" (method: "+series["add_name"]+")" if ser.name else f"Series {i+1}"
-            color = colors[i % len(colors)]  # Cycle through colors 
-            fig.add_trace(go.Scatter(x=ser.index, y=ser.values,
-                    name=name, line=dict(color=color), mode='lines'))
-        except Exception as e:
-            print(f"Error adding series to plot: {str(e)}")
-            continue
-
+    if right_colors is None:
+        right_colors = ['darkred', 'darkgreen', 'darkblue', 'darkorange', 'darkcyan', 'darkmagenta']
+    
+    # Add left axis series
+    if series_list:
+        not_dicts = False
+        for i, series in enumerate(series_list):
+            if isinstance(series, pd.Series):
+                not_dicts = True
+                series = {"series": series, "add_name": ""}
+                
+            try:
+                ser = series["series"]
+                logger.info(f"Adding left axis series {ser.name} to plot")
+                if not_dicts:
+                    name = ser.name
+                else:
+                    name = ser.name+" (method: "+series["add_name"]+")" if ser.name else f"Series {i+1}"
+                color = colors[i % len(colors)]  # Cycle through colors 
+                fig.add_trace(go.Scatter(
+                    x=ser.index, 
+                    y=ser.values,
+                    name=name, 
+                    line=dict(color=color), 
+                    mode='lines'
+                ))
+            except Exception as e:
+                print(f"Error adding left axis series to plot: {str(e)}")
+                continue
+    
+    # Add right axis series
+    if right_series_list:
+        not_dicts = False
+        for i, series in enumerate(right_series_list):
+            if isinstance(series, pd.Series):
+                not_dicts = True
+                series = {"series": series, "add_name": ""}
+                
+            try:
+                ser = series["series"]
+                logger.info(f"Adding right axis series {ser.name} to plot")
+                if not_dicts:
+                    name = ser.name
+                else:
+                    name = ser.name+" (method: "+series["add_name"]+")" if ser.name else f"Right axis {i+1}"
+                color = right_colors[i % len(right_colors)]  # Cycle through colors 
+                fig.add_trace(go.Scatter(
+                    x=ser.index, 
+                    y=ser.values,
+                    name=name, 
+                    line=dict(color=color), 
+                    mode='lines',
+                    yaxis="y2"  # Use the secondary y-axis
+                ))
+            except Exception as e:
+                print(f"Error adding right axis series to plot: {str(e)}")
+                continue
+    
+    # Set title and Y-axis labels based on metadata
+    title = "Time Series Plot"
+    left_ylabel = "Value"
+    right_ylabel = "Value (Right Axis)"
+    
     if metadata is not None:
-        title = str(metadata["country"]).capitalize() + ": " + str(metadata["title"]).capitalize()
-        ylabel = str(metadata["units"]).capitalize()
+        title = str(metadata.get("country", "")).capitalize() + ": " + str(metadata.get("title", "")).capitalize()
+        left_ylabel = str(metadata.get("units", "Value")).capitalize()
         
         # Create default annotation text from metadata
-        frequency = metadata["frequency"] if "frequency" in metadata.keys() else "Unknown"
+        frequency = metadata.get("frequency", "Unknown")
         if annotation_text is None:
             annotation_text = (
-                f"Source: {metadata['source']}<br>"
-                f"Original Source: {metadata['original_source']}<br>"
+                f"Source: {metadata.get('source', 'Unknown')}<br>"
+                f"Original Source: {metadata.get('original_source', 'Unknown')}<br>"
                 f"Frequency: {frequency}<br>"
             )
-    else:
-        title = "Time Series Plot"
-        ylabel = "Value"
-        annotation_text = annotation_text or "Source: Trading Economics"
-
+    
+    if right_metadata is not None:
+        right_ylabel = str(right_metadata.get("units", "Value (Right Axis)")).capitalize()
+        # Add to annotation text if it exists
+        if annotation_text and right_metadata.get("units"):
+            annotation_text += f"Right Axis: {right_metadata.get('units', 'Value')}<br>"
+    
+    # If no annotation text was created, set a default
+    annotation_text = annotation_text or "Source: Trading Economics"
+    
     # Add text annotation to bottom left
-    fig.add_annotation( text=annotation_text, xref="paper", yref="paper",
-        x=ann_box_pos[0], y=ann_box_pos[1], showarrow=False, font=dict(size=10),
-        align="left",  xanchor="left", yanchor="bottom", bgcolor="rgba(255, 255, 255, 0.8)",
-        bordercolor="black", borderwidth=1)
-
-    # Label x and y axis
+    fig.add_annotation(
+        text=annotation_text, 
+        xref="paper", 
+        yref="paper",
+        x=ann_box_pos[0], 
+        y=ann_box_pos[1], 
+        showarrow=False, 
+        font=dict(size=10),
+        align="left", 
+        xanchor="left", 
+        yanchor="bottom", 
+        bgcolor="rgba(255, 255, 255, 0.8)",
+        bordercolor="black", 
+        borderwidth=1
+    )
+    
+    # Update layout with dual y-axes
     fig.update_layout(
-        legend=dict(title_text="",  # Remove legend title
-        orientation="h", yanchor="bottom",
-        y=-0.2,  # Adjust this value to move the legend further down
-        xanchor="center", x=0.5),
-        yaxis_title=ylabel,
-        xaxis_title="",
-        title = title)
-
+        title=title,
+        xaxis=dict(title=""),
+        yaxis=dict(
+            title=left_ylabel),
+        yaxis2=dict(
+            title=right_ylabel,
+            anchor="x",
+            overlaying="y",
+            side="right"
+        ),
+        legend=dict(
+            title_text="",  # Remove legend title
+            orientation="h", 
+            yanchor="bottom",
+            y=-0.2,  # Adjust this value to move the legend further down
+            xanchor="center", 
+            x=0.5)
+    )
+    
     if show_fig:
         fig.show()
     if return_fig:

@@ -25,7 +25,7 @@ def scrape_chart(url: str = None,
                  method: Literal["path", "tooltips", "mixed"] = "path",
                  scraper: TE_Scraper = None,
                  driver: webdriver = None, 
-                 use_existing_driver: bool = True,
+                 use_existing_driver: bool = False,
                  headless: bool = True, 
                  browser: str = 'firefox') -> TE_Scraper:
     
@@ -58,6 +58,7 @@ def scrape_chart(url: str = None,
     whole series data. The 'path' method is likely to work yet could have inacuraccies in values. The 'tooltips' method is more accurate. Try both and 
     decide what works best for you.
     - scraper (TE_Scraper): A TE_Scraper object to use for scraping the data. If this is passed, the function will not create a new one.
+    - use_existing_driver (bool): Whether to use the existing webdriver of the scraper object if it exists. Default is False.
     - driver (webdriver): A Selenium WebDriver object to use for scraping the data. If this is passed, the function will not create a new one. If 
     scraper and driver are both passed, the webdriver of the scraper object will be used rather than the supplied webdriver.
     - headless (bool): Whether to run the browser in headless mode (display no window).
@@ -71,8 +72,18 @@ def scrape_chart(url: str = None,
         start_date = "1850-01-01"
     if end_date is None:
         end_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    if scraper is not None:       #Initialize TE_Scraper object..
+    if scraper is not None:  
+        logger.info(f"Using existing scraper object supplied {scraper}.")
         sel = scraper
+        # List of attributes to delete if they exist to reset scraper for overwriting.
+        attrs_to_delete = ['series', 'series_metadata', 'metadata', 'x_index', 'y_axis', "frequency", "start_end",
+                    '_date_span',  '_chart_type',  'last_url',  'series_name', 'date_spans',  'date_span_dict',
+                     'latest_points',  'date_series', 'plot']
+        # Delete each attribute if it exists
+        for attr in attrs_to_delete:
+            if hasattr(sel, attr):
+                delattr(sel, attr)
+
         if driver is None:
             driver = scraper.driver
         else:
@@ -128,8 +139,8 @@ def scrape_chart(url: str = None,
             return None
 
         try:  #Scrape the y-axis values from the chart.
-            sel.get_y_axis(set_global_y_axis=True)
-            #print("Successfully scraped y-axis values from the chart:", " \n", yaxis) 
+            yaxis = sel.get_y_axis(set_global_y_axis=True)
+            print("Successfully scraped y-axis values from the chart:", " \n", yaxis) 
             logger.debug(f"Successfully scraped y-axis values from the chart.") 
         except Exception as e:
             print(f"Error scraping y-axis: {str(e)}")

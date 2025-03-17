@@ -93,7 +93,13 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.debug(f"Error loading page: {str(e)}")
             return False
         
-        self.create_chart_types_dict() # Create the chart types dictionary for the chart.
+        retries = 3
+        for i in range(retries):
+            if self.create_chart_types_dict(): # Create the chart types dictionary for the chart.
+                break
+            else:
+                logger.debug("Error creating chart types dictionary. Retrying, attempt: ", i)
+            
         self.update_date_span()
         return True
         
@@ -255,6 +261,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         for key, value in self.chart_types.items():
             self.chart_types[key] = value.split(" ")[0]
         logger.info(f"Chart types dictionary created successfully: {self.chart_types.keys()}")
+        return True
 
     def select_chart_type(self, chart_type: str):
         """Select a chart type on the Trading Economics chart. This is done by clicking the chart type button and then selecting the specified chart type.
@@ -658,6 +665,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         time.sleep(0.25)
 
         if force_rerun_xlims or not hasattr(self, "start_end"):
+            self.start_end = None
             self.set_max_date_span_viaCalendar()  ##Set date_span to MAX for start and end date pull...
             time.sleep(0.25)
             self.set_chartType_js("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
@@ -670,32 +678,28 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
                     not all(key in self.start_end for key in ["start_date", "end_date"]) or
                     any(pd.isna(self.start_end[key]) for key in ["start_date", "end_date"]))\
                     or any(self.start_end[key] is None for key in ["start_date", "end_date"]):
-                    print("Retrying start_end extraction...")
+                    #print("Retrying start_end extraction...")
                     time.sleep(0.25)
                     pass
                 else:
                     break
-
-            print("Start and end dates scraped from tooltips: ", self.start_end)
             #For some reason running it twice seems to work better...
-        # Get the first and last datapoints from the chart at MAX datespan
 
-        if self.start_end is not None:
-            logger.info(f"Start and end values scraped from tooltips: \n{self.start_end}")
-        else:
-            print("Error: Start and end values not found...pulling out....")
-            logger.debug(f"Error: Start and end values not found...pulling out....")
-            return None
-
-        start_date = self.start_end["start_date"]; end_date = self.start_end["end_date"]
-        dtIndex = self.dtIndex(start_date=start_date, end_date=end_date, ser_name = self.metadata["title"])
-        if dtIndex is not None:
-            logger.info(f"DateTimeIndex created successfully for the time-series.")
-            self.x_index = dtIndex
-            return dtIndex  
-        else:
-            logger.info(f"Error creating DateTimeIndex for the time-series.")
-            return None
+            if self.start_end is not None:
+                logger.info(f"Start and end values scraped from tooltips: \n{self.start_end}")
+                start_date = self.start_end["start_date"]; end_date = self.start_end["end_date"]
+                dtIndex = self.dtIndex(start_date=start_date, end_date=end_date, ser_name = self.metadata["title"])
+                if dtIndex is not None:
+                    logger.info(f"DateTimeIndex created successfully for the time-series.")
+                    self.x_index = dtIndex
+                    return dtIndex  
+                else:
+                    logger.info(f"Error creating DateTimeIndex for the time-series.")
+                    return None
+            else:
+                print("Error: Start and end values not found...pulling out....")
+                logger.debug(f"Error: Start and end values not found...pulling out....")
+                return None
     
     def get_earliest_points(self, num_points: str = "all", num_years: int = 10):
         """Get the earliest data points from the chart using the cursor, use this to check for series that have differing frequency
@@ -896,6 +900,9 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
         if yaxis is not None:
             logger.info(f"Y-axis values scraped successfully.")
+        else:
+            logger.info(f"Y-axis values not scraped successfully, yaxis is None.")
+            return None
         
         if set_global_y_axis:
             self.y_axis = yaxis
@@ -925,7 +932,9 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         - end_date (str) YYYY-MM-DD: The end date of your series
         - ser_name (str): The name TO GIVE the series
         """
-
+        if hasattr(self, "x_index"):
+            logger.info("Overwriting existing x_index attribute.")
+            self.x_index = None
         if hasattr(self, "series") and not hasattr(self, "frequency"):
             logger.info("Series found but frequency not known. Creating a datetime x-index for series with frequency determined by length of series.\
                         Returning dtIndex only.")

@@ -173,7 +173,7 @@ class search_TE(Generic_Webdriver):
             print("No search results found.")
             return None
         
-    def get_data(self, result_num: int = 0):
+    def get_data(self, result_num: int = 0, method: str = "path", start_date: str = None, end_date: str = None):
         """Scrape data for a given search result number.
         This method will scrape data for a given search result number from the search results table.
         It will extract the URL for the result and scrape the data from the chart at that URL.
@@ -182,6 +182,7 @@ class search_TE(Generic_Webdriver):
         
         **Parameters:**
         - result_num (int): The index of the search result in your result table to scrape the data for.
+        - method (str): The method to use for scraping the data. Options are "path" (default) or "tooltips" or "mixed".
 
         **Returns:**
         - scraped_data (TE_Scraper): The scraped data object. The data can be accessed from the 'series' attribute of the TE_SCraper object
@@ -211,7 +212,7 @@ class search_TE(Generic_Webdriver):
         if hasattr(self, "result_table"):
             url = self.result_table.loc[result_num, "url"]
             print(f"Scraping data from: {url}")
-            self.scraped_data = scrape_chart(url, driver=self.driver, headless=self.headless, browser=self.browser)
+            self.scraped_data = scrape_chart(url, driver=self.driver, headless=self.headless, browser=self.browser, method=method, start_date=start_date, end_date=end_date)
             if self.scraped_data is not None:
                 print(f"Data scraped successfully from: {url}")
                 logger.debug(f"Data scraped successfully from: {url}")
