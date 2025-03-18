@@ -93,9 +93,10 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.debug(f"Error loading page: {str(e)}")
             return False
         
-        retries = 3
+        retries = 4
         for i in range(retries):
             if self.create_chart_types_dict(): # Create the chart types dictionary for the chart.
+                logger.info("Chart types dictionary created successfully.")
                 break
             else:
                 logger.debug("Error creating chart types dictionary. Retrying, attempt: ", i)
