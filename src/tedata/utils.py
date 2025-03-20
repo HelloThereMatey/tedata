@@ -547,7 +547,7 @@ class TooltipScraper(scraper.TE_Scraper):
                 try:
                     # Convert using ready_datestr to handle Q1, Q2, etc.
                     result['start_date'] = pd.to_datetime(ready_datestr(result['start_date']))
-                    print(f"Converted start_date: {result['start_date']}")
+                    print(f"Start date: {result['start_date']}")
                 except Exception as e:
                     logger.error(f"Error parsing start date '{result['start_date']}': {str(e)}")
                     # Keep the string value if parsing fails
@@ -556,7 +556,7 @@ class TooltipScraper(scraper.TE_Scraper):
                 try:
                     # Convert using ready_datestr to handle Q1, Q2, etc.
                     result['end_date'] = pd.to_datetime(ready_datestr(result['end_date']))
-                    print(f"Converted end_date: {result['end_date']}")
+                    print(f"End date: {result['end_date']}")
                 except Exception as e:
                     logger.info(f"Error parsing end date '{result['end_date']}': {str(e)}")
 
@@ -654,11 +654,29 @@ class TooltipScraper(scraper.TE_Scraper):
             shortest_span = list(self.date_spans.keys())[0]
             if self.date_span != shortest_span: # Set the datespan to 1 year to look just at the latest data points
                 self.set_date_span(shortest_span)
+                time.sleep(0.5)
         spline_step = timeit.default_timer()
         self.set_chartType_js("Spline") #Force spline chart selection - very important. I still have no way to determine if the chart type has changed when it changes automatically.
         #Chart type must be spline or line for this to work. Sometimes the chart_type chnages automatically when datespan is altered.
         logger.info(f"Time taken to select chart type: {timeit.default_timer() - spline_step}")
 
+        # First we'll try to get first & last points:
+        success = False
+        for attempt in range(3):
+            self.start_end = self.first_last_dates_js()
+            if (self.start_end is None or 
+                not all(key in self.start_end for key in ["start_date", "end_date"]) or
+                any(pd.isna(self.start_end[key]) for key in ["start_date", "end_date"]))\
+                or any(self.start_end[key] is None for key in ["start_date", "end_date"]):
+                print("Retrying start_end extraction...")
+                time.sleep(0.25)
+            else:
+                logger.info("Start_end extracted successfully:", self.start_end)
+                success = True
+                break
+        if not success:
+            logger.info("Failed to extract start & end points, this could adversely affect the rest of the tooltip scraping..")
+    
         try:
             # Load JavaScript code from file
             js_file_path = os.path.join(os.path.dirname(__file__), 'latest_points.js')
@@ -679,7 +697,7 @@ class TooltipScraper(scraper.TE_Scraper):
 
             if isinstance(result, dict):
                 # for log in result.get('logs', []):
-                #     logger.debug(f"JS Console: {log}")
+                #     logger.info(f"JS Console: {log}")
                     
                 datapoints = result.get('dataPoints', [])
                 

@@ -77,8 +77,8 @@ function getFirstLastDates(done) {
         async function executeSearch() {
             // Calculate precise positions
             const centerY = plotRect.top + (plotRect.height / 2);
-            const leftX = plotRect.left ; // Add small offset to ensure we're inside the chart
-            const rightX = plotRect.right; // Subtract small offset
+            const leftX = plotRect.left; // No offset
+            const rightX = plotRect.right; // No offset
             
             // Get first point (left edge)
             log(`Checking left point at x=${leftX}, y=${centerY}`);

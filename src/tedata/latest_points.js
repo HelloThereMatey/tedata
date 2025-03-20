@@ -17,7 +17,38 @@ function getIncrement(points) {
     return 5;
 }
 
+function processDataPoint(x, y, dateElement, valueElement, dataPoints, lastDate, target_points, cursor) {
+    if (dateElement) {
+        const date = dateElement.textContent;
+        const value = valueElement?.textContent;  // Optional value
+        
+        // Only proceed if the date is present and unique
+        if (date && date !== lastDate) {
+            dataPoints.push({
+                date: date.trim(),
+                value: value ? value.trim() : "NaN",
+                x: x,
+                y: y
+            });
+            lastDate = date;
+            
+            console.log(`Found data point: ${date.trim()} = ${value ? value.trim() : "NaN"}`);
+            
+            if (dataPoints.length >= target_points && target_points !== Infinity) {
+                console.log(`Collected ${target_points} points, finishing...`);
+                cursor.remove();
+                return { complete: true, lastDate: date };
+            }
+        }
+    }
+    return { complete: false, lastDate };
+}
+
 async function moveCursor(options, done) {
+    let cursor = null;
+    const dataPoints = [];
+    let lastDate = null;
+    
     try {
         // Destructure options with defaults
         const {
@@ -36,7 +67,7 @@ async function moveCursor(options, done) {
         console.log(`Using wait time: ${wait_time_override || 25}ms`);
         
         // Create visible cursor for debugging
-        const cursor = document.createElement('div');
+        cursor = document.createElement('div');
         cursor.style.cssText = `
             position: absolute;
             width: 5px;
@@ -62,19 +93,44 @@ async function moveCursor(options, done) {
         console.log('Chart dimensions:', rect);
         console.log('Scroll position:', { scrollX, scrollY });
 
-        // Use absolute positions (accounting for scroll)
-        const startX = rect.x;
-        const endX = rect.x + rect.width;
+        // Calculate all positions first
         const centerY = rect.y + (rect.height / 2);
+        const startX = rect.x; // 
+        const endX = rect.x + rect.width; // 
 
+        // // First put cursor in middle, make tooltip appear, and click
+        // const middleX = rect.x + (rect.width / 2);
+        // cursor.style.left = (middleX + scrollX) + 'px';
+        // cursor.style.top = (centerY + scrollY) + 'px';
+
+        // // Create and dispatch mousemove event to position cursor
+        // const initialMoveEvent = new MouseEvent('mousemove', {
+        //     bubbles: true,
+        //     clientX: middleX,
+        //     clientY: centerY,
+        //     view: window
+        // });
+        // plotBackground.dispatchEvent(initialMoveEvent);
+
+        // // Add mouse click event at the center
+        // console.log("Clicking at center of chart");
+        // const clickEvent = new MouseEvent('click', {
+        //     bubbles: true,
+        //     cancelable: true,
+        //     view: window,
+        //     clientX: middleX,
+        //     clientY: centerY
+        // });
+        // plotBackground.dispatchEvent(clickEvent);
+
+        // // Wait at center position with cursor visible
+        // await sleep(100);
+
+        // Set starting position at right edge
         let x = endX;
         const y = centerY;
-        let lastDate = null;
-        const dataPoints = [];
 
-        cursor.style.left = (x + scrollX) + 'px';
-        cursor.style.top = (y + scrollY) + 'px';
-
+        // Move cursor and collect the rest of the data points
         while (x > startX && dataPoints.length < target_points) {
             // Update cursor position with scroll offsets
             cursor.style.left = (x + scrollX) + 'px';
@@ -93,38 +149,41 @@ async function moveCursor(options, done) {
             const dateElement = document.querySelector('.tooltip-date');
             const valueElement = document.querySelector('.tooltip-value');
 
-            if (dateElement) {
-                const date = dateElement.textContent;
-                const value = valueElement?.textContent;  // Optional value
-                
-                // Only proceed if the date is present and unique
-                if (date && date !== lastDate) {
-                    dataPoints.push({
-                        date: date.trim(),
-                        value: value ? value.trim() : "NaN",
-                        x: x,
-                        y: y
-                    });
-                    lastDate = date;
-                    
-                    console.log(`Found data point: ${date.trim()} = ${value ? value.trim() : "NaN"}`);
-                    
-                    if (dataPoints.length >= target_points && target_points !== Infinity) {
-                        console.log(`Collected ${target_points} points, finishing...`);
-                        cursor.remove();
-                        done({
-                            dataPoints: dataPoints,
-                            logs: logs
-                        });
-                        return;
-                    }
-                }
+            // Process data point
+            const result = processDataPoint(x, y, dateElement, valueElement, dataPoints, lastDate, target_points, cursor);
+            if (result.complete) {
+                done({
+                    dataPoints: dataPoints,
+                    logs: logs
+                });
+                return;
             }
-            
+            lastDate = result.lastDate;
             
             await sleep(wait_time_override || 25);
             x -= increment;
         }
+        
+        // Explicitly check left edge
+        x = startX;
+        cursor.style.left = (x + scrollX) + 'px';
+        cursor.style.top = (y + scrollY) + 'px';
+        
+        const leftEdgeEvent = new MouseEvent('mousemove', {
+            bubbles: true,
+            clientX: x,
+            clientY: y,
+            view: window
+        });
+        plotBackground.dispatchEvent(leftEdgeEvent);
+        
+        // Wait for tooltip to appear
+        await sleep(150);
+        
+        // Check for left edge tooltip
+        const leftDateElement = document.querySelector('.tooltip-date');
+        const leftValueElement = document.querySelector('.tooltip-value');
+        processDataPoint(x, y, leftDateElement, leftValueElement, dataPoints, lastDate, target_points, cursor);
         
         // Reached left edge
         cursor.remove();
@@ -136,9 +195,10 @@ async function moveCursor(options, done) {
         
     } catch (error) {
         console.error('Error:', error);
-        cursor?.remove();
+        if (cursor) cursor.remove();
         done({
-            dataPoints: [],
+            dataPoints: dataPoints || [],
+            error: error.toString(),
             logs: logs
         });
     }

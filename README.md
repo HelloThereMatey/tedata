@@ -75,7 +75,7 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   --head, -he           Run browser with head i.e show the browser window. Default is headless/hidden window.
-  --method, -m          Scraping method to use either: "path", "tooltips" or "mixed". 
+  --method, -m          Scraping method to use either: "path", "tooltips", "mixed" or "highcharts_api". 
                         If not specified, default method "path" will be used.
 ```
 
@@ -184,7 +184,7 @@ metadata = pd.read_hdf(f"{country}_{indicator}.hd5", key = "Metadata")
 
 ##### DIFFERENT SCRAPING METHODS
 
-```scrape_chart()```has the keyword argument 'method' with the possible values of "path", "tooltips"or "mixed".
+```scrape_chart()```has the keyword argument 'method' with the possible values of "path", "tooltips", "mixed" or "highcharts_api".
 
 - The "path" method takes the path element for the data series trace from the svg chart. It then scales the pixel co-ordinates using the Y-axis values
 - "tooltips" takes the data values frm the tooltips which show up as the cursor is dragged across the chart. This method may end up with holes in your data if there are many datapoints in the series.

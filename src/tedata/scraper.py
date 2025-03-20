@@ -12,6 +12,7 @@ import os
 import plotly.graph_objects as go
 
 fdel = os.path.sep
+wd = os.path.dirname(__file__)
 
 # tedata related imports
 from . import utils
@@ -843,7 +844,46 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             self.series = self.series.sort_index().rename(self.metadata["title"])
         logger.info("Successfully scraped full series from tooltips.")
         return True
-        
+    
+    def series_from_highcharts(self):
+        """Get the series data from the Highcharts JavaScript object. This is the fastest method of getting the series data from the chart.
+        The series data is stored in the "series" attribute of the class. The method
+        will return the series data as well. """
+
+        js_file_path = wd + fdel + 'check_highcharts.js'
+        with open(js_file_path, 'r') as file:
+            script = file.read()
+
+        try:
+            result = self.driver.execute_script(script)
+            # Extract the data points
+            data_points = result['seriesData'][0]['points']
+            data = [(point['x'], point['y']) for point in data_points]
+            df = pd.DataFrame(data, columns=['timestamp', 'value'])
+            # Convert timestamp to datetime
+            df['date'] = pd.to_datetime(df['timestamp'], unit='ms')
+            # Set date as index
+            df = df.set_index('date')
+
+            series = df['value'].rename(self.metadata["title"])
+            self.series = series
+            logger.info("Successfully extracted series data from Highcharts.")
+            freq = pd.infer_freq(self.series.index) # Infer the frequency of the series.
+            if freq is None:
+                freq = "Unknown/irregular"
+            self.metadata["frequency"] = freq
+            self.metadata["start_date"] = self.series.index[0].strftime("%Y-%m-%d")
+            self.metadata["end_date"] = self.series.index[-1].strftime("%Y-%m-%d")
+            self.metadata["min_value"] = float(self.series.min())
+            self.metadata["max_value"] = float(self.series.max())
+            self.metadata["length"] = len(self.series)
+            self.series_metadata = pd.Series(self.metadata)
+            
+            return series
+        except Exception as e:
+            logger.info(f"Error extracting series from Highcharts: {e}")
+            return None
+
     def get_y_axis(self, update_chart: bool = False, set_global_y_axis: bool = False):
         """Get y-axis values from chart to make a y-axis series with tick labels and positions (pixel positions).
         Also gets the limits of both axis in pixel co-ordinates. A series containing the y-axis values and their pixel positions (as index) is assigned

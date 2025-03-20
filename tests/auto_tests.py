@@ -22,6 +22,13 @@ with open(wd+fdel+"test_urls_all.csv", "r") as f:
     TEST_URLS = [line.strip() for line in f.readlines()]
 print("Test URLS for which to download data: ",TEST_URLS)
 
+#### Choose which scraping methods to test:
+methods = [#"mixed", 
+           "path",
+           #"tooltips",
+           "highcharts_api"
+           ]
+
 def setup_test_logger(output_dir):
     """Set up logger for test runs with both file and console output"""
     # Disable selenium logging

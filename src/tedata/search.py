@@ -173,7 +173,7 @@ class search_TE(Generic_Webdriver):
             print("No search results found.")
             return None
         
-    def get_data(self, result_num: int = 0, method: str = "path", start_date: str = None, end_date: str = None):
+    def get_data(self, result_num: int = 0, method: str = "highcharts_api", start_date: str = None, end_date: str = None):
         """Scrape data for a given search result number.
         This method will scrape data for a given search result number from the search results table.
         It will extract the URL for the result and scrape the data from the chart at that URL.

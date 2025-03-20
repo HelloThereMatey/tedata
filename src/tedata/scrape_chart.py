@@ -4,6 +4,7 @@ wd = os.path.dirname(__file__)
 import datetime
 
 from typing import Literal
+import time
 from selenium import webdriver
 # tedata related imports
 from . import logger
@@ -22,7 +23,7 @@ def scrape_chart(url: str = None,
                  indicator: str = None,
                  start_date: str = None,   #Use "YYYY-MM-DD" format. Only for "mixed" method.
                  end_date: str = None,   #Use "YYYY-MM-DD" format. Only for "mixed" method.
-                 method: Literal["path", "tooltips", "mixed"] = "path",
+                 method: Literal["path", "tooltips", "mixed", 'highcharts_api'] = "highcharts_api",
                  scraper: TE_Scraper = None,
                  driver: webdriver = None, 
                  use_existing_driver: bool = False,
@@ -53,10 +54,11 @@ def scrape_chart(url: str = None,
     - end_date (str): The end date of the series to scrape. Use "YYYY-MM-DD" format. Only applies to the "mixed" method. Default is None. 
     If using None it will get max available date range.
     Currently start and end dates only apply when using the 'tooltips' method.
-    - method (str): The method to use to scrape the data. Default is 'path'. Other option is 'tooltips'. 'path' is the default method it uses, the path
-    element of the trace on the svg chart and then later scales the series using the y-axis values. 'tooltips' uses the tooltip box on the chart to get the
-    whole series data. The 'path' method is likely to work yet could have inacuraccies in values. The 'tooltips' method is more accurate. Try both and 
-    decide what works best for you.
+    - method (str): The method to use to scrape the data. Options are 'path', 'tooltips', 'mixed' and 'highcharts_api'. Default is 'highcharts_api'. The 'path' method
+    takes the path element of the trace on the svg chart and then later scales series using the y-axis values. 'tooltips' uses the tooltip box on the chart to get the
+    whole series data. The 'path' method is likely to work yet could have inacuraccies in values. The 'tooltips' method is more accurate. Try several and 
+    decide what works best for you. Update: v0.3.2 added 'highcharts_api' method which uses the Highcharts API to get the series data. This is handsdown the best
+    method to use if it works for the chart you are scraping.
     - scraper (TE_Scraper): A TE_Scraper object to use for scraping the data. If this is passed, the function will not create a new one.
     - use_existing_driver (bool): Whether to use the existing webdriver of the scraper object if it exists. Default is False.
     - driver (webdriver): A Selenium WebDriver object to use for scraping the data. If this is passed, the function will not create a new one. If 
@@ -195,10 +197,22 @@ def scrape_chart(url: str = None,
         except Exception as e:
             logger.info(f"Error scraping full series using mixed method: {str(e)}")
             return None
+        
+    elif method == "highcharts_api":
+        try:
+            # Set max date span for the series.
+            sel.set_max_date_span_viaCalendar()
+            time.sleep(1)
+            # Use new method to scrape series from Highcharts API.
+            sel.series_from_highcharts()
+            logger.info("Successfully scraped series from Highcharts API.")
+        except Exception as e:
+            logger.info(f"Error scraping series from Highcharts API: {str(e)}")
+            return None
 
     else:
-        print("Invalid method supplied. Use 'path', 'tooltips' or 'mixed'.")
-        logger.debug("Invalid method supplied. Use 'path', 'tooltips' or 'mixed'.")
+        logger.info("Invalid method supplied. Use 'path', 'tooltips', 'mixed' or 'highcharts_api'.")
         return
+    
     
     return sel #Return the TE_Scraper object with the series data in the 'series' attribute.
