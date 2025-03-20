@@ -17,7 +17,7 @@ from tedata import base
 import tedata as ted
 
 # Add parent directory to path to import tedata
-#List of urls to test
+#List of urls to tests
 with open(wd+fdel+"test_urls_all.csv", "r") as f:
     TEST_URLS = [line.strip() for line in f.readlines()]
 print("Test URLS for which to download data: ",TEST_URLS)
@@ -206,7 +206,7 @@ def test_url(url):
     index = ['units', 'original_source', 'title', 'indicator', 'country', 'source', 'id', 'description', 'frequency', 'unit_tooltips', 'start_date', 'end_date', 'min_value', 'max_value', 'length'],
     name="blank")
     
-    for i, method in enumerate(["mixed", "path", "tooltips"]):
+    for i, method in enumerate(methods):
         succeded = True
         base_name = url.split('/')[-2]+"_"+url.split('/')[-1]+"_"+method
         try:
@@ -215,7 +215,7 @@ def test_url(url):
             
             # Scrape data
             timer = timeit.default_timer()
-            scraper = ted.scrape_chart(url, method=method, use_existing_driver=False, headless=False)
+            scraper = ted.scrape_chart(url, method=method, use_existing_driver=False, headless=True)
             if scraper is None:
                 logger.error(f"{method} method failed to return scraper")
                 error = "No scraper returned"
@@ -270,7 +270,7 @@ def test_url(url):
             logger.error(f"Error deleting scraper: {str(e)}")
     
     # Outside for loop here..
-    metadata_match = compare_metadata(results["path"]["metadata"], results["mixed"]["metadata"], name=url)
+    metadata_match = compare_metadata(results[methods[0]]["metadata"], results[methods[1]]["metadata"], name=url)
     
     # Make plot with all 3 traces
     logger.info(f"Results for {url}:")
@@ -280,13 +280,11 @@ def test_url(url):
         output_df.to_excel(writer, sheet_name="Data")
         output_meta_df.to_excel(writer, sheet_name="Metadata")
     
-    for method in ["mixed", "path", "tooltips"]:
-        pctdev = (((results[method]["series"]/results["mixed"]["series"])-1)*100).dropna().mean()
+    for method in methods:
+        pctdev = (((results[method]["series"]/results[methods[0]]["series"])-1)*100).dropna().mean()
         result_summary.loc[result_summary["Method"]==method, "% deviation from mixed method"] = pctdev
 
-    series_list = [{"series": results["path"]["series"], "add_name": "path"},
-                    {"series": results["tooltips"]["series"], "add_name": "tooltips"},
-                    {"series": results["mixed"]["series"], "add_name": "mixed"}] 
+    series_list = [{"series": results[methods[i]]["series"], "add_name": methods[i]} for i in range(len(methods))] 
     triplefig = ted.plot_multi_series(series_list=series_list, metadata = metadata, show_fig=False, return_fig=True)
     triplefig.write_html(f"{output_dir}{fdel}{url.split('/')[-2]}_{url.split('/')[-1]}.html")
     logger.info(f"Plot saved as {output_dir}{fdel}{url.split('/')[-2]}_{url.split('/')[-1]}.html")
