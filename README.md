@@ -53,7 +53,13 @@ Ensure that you also have firefox browser installed.
 ```python
 import tedata as ted
 ```
-There are several different ways to use tedata to get data from trading economics:
+**Note:** On windows, if you get a permission denied error related to logging, such as:
+```python
+PermissionError: [Errno 13] Permission denied: 'c:\ProgramData\miniconda3\envs\ted\Lib\site-packages\tedata\logs\tedata.log
+```
+You need to run the package as administrator. Run VSCode or shell as admin. 
+
+#### There are several different ways to use tedata to get data from trading economics
 
 ##### Inside a Jupyter Notebook, python shell or script:
 
