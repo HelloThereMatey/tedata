@@ -18,7 +18,7 @@ logger = logging.getLogger('tedata.scrape_chart')
 ############ Convenience function to run the full scraper from scraper module ##########################################
 
 def scrape_chart(url: str = None, 
-                 id: str = "united-states/business-confidence",
+                 id: str = None,
                  country: str = "united-states",
                  indicator: str = None,
                  start_date: str = None,   #Use "YYYY-MM-DD" format. Only for "mixed" method.
@@ -203,6 +203,10 @@ def scrape_chart(url: str = None,
             # Set max date span for the series.
             sel.set_max_date_span_viaCalendar()
             time.sleep(1)
+        except Exception as e:
+            logger.info(f"Error setting max date span: {str(e)}")
+            return None
+        try:
             # Use new method to scrape series from Highcharts API.
             sel.series_from_highcharts()
             logger.info("Successfully scraped series from Highcharts API.")

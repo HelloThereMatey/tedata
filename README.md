@@ -184,20 +184,21 @@ metadata = pd.read_hdf(f"{country}_{indicator}.hd5", key = "Metadata")
 
 ##### DIFFERENT SCRAPING METHODS
 
-```scrape_chart()```has the keyword argument 'method' with the possible values of "path", "tooltips", "mixed" or "highcharts_api".
+```scrape_chart()```has the keyword argument 'method' with the possible values of "path", "tooltips", "mixed" or "highcharts_api". Default is "highcharts_api".
 
 - The "path" method takes the path element for the data series trace from the svg chart. It then scales the pixel co-ordinates using the Y-axis values
 - "tooltips" takes the data values frm the tooltips which show up as the cursor is dragged across the chart. This method may end up with holes in your data if there are many datapoints in the series.
 - "mixed" uses a combination of the two approaches and scrapes all of the data-points from the tooltips in multiple runs. This method should yield the highest accuracy.
+- "highcharts api" takes the series data directly from the highcharts api active on the page. This method was discovered for v0.3.3 and is the fastest and most accurate. If this method works for the series you are trying to get, it should always be used. This has been made the default from v0.3.3.
 
-The best approach will depend on your requirements. "path" is fastest yet is not as accurate as the other methods. "tooltips" is quite fast yet can have holes (NaNs) in the series, while "mixed" is the highest accuracy yet slowest method. However, some data series on Trading Economics display only a date but no value in the tooltips. For these, only path will work.
+If the "highcharts api" method does not work for you give the other methods a try. These other methods may also work on other sites that do not have the highcharts api active.
 
 ![Static plot](docs/aus_biz_conf.PNG)
-**Above:** Chart with data from the 3 scraping methods displayed. You can see how the path method yields slightly different data, while mixed & tooltips have yielded an identical series for this example. The tooltips trace cannot be seen as it is under the mixed trace.
+**Above:** Chart with data from the 3 scraping methods (excepting 'highcharts_api') displayed. You can see how the path method yields slightly different data, while mixed & tooltips have yielded an identical series for this example. The tooltips trace cannot be seen as it is under the mixed trace.
 
 #### #3: Run through the steps individually
 
-Running steps individually can have an advantage in terms of download speed as you may be able to avoid initializing new webdrivers with every new dataset download. Below we will download data for US corporate profits.
+Running steps individually can have an advantage in terms of download speed as you may be able to avoid initializing new webdrivers with every new dataset download. Below we will download data for US corporate profits using the 'path'method.
 
 ```python
 scr = ted.TE_Scraper(use_existing_driver=True)  ## Initialize a new TE_scraper object.

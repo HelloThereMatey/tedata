@@ -884,6 +884,91 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             logger.info(f"Error extracting series from Highcharts: {e}")
             return None
 
+    def get_chart_type_from_highcharts(self):
+        """
+        Get the chart type directly from the Highcharts API.
+        This is the most reliable way to determine chart type.
+        
+        Returns:
+            dict: Chart type information including main type, series types, and point count
+        """
+        script = """
+        try {
+            if (typeof Highcharts === 'undefined') {
+                return { error: "Highcharts not found", success: false };
+            }
+            
+            const chart = Highcharts.charts.find(c => c && c.series && c.series.length > 0);
+            if (!chart) {
+                return { error: "No valid chart found", success: false };
+            }
+            
+            return {
+                mainType: chart.options?.chart?.type || "unknown",
+                seriesTypes: chart.series.map(s => ({
+                    name: s.name,
+                    type: s.type || chart.options?.chart?.type
+                })),
+                pointCount: chart.series[0]?.points?.length || 0,
+                success: true
+            };
+        } catch (e) {
+            return { error: "JavaScript error: " + e.message, success: false };
+        }
+        """
+        
+        try:
+            result = self.driver.execute_script(script)
+            if result is None:
+                logger.info("JavaScript execution returned None - Highcharts API may not be accessible")
+                return None
+                
+            print('Result: ', result)
+            if result.get('success', False):
+                self.chart_type = "."+result['seriesTypes'][0]['type']+"Chart"
+                logger.info(f"Chart type detected from Highcharts API: {self.chart_type}")
+                return result
+            else:
+                error_msg = result.get('error', 'Unknown error')
+                logger.info(f"Failed to detect chart type: {error_msg}")
+                return None
+        except Exception as e:
+            logger.info(f"Error detecting chart type: {e}")
+            return None
+        
+    def set_chartType_highcharts(self, chart_type: Literal['Column', 'Spline', 'Areaspline', 'Stepline', 'Line', 'Area']):
+        """Set chart type directly using Highcharts API, unsure if this is working properly yet. This should be the most reliable way to set the chart type.
+        List chart types: 'Column', 'Spline', 'Areaspline', 'Stepline', 'Line', 'Area', list them by veiwing chart_types attribute of the TE_Scraper."""
+        
+        script = f"""
+        (() => {{
+        if (typeof Highcharts === 'undefined') return false;
+        
+        const chart = Highcharts.charts.find(c => c && c.series && c.series.length > 0);
+        if (!chart) return false;
+        
+        // Store current type
+        const currentType = chart.options?.chart?.type;
+        
+        // Set new type for all series
+        chart.update({{ chart: {{ type: '{chart_type.lower()}' }} }});
+        
+        return true;
+        }})();
+        """
+        
+        success = self.driver.execute_script(script)
+        
+        if success:
+            self.chart_type = chart_type
+            logger.info(f"Chart type set to: {chart_type} (using Highcharts API)")
+            time.sleep(0.5)
+            self.update_chart()
+            return True
+        else:
+            logger.info(f"Error setting chart type: {chart_type} (using Highcharts API)")
+            return False
+    
     def get_y_axis(self, update_chart: bool = False, set_global_y_axis: bool = False):
         """Get y-axis values from chart to make a y-axis series with tick labels and positions (pixel positions).
         Also gets the limits of both axis in pixel co-ordinates. A series containing the y-axis values and their pixel positions (as index) is assigned
