@@ -247,6 +247,12 @@ The package has extensive logging which should help me identify where things wen
 
 ### Troubleshooting
 
+On windows, if you get a permission denied error related to logging on package initialisation, such as:
+```python
+PermissionError: [Errno 13] Permission denied: 'c:\ProgramData\miniconda3\envs\ted\Lib\site-packages\tedata\logs\tedata.log
+```
+You need to run the package as administrator. Run VSCode or shell as admin. 
+
 Webscraping-based approaches to data acquisition can have errors resulting from the complexities of HTTP and browser interactions, which will not occur with consistent reproducibility. Due to the dynamic nature of web pages, network conditions, and browser states, errors that appear during one scraping attempt may not occur in subsequent attempts.
 
 *It is recommended to make at least 3 attempts at an operation before concluding that an error is a legitimate issue with the package.*
