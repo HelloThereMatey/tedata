@@ -28,6 +28,7 @@ def scrape_chart(url: str = None,
                  driver: webdriver = None, 
                  use_existing_driver: bool = False,
                  headless: bool = True, 
+                 wait_time: int = 5,
                  browser: str = 'firefox') -> TE_Scraper:
     
     """ This convenience function will scrape a chart from Trading Economics and return a TE_Scraper object with the series data in
@@ -106,7 +107,7 @@ def scrape_chart(url: str = None,
         pass
 
     logger.info(f"scrape_chart function: Scraping chart at: {url}, time: {datetime.datetime.now()}, method: {method}")
-    if sel.load_page(url):  # Load the page...
+    if sel.load_page(url, extra_wait_time=wait_time):  # Load the page...
         sel.scrape_metadata()  ## Scrape the metadata for the data series from the page.
     else:
         print("Error loading page at: ", url)

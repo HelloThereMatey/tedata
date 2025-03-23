@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 import time
 import datetime
 import pandas as pd
@@ -76,19 +77,32 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             # Scroll chart into view to ensure it's visible for interactions
             self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", chart_element)
             time.sleep(0.5)  # Small delay to let scrolling complete
-            
-            # Wait for the chart content to be loaded
-            self.wait.until(
-                EC.presence_of_element_located((By.CLASS_NAME, "highcharts-series-group")),
-                message="Chart series not loaded")
-            
+
             time.sleep(extra_wait_time)  # Extra wait time after page load just to be sure...
+            
+            if self.has_no_data_message():
+                logger.info("No data found for your country/indicator comibnation, check that the URL or country/indicator combination is correct.")
+                #return False
+            # Wait for the chart content to be loaded with a shorter timeout
+            try:
+                WebDriverWait(self.driver, 5).until(  # Using 5 seconds instead of default timeout
+                    EC.presence_of_element_located((By.CLASS_NAME, "highcharts-series-group")),
+                    message="Chart series not present")
+            except TimeoutException:
+                logger.info("No data series found for your country/indicator comibnation, check that the URL or country/indicator combination is correct.")
             
             # Now it's safe to get the page source
             self.full_page = self.get_page_source()
             self.page_soup = BeautifulSoup(self.full_page, 'html.parser')
             self.chart_soup = self.page_soup.select_one("#chart")  #Make a bs4 object from the #chart element of the page.
             self.full_chart = self.chart_soup.contents
+
+            #Final check...
+            if len(list(self.chart_soup.select_one(".highcharts-series-group").children)) > 0:
+                logger.info("Page loaded successfully.")
+            else:
+                logger.info("Page loaded but no data found.")
+                return False
         except Exception as e:
             print(f"Error loading page: {str(e)}")
             logger.debug(f"Error loading page: {str(e)}")
@@ -96,15 +110,41 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         
         retries = 4
         for i in range(retries):
-            if self.create_chart_types_dict(): # Create the chart types dictionary for the chart.
-                logger.info("Chart types dictionary created successfully.")
-                break
-            else:
+            try: 
+                if self.create_chart_types_dict(): # Create the chart types dictionary for the chart.
+                    break
+            except Exception as e:
                 logger.debug("Error creating chart types dictionary. Retrying, attempt: ", i)
-            
-        self.update_date_span()
+                continue
+        try:
+            self.update_date_span()
+        except Exception as e:
+            logger.info(f"Error determining date span of chart: {str(e)}")
         return True
+    
+    def has_no_data_message(self):
+        """
+        Check if the current chart shows a "no data available" message.
         
+        Returns:
+            bool: True if no data message is displayed, False otherwise
+        """
+        script = """
+        try {
+            const noDataMsg = document.querySelector('.noDataPlacehoder p');
+            return noDataMsg && 
+                noDataMsg.textContent.includes('There is no data for this indicator or it is unavailable at the moment');
+        } catch (e) {
+            return false;
+        }
+        """
+        
+        result = self.driver.execute_script(script)
+        if result:
+            logger.info("No data message detected on chart")
+        
+        return True if result else False
+    
     def click_button(self, selector, selector_type=By.CSS_SELECTOR):
         """Click button using webdriver and wait for response.
         **Parameters:**
@@ -257,13 +297,16 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         """Create a dictionary of chart types and their CSS selectors. This is used to select the chart type on the Trading Economics chart.
         The dictionary is stored in the chart_types attribute of the class. The keys are the names of the chart types and the values are the CSS selectors
         for the chart type buttons on the chart."""
-
-        hart_types = self.chart_soup.select_one(".chartTypesWrapper")
-        self.chart_types = {child["title"]: "."+child["class"][0]+" ."+ child.button["class"][0] for child in hart_types.children}
-        for key, value in self.chart_types.items():
-            self.chart_types[key] = value.split(" ")[0]
-        logger.info(f"Chart types dictionary created successfully: {self.chart_types.keys()}")
-        return True
+        try:
+            hart_types = self.chart_soup.select_one(".chartTypesWrapper")
+            self.chart_types = {child["title"]: "."+child["class"][0]+" ."+ child.button["class"][0] for child in hart_types.children}
+            for key, value in self.chart_types.items():
+                self.chart_types[key] = value.split(" ")[0]
+            logger.info(f"Chart types dictionary created successfully: {self.chart_types.keys()}")
+            return True
+        except Exception as e:
+            logger.error(f"Error creating chart types dictionary: {e}")
+            return False
 
     def select_chart_type(self, chart_type: str):
         """Select a chart type on the Trading Economics chart. This is done by clicking the chart type button and then selecting the specified chart type.
