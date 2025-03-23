@@ -57,7 +57,13 @@ import tedata as ted
 ```python
 PermissionError: [Errno 13] Permission denied: 'c:\ProgramData\miniconda3\envs\ted\Lib\site-packages\tedata\logs\tedata.log
 ```
-You need to run the package as administrator. Run VSCode or shell as admin. 
+You need to run the package as administrator. Run VSCode or shell as admin. Alternatively you can disable logging by importing like this:
+```python
+import os
+os.environ['TEDATA_DISABLE_LOGGING'] = 'true'
+import tedata  as ted # No logging output will appear
+```
+However, without logging there will be no messages printed to console and it may be hard to figure out what went wrong if an error occurs.
 
 #### There are several different ways to use tedata to get data from trading economics
 
@@ -251,7 +257,7 @@ On windows, if you get a permission denied error related to logging on package i
 ```python
 PermissionError: [Errno 13] Permission denied: 'c:\ProgramData\miniconda3\envs\ted\Lib\site-packages\tedata\logs\tedata.log
 ```
-You need to run the package as administrator. Run VSCode or shell as admin. 
+You need to run the package as administrator. Run VSCode or shell as admin.
 
 Webscraping-based approaches to data acquisition can have errors resulting from the complexities of HTTP and browser interactions, which will not occur with consistent reproducibility. Due to the dynamic nature of web pages, network conditions, and browser states, errors that appear during one scraping attempt may not occur in subsequent attempts.
 

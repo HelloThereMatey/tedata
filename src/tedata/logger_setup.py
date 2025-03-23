@@ -1,10 +1,27 @@
 import logging
 import os
 
-def setup_logger():
+def setup_logger(disable_logging=False):
+    """
+    Set up and configure the tedata logger
+    
+    Args:
+        disable_logging (bool): If True, suppresses all logging output
+                               If False (default), normal logging behavior
+    
+    Returns:
+        logger: Configured logger object
+    """
     # Check if logger already exists and has handlers to avoid duplicates
     logger = logging.getLogger('tedata')
     if logger.handlers:
+        return logger
+    
+    if disable_logging:
+        # Set level to CRITICAL+1 to disable all logging
+        logger.setLevel(logging.CRITICAL + 1)
+        # Add a null handler to prevent "No handlers could be found" warning
+        logger.addHandler(logging.NullHandler())
         return logger
         
     logger.setLevel(logging.DEBUG)
