@@ -53,7 +53,13 @@ Ensure that you also have firefox browser installed.
 ```python
 import tedata as ted
 ```
-There are several different ways to use tedata to get data from trading economics:
+**Note:** On windows, if you get a permission denied error related to logging, such as:
+```python
+PermissionError: [Errno 13] Permission denied: 'c:\ProgramData\miniconda3\envs\ted\Lib\site-packages\tedata\logs\tedata.log
+```
+You need to run the package as administrator. Run VSCode or shell as admin. 
+
+#### There are several different ways to use tedata to get data from trading economics
 
 ##### Inside a Jupyter Notebook, python shell or script:
 
@@ -240,6 +246,12 @@ scrape_chart(scraper = scr, id = "gdp", country = "united-states")
 The package has extensive logging which should help me identify where things went wrong if you encounter a problem. Please not that there are fleeting errors that can occur with webscraping based approaches and you should have multiple attempts at running an operation before concluding there is an issue with the package. Please log an issue or pull request and send me your logfile if you run into a problem. logfiles are stored in `/src/tedata/logs`.
 
 ### Troubleshooting
+
+On windows, if you get a permission denied error related to logging on package initialisation, such as:
+```python
+PermissionError: [Errno 13] Permission denied: 'c:\ProgramData\miniconda3\envs\ted\Lib\site-packages\tedata\logs\tedata.log
+```
+You need to run the package as administrator. Run VSCode or shell as admin. 
 
 Webscraping-based approaches to data acquisition can have errors resulting from the complexities of HTTP and browser interactions, which will not occur with consistent reproducibility. Due to the dynamic nature of web pages, network conditions, and browser states, errors that appear during one scraping attempt may not occur in subsequent attempts.
 
