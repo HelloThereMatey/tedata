@@ -831,9 +831,34 @@ class TooltipScraper(scraper.TE_Scraper):
         actions.move_by_offset(x, y).perform()
         actions.reset_actions()
         self.show_position_marker(x, y)
-    
 
-### Other utility functions for the TooltipScraper class ##########################################
+    def initialize_tooltip_simple(self):
+        """Initialize tooltip by moving mouse to center of chart with a single browser event"""
+        
+        with open(os.path.join(os.path.dirname(__file__), 'init_tooltips.js'), 'r') as file:
+            script = file.read()
+        
+        try:
+            result = self.driver.execute_script(script)
+            
+            if result.get('success'):
+                logger.info("Successfully initialized tooltip with simple mouse event")
+                return True
+            else:
+                initial = result.get('initialState', {})
+                final = result.get('finalState', {})
+                logger.warning(
+                    f"Failed to initialize tooltip with simple mouse event: {result.get('error')}\n"
+                    f"Initial state: {initial}\n"
+                    f"Final state: {final}\n"
+                    f"Chart found: {result.get('hasChart')}"
+                )
+                return False
+        except Exception as e:
+            logger.error(f"Error during simple tooltip initialization: {str(e)}")
+            return False
+
+    ### Other utility functions for the TooltipScraper class ##########################################
 
 def get_chart_datespans(scraper_object: Union[scraper.TE_Scraper, TooltipScraper], selector: str = "#dateSpansDiv"):
     """Get the date spans from the Trading Economics chart currently displayed in the scraper object. The scraper object can be a TE_Scraperfrom the scraper module
