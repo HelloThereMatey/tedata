@@ -75,14 +75,15 @@ function getFirstLastDates(done) {
         }
         
         async function executeSearch() {
-            // First clear any existing tooltips via mouseout event
+            //First clear any existing tooltips via mouseout event
             const outEvent = new MouseEvent('mouseout', {
                 bubbles: true,
                 cancelable: true,
                 view: window
             });
             document.body.dispatchEvent(outEvent);
-            // Calculate precise positions
+            
+            //Calculate precise positions
             const centerY = plotRect.top + (plotRect.height / 2);
             const leftX = plotRect.left; // No offset
             const rightX = plotRect.right; // No offset

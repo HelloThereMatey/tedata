@@ -670,9 +670,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if hasattr(self, "metadata"):
             self.metadata["unit_tooltips"] = self.start_end["unit_str"]
 
-    def make_x_index(self, 
-                     force_rerun_xlims: bool = True,
-                     force_rerun_freqdet: bool = True):
+    def make_x_index(self, force_rerun_xlims: bool = True, force_rerun_freqdet: bool = True):
         """Make the DateTime Index for the series using the start and end dates scraped from the tooltips. 
         This uses Selenium and also scrapes the some of the latest datapoints from the tooltips on the chart in order to determine
         the frequency of the time series. It will take a bit of time to run.

@@ -514,6 +514,8 @@ class TooltipScraper(scraper.TE_Scraper):
         """Get first and last data points using JavaScript execution instead of ActionChains.
         More reliable across different browser implementations and environments."""
 
+        self.initialize_tooltip_simple()  # Initialize tooltip by moving mouse to center of chart.
+
         # Load JavaScript code from file
         js_file_path = os.path.join(os.path.dirname(__file__), 'firstLastDates.js')
         try:
@@ -661,22 +663,23 @@ class TooltipScraper(scraper.TE_Scraper):
         logger.info(f"Time taken to select chart type: {timeit.default_timer() - spline_step}")
 
         # First we'll try to get first & last points:
-        success = False
-        for attempt in range(3):
-            self.start_end = self.first_last_dates_js()
-            if (self.start_end is None or 
-                not all(key in self.start_end for key in ["start_date", "end_date"]) or
-                any(pd.isna(self.start_end[key]) for key in ["start_date", "end_date"]))\
-                or any(self.start_end[key] is None for key in ["start_date", "end_date"]):
-                print("Retrying start_end extraction...")
-                time.sleep(0.25)
-            else:
-                logger.info("Start_end extracted successfully:", self.start_end)
-                success = True
-                break
-        if not success:
-            logger.info("Failed to extract start & end points, this could adversely affect the rest of the tooltip scraping..")
-    
+        # success = False
+        # for attempt in range(3):
+        #     self.start_end = self.first_last_dates_js()
+        #     if (self.start_end is None or 
+        #         not all(key in self.start_end for key in ["start_date", "end_date"]) or
+        #         any(pd.isna(self.start_end[key]) for key in ["start_date", "end_date"]))\
+        #         or any(self.start_end[key] is None for key in ["start_date", "end_date"]):
+        #         print("Retrying start_end extraction...")
+        #         time.sleep(0.25)
+        #     else:
+        #         logger.info("Start_end extracted successfully:", self.start_end)
+        #         success = True
+        #         break
+        # if not success:
+        #     logger.info("Failed to extract start & end points, this could adversely affect the rest of the tooltip scraping..")
+
+        self.initialize_tooltip_simple() #Initialize the tooltip by moving the mouse to the center of the chart.
         try:
             # Load JavaScript code from file
             js_file_path = os.path.join(os.path.dirname(__file__), 'latest_points.js')
@@ -840,14 +843,17 @@ class TooltipScraper(scraper.TE_Scraper):
         
         try:
             result = self.driver.execute_script(script)
+            initial = result.get('initialState', {})
+            final = result.get('finalState', {})
             
             if result.get('success'):
-                logger.info("Successfully initialized tooltip with simple mouse event")
+                logger.info("Successfully initialized tooltip with simple mouse event\n")
+                logger.debug(f"Initial state: {initial}\nFinal state: {final}")
                 return True
             else:
                 initial = result.get('initialState', {})
                 final = result.get('finalState', {})
-                logger.warning(
+                logger.info(
                     f"Failed to initialize tooltip with simple mouse event: {result.get('error')}\n"
                     f"Initial state: {initial}\n"
                     f"Final state: {final}\n"

@@ -126,6 +126,11 @@ def scrape_chart(url: str = None,
         except Exception as e:
             logger.info("Error setting date span: ", str(e))
         try:
+            sel.tooltip_scraper.initialize_tooltip_simple()  #Initialize the tooltips on the page by moving mouse onto chart.
+        except Exception as e:
+            logger.info(f"Error initializing tooltips: {str(e)}")
+            return None
+        try:
             sel.full_series_fromTooltips()  #Scrape the full series from the tooltips on the chart.
             logger.info("Successfully scraped full series from tooltips.")
         except Exception as e:
@@ -189,6 +194,11 @@ def scrape_chart(url: str = None,
         
         if not hasattr(sel, "tooltip_scraper"):
             sel.init_tooltipScraper()  ## Initialize the tooltip scraper.
+        try:
+            sel.tooltip_scraper.initialize_tooltip_simple()  #Initialize the tooltips on the page by moving mouse onto chart.
+        except Exception as e:
+            logger.info(f"Error initializing tooltips: {str(e)}")
+            return None
         
         try:  
             if sel.tooltip_multiScrape():  ## Scrape the full series from the chart using multiple runs of the javascript tooltip scraper.
