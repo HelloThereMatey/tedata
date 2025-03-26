@@ -96,7 +96,9 @@ Specify a URL to a Trading Economics chart as the command argument. Example belo
 python -m tedata --head --method mixed "https://tradingeconomics.com/united-states/ism-manufacturing-new-orders"
 ```
 
-Having a head will bring up browser (firefox) window. Watch as the scraper does it's thing. It'll take between 15 - 50 s. So head may be more entertaining than waiting without head. Once complete, a window will open in your browser to display the interactive plotly chart with your data. Data is saved to .xlsx at the same time.
+Having a head will bring up browser (firefox) window. Watch as the scraper does it's thing. It'll take between 15 - 40 s. So head may be more entertaining than waiting without head. Once complete, a window will open in your browser to display the interactive plotly chart with your data. Data is saved to .xlsx at the same time.
+
+Here the method "mixed" was used with a non-headless browser instance as it is more entertaining. The "highcharts_api" method is default though and is generally the best method to use. Omit method specification in order to use the default.
 
 ### Using Jupyter Notebook or Similar
 

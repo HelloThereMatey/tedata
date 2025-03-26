@@ -32,8 +32,8 @@ def main():
     parser.add_argument(
         '--method',
         '-m',
-        choices=["path", "tooltips", "mixed"],
-        help='Scraping method to use: "path", "tooltips" or "mixed". If not specified, default method "path" will be used.'
+        choices=["path", "tooltips", "mixed", "highcharts_api"],
+        help='Scraping method to use: "path", "tooltips" or "mixed". If not specified, default method "highcharts_api" will be used.'
     )
 
     # Parse arguments
