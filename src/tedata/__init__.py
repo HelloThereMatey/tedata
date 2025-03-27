@@ -8,7 +8,7 @@ from .logger_setup import setup_logger
 pd.options.plotting.backend = "plotly"
 
 # Version of the tedata package
-__version__ = "0.3.5"
+__version__ = "0.3.51"
 
 # Check for environment variable to disable logging
 disable_logging = os.environ.get('TEDATA_DISABLE_LOGGING', '').lower() in ('true', '1', 'yes')

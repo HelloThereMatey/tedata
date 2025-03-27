@@ -37,9 +37,9 @@ These will be automaticaly installed if you use pip to install tedata.
 
 #### Install from pypi
 
-Currently the package is in the testing phase. It has been pubished to test pypi but not yet pypi. You can install from testpypi. You need to specifiy both index urls in order to install the dependencies from pypi. Use the command below:
+Install from PyPi. Has been published to PyPi as of v0.3.5. Use the command below:
 ```bash
-pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple tedata
+pip install tedata
 ```
 
 Ensure that you also have firefox browser installed.
