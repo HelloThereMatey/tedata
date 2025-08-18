@@ -276,7 +276,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         by using the calendar widget on the chart. This method will click the calendar button and then enter an arbitrary date far in the past as start date and the 
         current date as the end date."""
 
-        self.custom_date_span_js(start_date="1850-01-01", end_date=datetime.date.today().strftime("%Y-%m-%d"))
+        self.custom_date_span_js(start_date="1950-01-01", end_date=datetime.date.today().strftime("%Y-%m-%d"))
         self.date_span = "MAX"
 
     def update_date_span(self, update_chart: bool = False):
@@ -539,7 +539,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             with open(js_file_path, 'r') as file:
                 js_code = file.read()
             
-            # Execute the JavaScript with parameters
+            # Execute the JavaScript with parameters using async API (custom_datespan.js expects a callback)
             result = self.driver.execute_async_script(js_code, start_date, end_date)
             
             if isinstance(result, dict) and result.get('success'):
@@ -896,7 +896,19 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
             script = file.read()
 
         try:
-            result = self.driver.execute_script(script)
+            # Use async execution so the JS can call the Selenium callback with the full object
+            result = self.driver.execute_async_script(script)
+            # If the page returned a JSON string, parse it
+            try:
+                if isinstance(result, str):
+                    import json as _json
+                    result = _json.loads(result)
+            except Exception as _e:
+                print('CHECK_HC_PARSE_ERROR:', _e)
+            # Ensure result is a dict and has seriesData
+            if not isinstance(result, dict) or 'seriesData' not in result:
+                raise ValueError(f'check_highcharts returned unexpected payload: {repr(result)}')
+
             # Extract the data points
             data_points = result['seriesData'][0]['points']
             data = [(point['x'], point['y']) for point in data_points]

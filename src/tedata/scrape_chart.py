@@ -71,8 +71,9 @@ def scrape_chart(url: str = None,
     - TE_Scraper object with the scraped data or None if an error occurs.
     """
 
-    if start_date is None: 
-        start_date = "1850-01-01"
+    if start_date is not None: 
+        print("WARNING: Trading Economics has disabled the custom date range setter for non-premium users. Only 10Y of history can be obtained.")
+        #start_date = (datetime.datetime.now() - datetime.timedelta(days=((365*10)-1))).strftime("%Y-%m-%d")
     if end_date is None:
         end_date = datetime.datetime.now().strftime("%Y-%m-%d")
     if scraper is not None:  
@@ -115,14 +116,12 @@ def scrape_chart(url: str = None,
         return None
 
     if method == "tooltips":
-        if start_date is None:
-            start_date = "1850-01-01"
-        if end_date is None:
-            end_date = datetime.datetime.now().strftime("%Y-%m-%d")
         if not hasattr(sel, "tooltip_scraper"):
             sel.init_tooltipScraper()  ## Initialize the tooltip scraper.
         try:
-            sel.custom_date_span_js(start_date, end_date)  # Set the date span for the chart.
+            # Trading economics has disabled the abilty to set custom date ranges. ALl date range will be set to 10Y which is now the max.
+            sel.set_date_span("10Y")
+            #sel.custom_date_span_js(start_date, end_date)  # Set the date span for the chart.
         except Exception as e:
             logger.info("Error setting date span: ", str(e))
         try:
@@ -139,6 +138,12 @@ def scrape_chart(url: str = None,
             return None
         
     elif method == "path":
+        try:
+            # Trading economics has disabled the abilty to set custom date ranges. ALl date range will be set to 10Y which is now the max.
+            sel.set_date_span("10Y")
+            #sel.custom_date_span_js(start_date, end_date)  # Set the date span for the chart.
+        except Exception as e:
+            logger.info("Error setting date span: ", str(e))
         try: #Create the x_index for the series. This is the most complicated bit.
             sel.make_x_index(force_rerun_xlims = True, force_rerun_freqdet = True)  
         except Exception as e:
@@ -186,6 +191,12 @@ def scrape_chart(url: str = None,
     ## Most accurate method but slowest. Determine start & end dates for full series and frequency, make x-index. Then scrape the data from tooltips
     # using multiple runs of the chart with different date spans to capture all the data.
     elif method == "mixed":
+        try:
+            # Trading economics has disabled the abilty to set custom date ranges. ALl date range will be set to 10Y which is now the max.
+            sel.set_date_span("10Y")
+            #sel.custom_date_span_js(start_date, end_date)  # Set the date span for the chart.
+        except Exception as e:
+            logger.info("Error setting date span: ", str(e))
         try: #Create the x_index for the series. This is the most complicated bit.
             sel.make_x_index(force_rerun_xlims = True, force_rerun_freqdet = True)  
         except Exception as e:
@@ -211,8 +222,9 @@ def scrape_chart(url: str = None,
         
     elif method == "highcharts_api":
         try:
-            # Set max date span for the series.
-            sel.set_max_date_span_viaCalendar()
+            # Trading economics has disabled the abilty to set custom date ranges. ALl date range will be set to 10Y which is now the max.
+            sel.set_date_span("10Y")
+            #sel.custom_date_span_js(start_date, end_date)  # Set the date span for the chart.
             time.sleep(1)
         except Exception as e:
             logger.info(f"Error setting max date span: {str(e)}")
