@@ -40,8 +40,15 @@ function setDateSpan(start_date, end_date, done) {
             });
             endInput.dispatchEvent(keyEvent);
             
-            // Success
-            done({ success: true });
+            // Success - return additional diagnostic fields so the Python caller can verify what was set
+            done({ 
+                success: true,
+                message: 'Date inputs set',
+                start_date: start_date,
+                end_date: end_date,
+                startInputValue: startInput.value,
+                endInputValue: endInput.value
+            });
         }, 100);
     } catch (error) {
         done({ success: false, error: error.toString() });
