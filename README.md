@@ -1,27 +1,30 @@
 ## tedata
 
-Download data from Trading Economics without an account or API key. Trading Economics API costs upwards of $100 USD per month for data access. Using this you will be able to download a large part of the data available on the site for free. Trading Economics has one of the greatest repositories of macroeconomic data on Earth. Download data series into a Jupyter notebook environment or save series directly to an excel file (.xlsx) using command line. This utilizes Selenium and BeautifulSoup4 to scrape data from charts. Runs fine on linux, mac OS or windows.
+Download data from Trading Economics without an account or API key. Trading Economics API costs upwards of $100 USD per month for data access. Using this you will be able to download a large part of the data available on the site for free. Trading Economics has one of the greatest repositories of macroeconomic data on Earth. Download data series into a Jupyter notebook environment or save series directly to excel file (.xlsx) using command line. Utilizes Selenium and BeautifulSoup4 to scrape data from charts. Runs fine on linux, mac OS or windows.
 
 **Update 2025-08-19:** It appears that Trading Economics have vastly upgraded their anti-scraping measures. The maximum length of data that can be downloaded using tedata is now limited to 10 years. Most series on the site can be downloaded but the historical length is now limited.
 
-Note that the current version (v0.3.x) only supports scraping of data from the economic data type of chart (example below). The more interactive type chart (second example chart image below) that displays higher frequency data for stocks, commodities etc is not yet working for data download.
-
 ![Static plot](docs/te_chart.PNG)
 
-**Above:** You can download the data from charts that look like this. The highest frequency data I've seen on these is weekly. I suspect weekly is the highest data frequency accessible via tedata at the moment.
+**Above:** Chart type for lower frequency data, e.g monthly economic indicators such as CPI. tedata has always enabled scraping of the data from this chart type.
+
+**Update 2026-04-26:**
+tedata now supports download of data series for higher-frequency series such as commodity prices. You can now also download data from the chart type shown below, used for higher frequency data such as commodity prices. This is a significant upgrade as it opens up a much wider range of data series for download.
 
 ![Static plot](docs/te_chart2.PNG)
 
-**Above:** You cannot yet download the high frequency data from these types of chart. I'm sure we'll figure out how to do it soon though...
+**Above:** You can now download data from a chart like this as well.
 
 ### System Requirements
 
-This package requires a browser that can be automated via selenium. **ONLY FIREFOX BROWSER IS CURRENTLY SUPPORTED**. Ensure that you have the latest stable version of Firefox installed in order to use this package. We should be able to add support for Chrome soon.
+This package requires a browser that can be automated via selenium. **Firefox and chrome browsers are supported.**. Ensure that you have the latest stable version of Firefox or chrome installed in order to use this package.
 
 - Firefox (version 115.0.0 or higher)
+- Chrome (version 115.0.0 or higher)
 - Python v3.9 or higher.
 
 You can download firefox from: [firefox](https://www.mozilla.org/firefox/new/)
+You can download chrome from: [chrome](https://www.google.com/chrome/)
 
 #### Python requirements:
 

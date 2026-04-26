@@ -1,0 +1,101 @@
+idx,url,method,browser,status,error,series_len,start_date,end_date,duration_s
+0,https://tradingeconomics.com/commodity/brent-crude-oil,highcharts_api,chrome,success,,522.0,2016-04-25,2026-04-20,16.1
+1,https://tradingeconomics.com/commodity/crude-oil,highcharts_api,chrome,success,,522.0,2016-04-25,2026-04-20,13.9
+2,https://tradingeconomics.com/united-states/spot-crude-oil-price-west-texas-intermediate-wti-fed-data.html,highcharts_api,chrome,success,,120.0,2016-04-01,2026-03-01,13.4
+3,https://tradingeconomics.com/united-states/crude-oil-prices-west-texas-intermediate-wti--cushing-oklahoma-fed-data.html,highcharts_api,chrome,success,,12.0,2026-04-02,2026-04-20,10.4
+4,https://tradingeconomics.com/abx:cn:pe,highcharts_api,chrome,success,,35.0,2016-06-01,2025-12-01,13.7
+5,https://tradingeconomics.com/eld:cn:pe,highcharts_api,chrome,success,,35.0,2016-06-01,2025-12-01,13.5
+6,https://tradingeconomics.com/ngd:cn:pe,highcharts_api,chrome,success,,24.0,2016-06-01,2025-09-01,14.1
+7,https://tradingeconomics.com/2368:tt:pe,highcharts_api,chrome,success,,38.0,2016-06-01,2025-12-01,16.2
+8,https://tradingeconomics.com/cg:cn:pe,highcharts_api,chrome,success,,32.0,2016-06-01,2025-09-01,13.6
+9,https://tradingeconomics.com/gfi:sj:pe,highcharts_api,chrome,success,,19.0,2016-01-01,2025-01-01,13.6
+10,https://tradingeconomics.com/eqx:cn:pe,highcharts_api,chrome,success,,23.0,2017-06-01,2025-12-01,14.1
+11,https://tradingeconomics.com/fr:cn:pe,highcharts_api,chrome,success,,26.0,2016-06-01,2025-12-01,13.3
+12,https://tradingeconomics.com/fvi:cn:pe,highcharts_api,chrome,success,,38.0,2016-06-01,2025-12-01,13.9
+13,https://tradingeconomics.com/united-states/all-transactions-house-price-index-for-silver-bow-county-mt-fed-data.html,highcharts_api,chrome,success,,10.0,2015-01-01,2024-01-01,13.4
+14,https://tradingeconomics.com/scco:us:pe,highcharts_api,chrome,success,,39.0,2016-06-01,2025-12-01,13.7
+15,https://tradingeconomics.com/coo:us:pe,highcharts_api,chrome,success,,39.0,2016-06-01,2025-12-01,13.8
+16,https://tradingeconomics.com/ero:cn:pe,highcharts_api,chrome,success,,33.0,2017-12-01,2025-12-01,13.6
+17,https://tradingeconomics.com/germany/producer-prices-in-industry-copper-production-eurostat-data.html,highcharts_api,chrome,success,,120.0,2016-03-01,2026-02-01,13.7
+18,https://tradingeconomics.com/italy/producer-prices-in-industry-copper-production-eurostat-data.html,highcharts_api,chrome,success,,120.0,2016-03-01,2026-02-01,13.6
+19,https://tradingeconomics.com/spain/producer-prices-in-industry-copper-production-eurostat-data.html,highcharts_api,chrome,success,,120.0,2016-03-01,2026-02-01,13.7
+20,https://tradingeconomics.com/european-union/producer-prices-in-industry-copper-production-eurostat-data.html,highcharts_api,firefox,success,,120.0,2016-03-01,2026-02-01,17.7
+21,https://tradingeconomics.com/euro-area/producer-prices-in-industry-aluminium-production-eurostat-data.html,highcharts_api,firefox,success,,120.0,2016-03-01,2026-02-01,15.9
+22,https://tradingeconomics.com/sweden/producer-prices-in-industry-aluminium-production-eurostat-data.html,highcharts_api,firefox,success,,120.0,2016-03-01,2026-02-01,15.0
+23,https://tradingeconomics.com/european-union/producer-prices-in-industry-aluminium-production-eurostat-data.html,highcharts_api,firefox,success,,120.0,2016-03-01,2026-02-01,14.9
+24,https://tradingeconomics.com/romania/producer-prices-in-industry-aluminium-production-eurostat-data.html,highcharts_api,firefox,success,,120.0,2013-12-01,2023-11-01,17.7
+25,https://tradingeconomics.com/cenx:us:pe,highcharts_api,firefox,success,,19.0,2017-09-01,2025-12-01,16.4
+26,https://tradingeconomics.com/601600:ch:pe,highcharts_api,firefox,success,,36.0,2016-06-01,2025-09-01,16.7
+27,https://tradingeconomics.com/kalu:us:pe,highcharts_api,firefox,success,,37.0,2016-06-01,2025-12-01,16.5
+28,https://tradingeconomics.com/ongc:in:pe,highcharts_api,firefox,success,,36.0,2016-09-01,2025-12-01,16.7
+29,https://tradingeconomics.com/austria/harmonised-idx-of-consumer-prices-hicp-natural-gas-town-gas-eurostat-data.html,highcharts_api,firefox,success,,120.0,2015-12-01,2025-11-01,15.4
+30,https://tradingeconomics.com/denmark/harmonised-idx-of-consumer-prices-hicp-natural-gas-town-gas-eurostat-data.html,highcharts_api,firefox,success,,120.0,2015-12-01,2025-11-01,17.0
+31,https://tradingeconomics.com/spain/harmonised-idx-of-consumer-prices-hicp-natural-gas-town-gas-eurostat-data.html,highcharts_api,firefox,success,,120.0,2015-12-01,2025-11-01,16.3
+32,https://tradingeconomics.com/france/harmonised-idx-of-consumer-prices-hicp-natural-gas-town-gas-eurostat-data.html,highcharts_api,firefox,success,,120.0,2015-12-01,2025-11-01,15.8
+33,https://tradingeconomics.com/hungary/harmonised-idx-of-consumer-prices-hicp-natural-gas-town-gas-eurostat-data.html,highcharts_api,firefox,success,,120.0,2015-12-01,2025-11-01,15.7
+34,https://tradingeconomics.com/lithuania/harmonised-idx-of-consumer-prices-hicp-natural-gas-town-gas-eurostat-data.html,highcharts_api,firefox,success,,120.0,2015-12-01,2025-11-01,17.6
+35,https://tradingeconomics.com/united-states/crude-oil-production,highcharts_api,firefox,success,,120.0,2016-02-01,2026-01-01,15.5
+36,https://tradingeconomics.com/united-states/crude-oil-stocks-change,highcharts_api,firefox,success,,53.0,2025-04-18,2026-04-17,17.9
+37,https://tradingeconomics.com/united-states/weekly-crude-oil-production,highcharts_api,firefox,success,,12.0,2026-01-30,2026-04-17,12.3
+38,https://tradingeconomics.com/united-states/oil-exports,highcharts_api,firefox,success,,120.0,2016-03-01,2026-02-01,16.0
+39,https://tradingeconomics.com/united-states/export-end-use-wheat-and-rice-index-2000-100-m-nsa-fed-data.html,highcharts_api,firefox,success,,119.0,2016-04-01,2026-03-01,15.5
+40,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-farm-products-hard-red-spring-wheat-fed-data.html,path,chrome,success,,120.0,2016-04-01,2026-03-01,20.7
+41,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-farm-products-soft-white-wheat-fed-data.html,path,firefox,success,,120.0,2016-04-01,2026-03-01,21.6
+42,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-farm-products-soft-red-winter-wheat-fed-data.html,path,chrome,success,,120.0,2016-04-01,2026-03-01,20.1
+43,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-processed-foods-and-feeds-dark-wheat-breads-whole-wheat-cracked-wheat-multigrain-etc--fed-data.html,path,firefox,success,,120.0,2016-04-01,2026-03-01,24.5
+44,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-processed-foods-and-feeds-wheat-mill-products-corn-mill-products-and-other-grain-mill-products-except-flour-fed-data.html,path,chrome,success,,120.0,2016-04-01,2026-03-01,19.9
+45,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-farm-products-hard-red-winter-wheat-fed-data.html,path,firefox,success,,120.0,2016-04-01,2026-03-01,24.3
+46,https://tradingeconomics.com/united-states/export-naics-corn-farming-index-2005-100-m-nsa-fed-data.html,path,chrome,success,,120.0,2016-04-01,2026-03-01,23.4
+47,https://tradingeconomics.com/united-states/producer-price-index-by-industry-wet-corn-milling-wet-process-corn-byproducts-fed-data.html,path,firefox,success,,120.0,2016-04-01,2026-03-01,24.3
+48,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-processed-foods-and-feeds-corn-sweeteners-fed-data.html,path,chrome,success,,120.0,2016-04-01,2026-03-01,19.9
+49,https://tradingeconomics.com/united-states/producer-price-index-by-industry-wet-corn-milling-fed-data.html,path,firefox,success,,120.0,2016-04-01,2026-03-01,23.5
+50,https://tradingeconomics.com/united-states/producer-price-index-by-industry-flour-milling-corn-mill-products-fed-data.html,path,chrome,success,,120.0,2016-04-01,2026-03-01,20.6
+51,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-processed-foods-and-feeds-chips-potato-corn-etc--fed-data.html,path,firefox,success,,120.0,2016-04-01,2026-03-01,22.6
+52,https://tradingeconomics.com/united-states/export-end-use-soybeans-and-soybean-by-products-prior-to-the-extraction-of-oil-index-2000-100-m-nsa-fed-data.html,path,chrome,success,,120.0,2016-04-01,2026-03-01,20.7
+53,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-processed-foods-and-feeds-soybean-cake-meal-and-other-byproducts-discontinued-index-1982100-fed-data.html,path,firefox,success,,32.0,2014-01-01,2021-10-01,22.5
+54,https://tradingeconomics.com/united-states/export-end-use-soybeans-and-other-oil-seeds-index-2000-100-m-nsa-fed-data.html,path,chrome,success,,120.0,2016-04-01,2026-03-01,20.7
+55,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-chemicals-and-allied-products-soybean-oil-processed-for-inedible-purposes-fed-data.html,path,firefox,success,,120.0,2016-04-01,2026-03-01,22.0
+56,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-processed-foods-and-feeds-wines-rose-grape-and-other-fruits-and-berries-14-percent-or-less-alcohol-fed-data.html,path,chrome,success,,120.0,2016-04-01,2026-03-01,20.3
+57,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-chemicals-and-allied-products-crude-soybean-oil-degummed-fed-data.html,path,firefox,success,,120.0,2016-04-01,2026-03-01,22.0
+58,https://tradingeconomics.com/united-states/producer-price-index-by-industry-oilseed-processing-primary-products-fed-data.html,path,chrome,success,,120.0,2016-04-01,2026-03-01,20.8
+59,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-textile-products-and-apparel-finished-manmade-fiber-silk-and-other-natural-fiber-excluding-cotton-and-wool-broadwoven-fabrics-fed-data.html,path,firefox,success,,120.0,2016-04-01,2026-03-01,23.2
+60,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-contract-work-on-textile-products-apparel-and-leather-commission-finishing-of-other-broadwoven-fabrics-excluding-cotton-and-wool-fed-data.html,tooltips,chrome,success,,120.0,2016-04-01,2026-03-01,22.2
+61,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-textile-products-and-apparel-spun-cotton-yarns-fed-data.html,tooltips,firefox,success,,120.0,2015-04-01,2025-03-01,23.4
+62,https://tradingeconomics.com/united-states/export-harmonized-system-cotton-not-carded-or-combed-index-dec-2006-100-m-nsa-fed-data.html,tooltips,chrome,success,,97.0,2016-04-01,2026-03-01,21.8
+63,https://tradingeconomics.com/united-states/import-end-use-cotton-apparel-and-household-goods-index-2000-100-m-nsa-fed-data.html,tooltips,firefox,success,,120.0,2016-04-01,2026-03-01,23.2
+64,https://tradingeconomics.com/united-states/import-end-use-apparel-and-household-goods-for-other-textiles-index-2000-100-m-nsa-fed-data.html,tooltips,chrome,success,,120.0,2016-04-01,2026-03-01,21.9
+65,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-processed-foods-and-feeds-cotton-linters-fed-data.html,tooltips,firefox,success,,120.0,2016-04-01,2026-03-01,23.2
+66,https://tradingeconomics.com/world/sugar-price-index,tooltips,chrome,success,,120.0,2016-04-01,2026-03-01,22.1
+67,https://tradingeconomics.com/germany/producer-prices-in-industry-manufacture-of-cocoa-chocolate-sugar-confectionery-eurostat-data.html,tooltips,firefox,success,,120.0,2016-03-01,2026-02-01,23.4
+68,https://tradingeconomics.com/france/producer-prices-in-industry-manufacture-of-cocoa-chocolate-sugar-confectionery-eurostat-data.html,tooltips,chrome,success,,120.0,2016-03-01,2026-02-01,22.2
+69,https://tradingeconomics.com/romania/producer-prices-in-industry-manufacture-of-sugar-eurostat-data.html,tooltips,firefox,success,,120.0,2013-12-01,2023-11-01,23.8
+70,https://tradingeconomics.com/cyprus/harmonised-idx-of-consumer-prices-hicp-artificial-sugar-substitutes-eurostat-data.html,tooltips,chrome,success,,25.0,2015-12-01,2017-12-01,23.8
+71,https://tradingeconomics.com/portugal/harmonised-idx-of-consumer-prices-hicp-artificial-sugar-substitutes-eurostat-data.html,tooltips,firefox,success,,37.0,2014-12-01,2017-12-01,23.3
+72,https://tradingeconomics.com/romania/harmonised-idx-of-consumer-prices-hicp-artificial-sugar-substitutes-eurostat-data.html,tooltips,chrome,failed,Scraper returned None or no series,,,,22.0
+73,https://tradingeconomics.com/euro-area/producer-prices-in-industry-processing-of-tea-coffee-eurostat-data.html,tooltips,firefox,success,,120.0,2016-03-01,2026-02-01,23.9
+74,https://tradingeconomics.com/romania/producer-prices-in-industry-processing-of-tea-coffee-eurostat-data.html,tooltips,chrome,failed,Scraper returned None or no series,,,,21.9
+75,https://tradingeconomics.com/belgium/harmonised-idx-of-consumer-prices-hicp-coffee-machines-tea-makers-similar-appliances-eurostat-data.html,tooltips,firefox,success,,120.0,2015-12-01,2025-11-01,25.7
+76,https://tradingeconomics.com/greece/harmonised-idx-of-consumer-prices-hicp-coffee-machines-tea-makers-similar-appliances-eurostat-data.html,tooltips,chrome,success,,96.0,2017-12-01,2025-11-01,22.1
+77,https://tradingeconomics.com/croatia/harmonised-idx-of-consumer-prices-hicp-coffee-machines-tea-makers-similar-appliances-eurostat-data.html,tooltips,firefox,success,,120.0,2015-12-01,2025-11-01,25.9
+78,https://tradingeconomics.com/lithuania/harmonised-idx-of-consumer-prices-hicp-coffee-machines-tea-makers-similar-appliances-eurostat-data.html,tooltips,chrome,success,,120.0,2015-12-01,2025-11-01,22.6
+79,https://tradingeconomics.com/poland/harmonised-idx-of-consumer-prices-hicp-coffee-machines-tea-makers-similar-appliances-eurostat-data.html,tooltips,firefox,success,,120.0,2015-12-01,2025-11-01,22.9
+80,https://tradingeconomics.com/ko:us:pe,mixed,chrome,failed,Scraper returned None or no series,,,,16.6
+81,https://tradingeconomics.com/belgium/harmonised-idx-of-consumer-prices-hicp-cocoa-powdered-chocolate-eurostat-data.html,mixed,firefox,success,,120.0,2015-12-01,2025-11-01,31.6
+82,https://tradingeconomics.com/cyprus/harmonised-idx-of-consumer-prices-hicp-cocoa-powdered-chocolate-eurostat-data.html,mixed,chrome,success,,120.0,2015-12-01,2025-11-01,28.9
+83,https://tradingeconomics.com/european-union/harmonised-idx-of-consumer-prices-hicp-cocoa-powdered-chocolate-eurostat-data.html,mixed,firefox,success,,108.0,2016-12-01,2025-11-01,29.0
+84,https://tradingeconomics.com/france/harmonised-idx-of-consumer-prices-hicp-cocoa-powdered-chocolate-eurostat-data.html,mixed,chrome,failed,Scraper returned None or no series,,,,20.8
+85,https://tradingeconomics.com/united-states/export-end-use-logs-lumber-plywood-and-veneers-index-2000-100-m-nsa-fed-data.html,mixed,firefox,success,,120.0,2016-04-01,2026-03-01,29.6
+86,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-lumber-and-wood-products-softwood-cut-stock-and-dimension-index-1982-100-fed-data.html,mixed,chrome,success,,120.0,2015-06-01,2025-05-01,28.4
+87,https://tradingeconomics.com/united-states/import-end-use-lumber-and-other-unfinished-building-materials-index-2000-100-m-nsa-fed-data.html,mixed,firefox,success,,120.0,2016-04-01,2026-03-01,29.5
+88,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-lumber-and-wood-products-wood-moldings-fed-data.html,mixed,chrome,success,,120.0,2016-04-01,2026-03-01,27.9
+89,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-lumber-and-wood-products-laminated-veneer-lumber-fed-data.html,mixed,firefox,success,,119.0,2016-02-01,2026-01-01,29.1
+90,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-lumber-and-wood-products-plywood-fed-data.html,mixed,chrome,success,,120.0,2016-04-01,2026-03-01,27.9
+91,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-lumber-and-wood-products-softwood-veneer-including-veneer-backed-with-paper-cloth-or-other-flexible-material-fed-data.html,mixed,firefox,success,,120.0,2016-04-01,2026-03-01,29.1
+92,https://tradingeconomics.com/nhm:sj:pe,mixed,chrome,failed,Scraper returned None or no series,,,,22.2
+93,https://tradingeconomics.com/imp:sj:pe,mixed,firefox,failed,Scraper returned None or no series,,,,20.0
+94,https://tradingeconomics.com/ptm:au:pe,mixed,chrome,failed,Scraper returned None or no series,,,,20.3
+95,https://tradingeconomics.com/united-states/import-harmonized-system-gold-including-plated-with-platinum-unwrght-semi-mfg-or-powder-index-2000-100-m-nsa-fed-data.html,mixed,firefox,success,,120.0,2016-04-01,2026-03-01,29.7
+96,https://tradingeconomics.com/united-states/producer-price-index-by-commodity-for-miscellaneous-products-jewelry-gold-and-platinum-fed-data.html,mixed,chrome,failed,Scraper returned None or no series,,,,21.2
+97,https://tradingeconomics.com/united-states/producer-price-index-by-industry-jewelry-and-silverware-manufacturing-jewelry-excluding-costume-fed-data.html,mixed,firefox,success,,116.0,2016-04-01,2026-03-01,30.2
+98,https://tradingeconomics.com/united-states/export-harmonized-system-gold-including-gold-plated-with-platinum-unwrought-index-dec-2001-100-m-nsa-fed-data.html,mixed,chrome,failed,Scraper returned None or no series,,,,19.7
+99,https://tradingeconomics.com/european-union/producer-prices-in-industry-mining-of-iron-ores-eurostat-data.html,mixed,firefox,success,,120.0,2014-01-01,2023-12-01,29.1

@@ -110,7 +110,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         
         retries = 4
         for i in range(retries):
-            try: 
+            try:
                 if self.create_chart_types_dict(): # Create the chart types dictionary for the chart.
                     break
             except Exception as e:
@@ -168,22 +168,41 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
     def find_max_button(self, selector: str = "#dateSpansDiv"):
         """Find the button on the chart that selects the maximum date range and return the CSS selector for it.
-        The button is usually labelled 'MAX' and is used to select the maximum date range for the chart. The selector for the button is
-        usually '#dateSpansDiv' but can be changed if the button is not found. The method will return the CSS selector for the button.
-        This will also create an atrribute 'date_spans' which is a dictionary containing the text of the date span buttons and their CSS selectors."""
+        The button is usually labelled 'MAX' and is used to select the maximum date range for the chart. The method will return the CSS selector for the button.
+        This will also create an attribute 'date_spans' which is a dictionary containing the text of the date span buttons and their CSS selectors."""
 
         try:
-            buts = self.page_soup.select_one(selector)
-            datebut = buts[0] if isinstance(buts, list) else buts
-            self.date_spans = {child.text: f"a.{child['class'][0] if isinstance(child['class'], list) else child['class']}:nth-child({i+1})" for i, child in enumerate(datebut.children)}
+            # Use JavaScript to find and click the MAX button - more reliable than CSS selector
+            result = self.driver.execute_script("""
+                const dateSpansDiv = document.querySelector('#dateSpansDiv');
+                if (!dateSpansDiv) return null;
 
-            if "MAX" in self.date_spans.keys():
-                max_selector = self.date_spans["MAX"]
-            else:
-                raise ValueError("MAX button not found.")
-            logger.debug(f"MAX button found for chart at URL: {self.last_url}, selector: {max_selector}")
-            
-            return max_selector
+                const buttons = dateSpansDiv.querySelectorAll('a');
+                const dateSpans = {};
+
+                buttons.forEach((btn, i) => {
+                    const text = btn.textContent.trim();
+                    if (text) {
+                        dateSpans[text] = '#dateSpansDiv a:nth-child(' + (i + 1) + ')';
+                    }
+                });
+
+                return {
+                    dateSpans: dateSpans,
+                    hasMAX: 'MAX' in dateSpans,
+                    maxSelector: dateSpans['MAX'] || null
+                };
+            """)
+
+            if result:
+                self.date_spans = result.get('date_spans', {})
+                if result.get('hasMAX'):
+                    logger.debug(f"MAX button found for chart at URL: {self.last_url}, selector: {result['maxSelector']}")
+                    return result['maxSelector']
+                else:
+                    logger.debug(f"MAX button not found. Available buttons: {list(self.date_spans.keys())}")
+                    return None
+            return None
         except Exception as e:
             print(f"Error finding date spans buttons: {str(e)}")
             logger.debug(f"Error finding date spans buttons: {str(e)}")
@@ -204,37 +223,59 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         
     def determine_date_span(self, update_chart: bool = True):
         """Determine the selected date span from the Trading Economics chart currently displayed in webdriver."""
-    
-        if update_chart: 
+
+        if update_chart:
             self.update_chart()
-        ## Populate the date spans dictionary
-        buts = self.chart_soup.select("#dateSpansDiv")
-        datebut = buts[0] if isinstance(buts, list) else buts
-        self.date_spans = OrderedDict()
-        for i, child in enumerate(datebut.children):
-            selector = f"a.{child['class'][0] if isinstance(child['class'], list) else child['class']}:nth-child({i+1})"
-            self.date_spans[child.text] = selector
 
-        ## Find the selected date span
-        if len(buts) == 1:
-            result = buts[0].children
-        elif len(buts) > 1:
-            print("Multiple date spans found")
-            return buts
-        else:
-            print("No date spans found")
+        try:
+            # Use JavaScript to determine date spans - more reliable
+            result = self.driver.execute_script("""
+                const dateSpansDiv = document.querySelector('#dateSpansDiv');
+                if (!dateSpansDiv) return null;
+
+                const buttons = dateSpansDiv.querySelectorAll('a');
+                const dateSpans = {};
+                let selectedSpan = null;
+
+                buttons.forEach((btn, i) => {
+                    const text = btn.textContent.trim();
+                    if (text) {
+                        dateSpans[text] = '#dateSpansDiv a:nth-child(' + (i + 1) + ')';
+                        if (btn.classList.contains('selected')) {
+                            selectedSpan = text;
+                        }
+                    }
+                });
+
+                return {
+                    dateSpans: dateSpans,
+                    selectedSpan: selectedSpan
+                };
+            """)
+
+            if result:
+                self.date_spans = result.get('dateSpans', {})
+                selected = result.get('selectedSpan')
+
+                if selected:
+                    logger.info(f"Currently selected date span: {selected}")
+                    return selected
+                else:
+                    # Default to shortest span if nothing is selected
+                    if self.date_spans:
+                        shortest_span = list(self.date_spans.keys())[0]
+                        logger.info(f"No date span selected, defaulting to: {shortest_span}")
+                        return shortest_span
+                    # No date spans found (commodity chart)
+                    self.date_spans = {}
+                    return None
+            # No date spans found (commodity chart)
+            self.date_spans = {}
             return None
-
-        for r in result:
-            #print("Date span element: ", r)
-            if "selected" in r["class"] and r.text in list(self.date_spans.keys()):
-                date_span = {r.text: r}
-                return date_span
-            else:
-                # No button has been slected already in this case.
-                shortest_span = list(self.date_spans.keys())[0]
-                self.set_date_span(shortest_span)
-                return shortest_span
+        except Exception as e:
+            logger.debug(f"Error determining date span: {str(e)}")
+            self.date_spans = {}
+            return None
 
     def update_chart(self):
         """Update the chart attributes after loading a new page or clicking a button. This will check the page source and update the 
@@ -256,8 +297,14 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         that allows you to change the date range of the chart. This method will click the button for the date span specified in the date_span parameter.
         The date_span parameter should be a string that matches one of the date span buttons on the chart. The method will also update the date_span attribute
         of the class to reflect the new date span."""
-        if not hasattr(self, "date_spans"):
+        if not hasattr(self, "date_spans") or not self.date_spans:
             self.determine_date_span()
+
+        # If date_spans is still not available (e.g., commodity charts don't have date span buttons), skip
+        if not hasattr(self, "date_spans") or not self.date_spans:
+            logger.info(f"Date span buttons not available on this chart type (may be a commodity/high-frequency chart).")
+            return False
+
         if date_span in self.date_spans.keys():
             if self.click_button(self.date_spans[date_span]):
                 self.date_span = date_span
@@ -281,7 +328,7 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
 
     def update_date_span(self, update_chart: bool = False):
         """Update the date span after clicking a button. This will check the page source and update the date span attribute.
-        This method can be used t check that the curret date span is correct after clicking a button to change it. 
+        This method can be used t check that the curret date span is correct after clicking a button to change it.
         It will update the date_span attribute. It is not necessary after running set_date_span though as that method already updates the date span attribute.
 
         **Parameters:**
@@ -291,21 +338,33 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         if update_chart:
             self.update_chart()
         self.date_span_dict = self.determine_date_span()
-        self.date_span = list(self.date_spans.keys())[0]
+        # Only set date_span if date_spans is not empty (commodity charts don't have date spans)
+        if hasattr(self, "date_spans") and self.date_spans:
+            self.date_span = list(self.date_spans.keys())[0]
+        else:
+            self.date_span = "MAX"  # Default for commodity charts
     
     def create_chart_types_dict(self):
         """Create a dictionary of chart types and their CSS selectors. This is used to select the chart type on the Trading Economics chart.
         The dictionary is stored in the chart_types attribute of the class. The keys are the names of the chart types and the values are the CSS selectors
-        for the chart type buttons on the chart."""
+        for the chart type buttons on the chart. Returns False if chart type buttons are not available (e.g., commodity charts)."""
         try:
             hart_types = self.chart_soup.select_one(".chartTypesWrapper")
+            if hart_types is None:
+                # Only log this once per instance
+                if not getattr(self, '_chart_types_none_logged', False):
+                    logger.info("Chart type buttons not available on this chart type (may be a commodity/high-frequency chart).")
+                    self._chart_types_none_logged = True
+                self.chart_types = {}
+                return False
             self.chart_types = {child["title"]: "."+child["class"][0]+" ."+ child.button["class"][0] for child in hart_types.children}
             for key, value in self.chart_types.items():
                 self.chart_types[key] = value.split(" ")[0]
             logger.info(f"Chart types dictionary created successfully: {self.chart_types.keys()}")
             return True
         except Exception as e:
-            logger.error(f"Error creating chart types dictionary: {e}")
+            logger.info(f"Error creating chart types dictionary: {e}")
+            self.chart_types = {}
             return False
 
     def select_chart_type(self, chart_type: str):
@@ -1328,43 +1387,108 @@ class TE_Scraper(Generic_Webdriver, SharedWebDriverState):
         """Scrape metadata from the page. This method scrapes metadata from the page and stores it in the 'metadata' attribute. The metadata
         includes the title, indicator, country, length, frequency, source, , original source, id, start date, end date, min value, and max value of the series.
         It also scrapes a description of the series if available and stores it in the 'description' attribute.
+        Works with both standard economic indicator charts and commodity/high-frequency charts.
         """
 
         self.metadata = {}
         logger.debug(f"Scraping metadata for the series from the page...")
 
+        # First, try to get metadata from TE global JavaScript variables (works for commodity charts)
+        te_globals = self.driver.execute_script("""
+            const results = {};
+            if (typeof TECountry !== 'undefined') results['TECountry'] = TECountry;
+            if (typeof TECategory !== 'undefined') results['TECategory'] = TECategory;
+            if (typeof TEFrequency !== 'undefined') results['TEFrequency'] = TEFrequency;
+            if (typeof TESymbol !== 'undefined') results['TESymbol'] = TESymbol;
+            if (typeof TEType !== 'undefined') results['TEType'] = TEType;
+            if (typeof TEChartUrl !== 'undefined') results['TEChartUrl'] = TEChartUrl;
+            return results;
+        """)
+
+        # Try to get unit from HighCharts series options (works for both chart types)
+        hc_metadata = self.driver.execute_script("""
+            const chart = Highcharts.charts.find(c => c && c.series && c.series.length > 0);
+            if (chart && chart.series[0]) {
+                const opts = chart.series[0].options;
+                return {
+                    frequency: opts.frequency,
+                    unit: opts.unit,
+                    country: opts.country,
+                    category: opts.category,
+                    id: opts.id,
+                    title: opts.title
+                };
+            }
+            return null;
+        """)
+
+        # Set basic metadata from URL
+        self.metadata["indicator"] = self.last_url.split("/")[-1].replace("-", " ")
+        self.metadata["country"] = self.last_url.split("/")[-2].replace("-", " ")
+        self.metadata["source"] = "Trading Economics"
+        self.metadata["id"] = "/".join(self.last_url.split("/")[-2:])
+
+        # Override with TE global variables if available
+        if te_globals:
+            if 'TECountry' in te_globals:
+                self.metadata["country"] = te_globals['TECountry']
+            if 'TEFrequency' in te_globals:
+                self.metadata["frequency"] = te_globals['TEFrequency']
+            if 'TESymbol' in te_globals:
+                self.metadata["symbol"] = te_globals['TESymbol']
+            if 'TEType' in te_globals:
+                self.metadata["te_type"] = te_globals['TEType']
+
+        # Try to get units from chart soup (standard charts)
         try:
             self.metadata["units"] = self.chart_soup.select_one('#singleIndChartUnit2').text
-        except Exception as e:
-            print("Units label not found: ", {str(e)})
-            self.metadata["units"] = "a.u"
-        
+        except Exception:
+            # Fallback to HighCharts unit
+            if hc_metadata and hc_metadata.get('unit'):
+                self.metadata["units"] = hc_metadata.get('unit')
+            else:
+                self.metadata["units"] = "a.u"
+
+        # Try to get original source from chart soup (standard charts)
         try:
             self.metadata["original_source"] = self.chart_soup.select_one('#singleIndChartUnit').text
-        except Exception as e:
-            print("original_source label not found: ", {str(e)})
+        except Exception:
             self.metadata["original_source"] = "unknown"
 
-        if hasattr(self, "page_soup"):
-            heads = self.page_soup.select("#ctl00_Head1")
-            self.metadata["title"] = heads[0].title.text.strip()
+        # Try to get title from page soup or HighCharts
+        if hc_metadata and hc_metadata.get('title'):
+            self.metadata["title"] = hc_metadata.get('title')
         else:
-            self.metadata["title"] = self.last_url.split("/")[-1].replace("-", " ")  # Use URL if can't find the title
-        self.metadata["indicator"] = self.last_url.split("/")[-1].replace("-", " ")  
-        self.metadata["country"] = self.last_url.split("/")[-2].replace("-", " ") 
-        self.metadata["source"] = "Trading Economics" 
-        self.metadata["id"] = "/".join(self.last_url.split("/")[-2:])
+            try:
+                if hasattr(self, "page_soup"):
+                    heads = self.page_soup.select("#ctl00_Head1")
+                    if heads:
+                        self.metadata["title"] = heads[0].title.text.strip()
+                    else:
+                        self.metadata["title"] = self.last_url.split("/")[-1].replace("-", " ")
+                else:
+                    self.metadata["title"] = self.last_url.split("/")[-1].replace("-", " ")
+            except Exception:
+                self.metadata["title"] = self.last_url.split("/")[-1].replace("-", " ")
+
+        # Set frequency from HighCharts if available
+        if hc_metadata and hc_metadata.get('frequency'):
+            self.metadata["frequency"] = hc_metadata.get('frequency')
+
         logger.info(f"\nSeries metadata: \n {self.metadata}")
 
+        # Try to get description (standard charts only)
         try:
-            desc_card = self.page_soup.select_one("#item_definition")
-            header_text = desc_card.select_one('.card-header').text.strip()
-            if header_text.lower() == self.metadata["title"].lower():
-                self.metadata["description"] = desc_card.select_one('.card-body').text.strip()
-            else:
-                print("Description card title does not match series title.")
-                self.metadata["description"] = "Description not found."
+            if hasattr(self, "page_soup"):
+                desc_card = self.page_soup.select_one("#item_definition")
+                if desc_card:
+                    header_text = desc_card.select_one('.card-header').text.strip()
+                    if header_text.lower() == self.metadata["title"].lower():
+                        self.metadata["description"] = desc_card.select_one('.card-body').text.strip()
+                    else:
+                        self.metadata["description"] = "Description not found."
         except Exception as e:
+            self.metadata["description"] = "Description not available for this chart type."
             print("Description card not found: ", {str(e)})
 
         self.series_metadata = pd.Series(self.metadata)

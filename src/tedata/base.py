@@ -1,5 +1,7 @@
 from typing import Literal
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.support.ui import WebDriverWait
 from bs4 import BeautifulSoup
 import time
@@ -114,14 +116,27 @@ class Generic_Webdriver:
 
         if driver is None and not use_existing_driver:
             if browser == "chrome":
-                print("Chrome browser not supported yet. Please use Firefox.")
-                logger.debug(f"Chrome browser not supported yet. Please use Firefox.")
-                return None
-            elif browser == "firefox":
-                options = webdriver.FirefoxOptions()
+                options = webdriver.ChromeOptions()
                 if headless:
                     options.add_argument('--headless')
-                self.driver = TimestampedFirefox(options=options)
+                options.binary_location = '/usr/bin/google-chrome'
+                options.add_argument('--no-sandbox')
+                options.add_argument('--disable-setuid-sandbox')
+                options.add_argument('--disable-dev-shm-usage')
+                options.add_argument('--disable-gpu')
+                options.add_argument('--window-size=1920,1080')
+                options.add_argument('--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+                options.add_argument('--disable-blink-features=AutomationControlled')
+                options.add_experimental_option('excludeSwitches', ['enable-automation'])
+                options.add_experimental_option('useAutomationExtension', False)
+                self.driver = TimestampedChrome(options=options)
+            elif browser == "firefox":
+                options = FirefoxOptions()
+                if headless:
+                    options.add_argument('--headless')
+                options.binary_location = "/usr/bin/firefox"
+                service = FirefoxService("/usr/bin/geckodriver")
+                self.driver = TimestampedFirefox(service=service, options=options)
             else:
                 logger.debug(f"Error: Unsupported browser! Use 'chrome' or 'firefox'.")
                 raise ValueError("Unsupported browser! Use 'chrome' or 'firefox'.")

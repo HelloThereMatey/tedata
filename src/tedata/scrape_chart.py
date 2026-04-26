@@ -15,7 +15,59 @@ import logging
 logger = logging.getLogger('tedata.scrape_chart')
 
 ############################################################################################################
-############ Convenience function to run the full scraper from scraper module ##########################################
+############ Helper: click 10Y on commodity chart (uses menu2-bottom selector) ###########################
+
+def _click_10y_button(driver, logger):
+    """Click the 10Y date button on commodity charts.
+    Commodity charts use #trading_chart > div > div.iChart-wrapper-footer > div.iChart-menu2-bottom-cnt-horizontal
+    instead of the standard #dateSpansDiv. Tries the menu2-bottom container first, then falls back to #dateSpansDiv.
+    Returns True if 10Y was successfully clicked, False otherwise."""
+    ten_years_ago = (datetime.date.today() - datetime.timedelta(days=10*365)).strftime("%Y-%m-%d")
+    today_str = datetime.date.today().strftime("%Y-%m-%d")
+
+    # ── Step 1: Try the commodity/menu2-bottom container ──────────────────────────
+    success = driver.execute_script("""
+        const container = document.querySelector('#trading_chart > div > div.iChart-wrapper-footer > div.iChart-menu2-bottom-cnt-horizontal');
+        if (!container) return {clicked: false, via: null, buttons: []};
+        const allBtns = container.querySelectorAll('div, span, a, button');
+        const textBtns = Array.from(allBtns).filter(el => el.children.length === 0 && el.textContent.trim());
+        const tenY = textBtns.find(b => b.textContent.trim() === '10Y');
+        if (tenY) { tenY.click(); return {clicked: true, via: 'menu2-bottom', buttons: ['10Y']}; }
+        // Try direct text match on any descendant
+        const allText = Array.from(container.querySelectorAll('*')).filter(el => el.children.length === 0 && el.textContent.trim() === '10Y');
+        if (allText.length > 0) { allText[0].click(); return {clicked: true, via: 'menu2-bottom-text', buttons: ['10Y']}; }
+        return {clicked: false, via: 'menu2-bottom', buttons: textBtns.map(b => b.textContent.trim())};
+    """)
+    if success and success.get('clicked'):
+        logger.info("Clicked 10Y via menu2-bottom commodity selector")
+        time.sleep(3)
+        return True
+
+    logger.info(f"menu2-bottom 10Y not found, available in that zone: {success.get('buttons', []) if success else 'N/A'}")
+
+    # ── Step 2: Fall back to #dateSpansDiv (standard charts) ────────────────────
+    success = driver.execute_script("""
+        const dateSpansDiv = document.querySelector('#dateSpansDiv');
+        if (!dateSpansDiv) return {clicked: false, via: null, buttons: []};
+        const buttons = dateSpansDiv.querySelectorAll('a');
+        const available = [];
+        buttons.forEach(btn => available.push(btn.textContent.trim()));
+        const tenY = Array.from(buttons).find(a => a.textContent.trim() === '10Y');
+        if (tenY) { tenY.click(); return {clicked: true, via: 'dateSpansDiv', buttons: available}; }
+        return {clicked: false, via: 'dateSpansDiv', buttons: available};
+    """)
+    if success and success.get('clicked'):
+        logger.info("Clicked 10Y via standard #dateSpansDiv")
+        time.sleep(3)
+        return True
+
+    logger.info(f"#dateSpansDiv 10Y not found, available: {success.get('buttons', []) if success else 'N/A'}")
+
+    # ── Step 3: Neither worked — use calendar with 10Y lookback ──────────────────
+    return {'clicked': False, 'ten_years_ago': ten_years_ago, 'today_str': today_str}
+
+############################################################################################################
+############ Convenience function to run the full scraper from scraper module ##############################
 
 def scrape_chart(url: str = None, 
                  id: str = None,
@@ -71,9 +123,9 @@ def scrape_chart(url: str = None,
     - TE_Scraper object with the scraped data or None if an error occurs.
     """
 
-    if start_date is not None: 
-        print("WARNING: Trading Economics has disabled the custom date range setter for non-premium users. Only 10Y of history can be obtained.")
-        #start_date = (datetime.datetime.now() - datetime.timedelta(days=((365*10)-1))).strftime("%Y-%m-%d")
+    if start_date is not None:
+        print("WARNING: Trading Economics has disabled the custom date range setter for non-premium users. Data may be limited based on subscription level.")
+        # Note: We now try to use MAX button to get the maximum available data
     if end_date is None:
         end_date = datetime.datetime.now().strftime("%Y-%m-%d")
     if scraper is not None:  
@@ -118,12 +170,16 @@ def scrape_chart(url: str = None,
     if method == "tooltips":
         if not hasattr(sel, "tooltip_scraper"):
             sel.init_tooltipScraper()  ## Initialize the tooltip scraper.
-        try:
-            # Trading economics has disabled the abilty to set custom date ranges. ALl date range will be set to 10Y which is now the max.
-            sel.set_date_span("10Y")
-            #sel.custom_date_span_js(start_date, end_date)  # Set the date span for the chart.
-        except Exception as e:
-            logger.info("Error setting date span: ", str(e))
+        # Try commodity 10Y button first, then standard #dateSpansDiv, then calendar fallback
+        result = _click_10y_button(sel.driver, logger)
+        if result is True:
+            pass  # 10Y clicked successfully via menu2-bottom or dateSpansDiv
+        elif isinstance(result, dict) and not result.get('clicked'):
+            sel.custom_date_span_js(start_date=result['ten_years_ago'], end_date=result['today_str'])
+            logger.info(f"10Y button not clickable — set date span to 10Y lookback via calendar: {result['ten_years_ago']} to {result['today_str']}")
+        else:
+            sel.custom_date_span_js(start_date="2010-01-01", end_date="2024-06-01")
+            logger.info("10Y button unknown state — falling back to custom_date_span_js")
         try:
             sel.tooltip_scraper.initialize_tooltip_simple()  #Initialize the tooltips on the page by moving mouse onto chart.
         except Exception as e:
@@ -138,12 +194,16 @@ def scrape_chart(url: str = None,
             return None
         
     elif method == "path":
-        try:
-            # Trading economics has disabled the abilty to set custom date ranges. ALl date range will be set to 10Y which is now the max.
-            sel.set_date_span("10Y")
-            #sel.custom_date_span_js(start_date, end_date)  # Set the date span for the chart.
-        except Exception as e:
-            logger.info("Error setting date span: ", str(e))
+        # Try commodity 10Y button first, then standard #dateSpansDiv, then calendar fallback
+        result = _click_10y_button(sel.driver, logger)
+        if result is True:
+            pass  # 10Y clicked successfully
+        elif isinstance(result, dict) and not result.get('clicked'):
+            sel.custom_date_span_js(start_date=result['ten_years_ago'], end_date=result['today_str'])
+            logger.info(f"10Y button not clickable — set date span to 10Y lookback via calendar: {result['ten_years_ago']} to {result['today_str']}")
+        else:
+            sel.custom_date_span_js(start_date="2010-01-01", end_date="2024-06-01")
+            logger.info("10Y button unknown state — falling back to custom_date_span_js")
         try: #Create the x_index for the series. This is the most complicated bit.
             sel.make_x_index(force_rerun_xlims = True, force_rerun_freqdet = True)  
         except Exception as e:
@@ -191,12 +251,16 @@ def scrape_chart(url: str = None,
     ## Most accurate method but slowest. Determine start & end dates for full series and frequency, make x-index. Then scrape the data from tooltips
     # using multiple runs of the chart with different date spans to capture all the data.
     elif method == "mixed":
-        try:
-            # Trading economics has disabled the abilty to set custom date ranges. ALl date range will be set to 10Y which is now the max.
-            sel.set_date_span("10Y")
-            #sel.custom_date_span_js(start_date, end_date)  # Set the date span for the chart.
-        except Exception as e:
-            logger.info("Error setting date span: ", str(e))
+        # Try commodity 10Y button first, then standard #dateSpansDiv, then calendar fallback
+        result = _click_10y_button(sel.driver, logger)
+        if result is True:
+            pass  # 10Y clicked successfully
+        elif isinstance(result, dict) and not result.get('clicked'):
+            sel.custom_date_span_js(start_date=result['ten_years_ago'], end_date=result['today_str'])
+            logger.info(f"10Y button not clickable — set date span to 10Y lookback via calendar: {result['ten_years_ago']} to {result['today_str']}")
+        else:
+            sel.custom_date_span_js(start_date="2010-01-01", end_date="2024-06-01")
+            logger.info("10Y button unknown state — falling back to custom_date_span_js")
         try: #Create the x_index for the series. This is the most complicated bit.
             sel.make_x_index(force_rerun_xlims = True, force_rerun_freqdet = True)  
         except Exception as e:
@@ -221,14 +285,16 @@ def scrape_chart(url: str = None,
             return None
         
     elif method == "highcharts_api":
-        try:
-            # Trading economics has disabled the abilty to set custom date ranges. ALl date range will be set to 10Y which is now the max.
-            sel.set_date_span("10Y")
-            #sel.custom_date_span_js(start_date, end_date)  # Set the date span for the chart.
-            time.sleep(1)
-        except Exception as e:
-            logger.info(f"Error setting max date span: {str(e)}")
-            return None
+        # Try the commodity 10Y button first (menu2-bottom), then standard #dateSpansDiv, then calendar fallback
+        result = _click_10y_button(sel.driver, logger)
+        if result is True:
+            pass  # 10Y clicked successfully
+        elif isinstance(result, dict) and not result.get('clicked'):
+            sel.custom_date_span_js(start_date=result['ten_years_ago'], end_date=result['today_str'])
+            logger.info(f"10Y button not clickable — set date span to 10Y lookback via calendar: {result['ten_years_ago']} to {result['today_str']}")
+        else:
+            sel.custom_date_span_js(start_date="2010-01-01", end_date="2024-06-01")
+            logger.info("10Y button unknown state — falling back to custom_date_span_js")
         try:
             # Use new method to scrape series from Highcharts API.
             sel.series_from_highcharts()

@@ -13,8 +13,9 @@ wd = os.path.dirname(__file__)
 fdel = os.path.sep
 
 #List of urls to test
-with open(wd+fdel+"test_urls.csv", "r") as f:
-    TEST_URLS = [line.strip() for line in f.readlines()]
+INDICATORS_CSV = 'tests/TE_indicators_100.csv'
+df = pd.read_csv(INDICATORS_CSV)
+TEST_URLS = df['url'].tolist()
 
 class TestTEDataScraping(unittest.TestCase):
     @classmethod

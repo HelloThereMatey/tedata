@@ -76,13 +76,13 @@ class search_TE(Generic_Webdriver):
     def search_trading_economics(self, search_term: str = None, wait_time: int = 5):
         """Search Trading Economics website for a given term and extract URLs of search results.
         This method will search the Trading Economics website for a given term and extract the URLs of the search results.
-        It will enter the search term in the search box, submit the search, and extract the URLs of the search results.
+        It will enter the search term in the search box, wait for dropdown suggestions, and extract the URLs.
         Results are assigned to the 'results' attribute as a list of URLs and as result_table attribute as a pandas df.
 
         **Parameters:**
 
         - search_term (str): The term to search for on the website.
-        - wait_time (int): The time to wait for the search results to load, in seconds (if you get an empty table 
+        - wait_time (int): The time to wait for the search results to load, in seconds (if you get an empty table
         of results, increase this time).
         """
 
@@ -93,59 +93,82 @@ class search_TE(Generic_Webdriver):
         else:
             search_box = WebDriverWait(self.driver, 30).until(
                 EC.presence_of_element_located((By.ID, "thisIstheSearchBoxIdTag")))
- 
+
         if search_term is None:
             search_term = self.search_term
         else:
             self.search_term = search_term
         logger.debug(f"Searching Trading Economics for: {self.search_term}")
-        
+
         try:
-        # Wait for search box - using the ID from the HTML
+            # Wait for search box - using the ID from the HTML
             # Click search box
             logger.info("Clicking search box...")
             search_box.click()
-            
+
             # Enter search term
             logger.info(f"Entering search term: {search_term}")
             search_box.send_keys(search_term)
-            time.sleep(0.5)  # Small delay to let suggestions appear
-            
-            # Press Enter
-            logger.info(f"Submitting search, waiting {wait_time}s for page to load...")
-            search_box.send_keys(Keys.RETURN)
-            
-            # Wait a moment to see results  
-            ## Need to figure a better way to figure when the search results are loaded...
-            results = WebDriverWait(self.driver, 30).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, ".list-group-item")))
+
+            # Wait for dropdown suggestions to appear (don't press Enter - that navigates away)
+            logger.info("Waiting for dropdown suggestions to appear...")
             time.sleep(wait_time)
+
+            # Wait for the dropdown results container
+            try:
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "#dpSearch-resultCnt")))
+                logger.info("Dropdown suggestions found.")
+            except Exception:
+                logger.info("Dropdown suggestions not found, trying list-group-item...")
+                WebDriverWait(self.driver, 30).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, ".list-group-item")))
 
             self.results = self.extract_search_results(self.driver.page_source)
             self.results_table()
             logger.debug(f"Search for {self.search_term} completed successfully.")
-        
+
         except Exception as e:
             logger.info(f"Error occurred: {str(e)}")
             logger.debug(f"Error on search occurred: {str(e)}")
             return None
         
     def extract_search_results(self, html_content):
-        """Extract URLs from search results page"""
-        
-        results_container = WebDriverWait(self.driver, 30).until(
-            EC.all_of(
-                EC.presence_of_element_located((By.CSS_SELECTOR, ".list-group")),
-                #EC.visibility_of_element_located((By.CSS_SELECTOR, ".list-group")),
-            )
-        )
-        
-        print("Found search results on page.")
+        """Extract URLs from search results dropdown/page"""
+
+        # Try to find the dropdown results container (newer TE structure)
+        try:
+            results_container = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "#dpSearch-resultCnt")))
+            print("Found search results dropdown.")
+        except Exception:
+            # Fallback to old structure
+            try:
+                results_container = WebDriverWait(self.driver, 30).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, ".list-group")))
+                print("Found search results list.")
+            except Exception:
+                logger.info("Could not find search results container")
+                return []
+
         time.sleep(1)
         soup = BeautifulSoup(html_content, 'html.parser')
-        
-        # Find all list items in search results
-        results = soup.find_all('li', class_='list-group-item')
+
+        # Find all list items in search results (handle both dropdown and page structures)
+        # Note: TE now uses full URLs in href, not relative paths
+        results = soup.select('li.list-group-item a[href]')
+        if not results:
+            # Try alternative selector for dropdown structure
+            results = soup.select('#dpSearch-resultCnt li a[href]')
+
+        urls = []
+        for result in results:
+            href = result.get('href', '')
+            # Filter out "More" results and non-TE links
+            if href and '/search.aspx' not in href and 'tradingeconomics.com' in href:
+                urls.append(href)
+
+        return urls
         
         urls = []
         for result in results:
