@@ -1,6 +1,6 @@
 ## tedata
 
-Download data from Trading Economics without an account or API key. Trading Economics API costs upwards of $100 USD per month for data access. Using this you will be able to download a large part of the data available on the site for free. Trading Economics has one of the greatest repositories of macroeconomic data on Earth. Download data series into a Jupyter notebook environment or save series directly to excel file (.xlsx) using command line. Utilizes Selenium and BeautifulSoup4 to scrape data from charts. Runs fine on linux, mac OS or windows.
+Download data from Trading Economics without an account or API key. Trading Economics API costs upwards of $100 USD per month for data access. Using this you will be able to download most of the time-series data available on the site for free (limited to 10Y of historical data). Trading Economics has one of the greatest repositories of macroeconomic data on Earth. Download data series into a Jupyter notebook environment or save series directly to excel file (.xlsx) using command line. Utilizes Selenium and BeautifulSoup4 to scrape data from charts. Runs fine on linux, mac OS or windows.
 
 **Update 2025-08-19:** It appears that Trading Economics have vastly upgraded their anti-scraping measures. The maximum length of data that can be downloaded using tedata is now limited to 10 years. Most series on the site can be downloaded but the historical length is now limited.
 

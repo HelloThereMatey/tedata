@@ -17,3 +17,7 @@ __pycache__/
 /src/tedata/logs/
 /tests/test_runs/
 /tests/test_urls*
+
+#Dev tools
+.vscode/
+CLAUDE.md
