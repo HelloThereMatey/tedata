@@ -4,14 +4,14 @@ Download data from Trading Economics without an account or API key. Trading Econ
 
 **Update 2025-08-19:** It appears that Trading Economics have vastly upgraded their anti-scraping measures. The maximum length of data that can be downloaded using tedata is now limited to 10 years. Most series on the site can be downloaded but the historical length is now limited.
 
-![Static plot](docs/te_chart.PNG)
+![Static plot](docs/te_chart.png)
 
 **Above:** Chart type for lower frequency data, e.g monthly economic indicators such as CPI. tedata has always enabled scraping of the data from this chart type.
 
 **Update 2026-04-26:**
 tedata now supports download of data series for higher-frequency series such as commodity prices. You can now also download data from the chart type shown below, used for higher frequency data such as commodity prices. This is a significant upgrade as it opens up a much wider range of data series for download.
 
-![Static plot](docs/te_chart2.PNG)
+![Static plot](docs/te_chart2.png)
 
 **Above:** You can now download data from a chart like this as well.
 
